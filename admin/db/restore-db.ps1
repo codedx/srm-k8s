@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.5.0
+.VERSION 1.6.0
 .GUID 5f30b324-9305-4a7c-bd68-f9845d30659e
 .AUTHOR SRM
 #>
@@ -18,7 +18,7 @@ param (
 	[string] $namespace = 'srm',
 	[string] $releaseName = 'srm',
 	[int]    $waitSeconds = 600,
-	[string] $imageDatabaseRestore = 'codedx/codedx-dbrestore:v1.13.0',
+	[string] $imageDatabaseRestore = 'codedx/codedx-dbrestore:v1.14.0',
 	[string] $dockerImagePullSecretName,
 	[switch] $skipSRMWebRestart
 )

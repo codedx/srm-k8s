@@ -48,9 +48,9 @@ The following example commands use a fictitious private registry hosted in AWS a
 The first example stores Black Duck Docker images at the root of your private registry:
 
 ```
-$ docker pull repo.blackduck.com/containers/codedx/codedx-tomcat:v2024.12.0
-$ docker tag repo.blackduck.com/containers/codedx/codedx-tomcat:v2024.12.0 id.dkr.ecr.us-east-2.amazonaws.com/codedx/codedx-tomcat:v2024.12.0
-$ docker push id.dkr.ecr.us-east-2.amazonaws.com/codedx/codedx-tomcat:v2024.12.0
+$ docker pull repo.blackduck.com/containers/codedx/codedx-tomcat:v2024.12.1
+$ docker tag repo.blackduck.com/containers/codedx/codedx-tomcat:v2024.12.1 id.dkr.ecr.us-east-2.amazonaws.com/codedx/codedx-tomcat:v2024.12.1
+$ docker push id.dkr.ecr.us-east-2.amazonaws.com/codedx/codedx-tomcat:v2024.12.1
 ```
 
 >Note: Your private Docker registry might require creating a repository before adding a Docker image with `docker push`.
@@ -58,9 +58,9 @@ $ docker push id.dkr.ecr.us-east-2.amazonaws.com/codedx/codedx-tomcat:v2024.12.0
 The following example stores Black Duck images under "my-srm" in your private registry. In this scenario, you must enter "my-srm" as your private registry repository prefix in the Guided Setup:
 
 ```
-$ docker pull repo.blackduck.com/containers/codedx/codedx-tomcat:v2024.12.0
-$ docker tag repo.blackduck.com/containers/codedx/codedx-tomcat:v2024.12.0 id.dkr.ecr.us-east-2.amazonaws.com/my-srm/codedx/codedx-tomcat:v2024.12.0
-$ docker push id.dkr.ecr.us-east-2.amazonaws.com/my-srm/codedx/codedx-tomcat:v2024.12.0
+$ docker pull repo.blackduck.com/containers/codedx/codedx-tomcat:v2024.12.1
+$ docker tag repo.blackduck.com/containers/codedx/codedx-tomcat:v2024.12.1 id.dkr.ecr.us-east-2.amazonaws.com/my-srm/codedx/codedx-tomcat:v2024.12.1
+$ docker push id.dkr.ecr.us-east-2.amazonaws.com/my-srm/codedx/codedx-tomcat:v2024.12.1
 ```
 
 >Note: Your private Docker registry might require creating a repository before adding a Docker image with `docker push`.
@@ -71,7 +71,7 @@ See the following sections for the Docker images you must obtain via docker pull
 
 The SRM Web pod requires this Docker image:
 
-- repo.blackduck.com/containers/codedx/codedx-tomcat:v2024.12.0
+- repo.blackduck.com/containers/codedx/codedx-tomcat:v2024.12.1
 
 You can use this PowerShell script below to pull, tag, and push the above Black Duck Docker image to your private registry; you must set the $myPrivateRegistryPrefix variable by replacing `id.dkr.ecr.us-east-2.amazonaws.com` with your Docker registry name and any prefix (e.g., my-srm) you require ($myPrivateRegistryPrefix must end with a forward slash):
 
@@ -79,7 +79,7 @@ You can use this PowerShell script below to pull, tag, and push the above Black 
 $myPrivateRegistryPrefix = 'id.dkr.ecr.us-east-2.amazonaws.com/'
 if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$myPrivateRegistryPrefix/" }
 
-'codedx/codedx-tomcat:v2024.12.0' | ForEach-Object {
+'codedx/codedx-tomcat:v2024.12.1' | ForEach-Object {
 
    docker pull "repo.blackduck.com/containers/$_"
    if($LASTEXITCODE -ne 0){throw "$_ pull failed"} 
@@ -100,7 +100,7 @@ If you are using an external SRM database, skip this section.
 
 The SRM Database pod requires this Docker image:
 
-- repo.blackduck.com/containers/codedx/codedx-mariadb:v1.36.0
+- repo.blackduck.com/containers/codedx/codedx-mariadb:v1.37.0
 
 You can use this PowerShell script below to pull, tag, and push the above Black Duck Docker image to your private registry; you must set the $myPrivateRegistryPrefix variable by replacing `id.dkr.ecr.us-east-2.amazonaws.com` with your Docker registry name and any prefix (e.g., my-srm) you require ($myPrivateRegistryPrefix must end with a forward slash):
 
@@ -108,7 +108,7 @@ You can use this PowerShell script below to pull, tag, and push the above Black 
 $myPrivateRegistryPrefix = 'id.dkr.ecr.us-east-2.amazonaws.com/'
 if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$myPrivateRegistryPrefix/" }
 
-'codedx/codedx-mariadb:v1.36.0' | ForEach-Object {
+'codedx/codedx-mariadb:v1.37.0' | ForEach-Object {
 
    docker pull "repo.blackduck.com/containers/$_"
    if($LASTEXITCODE -ne 0){throw "$_ pull failed"} 
@@ -170,12 +170,12 @@ If you are not using the SRM Tool Orchestration feature, skip this section.
 
 The SRM Tool Orchestration feature requires these Docker images:
 
-- repo.blackduck.com/containers/codedx/codedx-tools:v2024.12.0
-- repo.blackduck.com/containers/codedx/codedx-prepare:v2.6.0
-- repo.blackduck.com/containers/codedx/codedx-newanalysis:v2.6.0
-- repo.blackduck.com/containers/codedx/codedx-results:v2.6.0
-- repo.blackduck.com/containers/codedx/codedx-tool-service:v2.6.0
-- repo.blackduck.com/containers/codedx/codedx-cleanup:v2.6.0
+- repo.blackduck.com/containers/codedx/codedx-tools:v2024.12.1
+- repo.blackduck.com/containers/codedx/codedx-prepare:v2.7.0
+- repo.blackduck.com/containers/codedx/codedx-newanalysis:v2.7.0
+- repo.blackduck.com/containers/codedx/codedx-results:v2.7.0
+- repo.blackduck.com/containers/codedx/codedx-tool-service:v2.7.0
+- repo.blackduck.com/containers/codedx/codedx-cleanup:v2.7.0
 - repo.blackduck.com/containers/argoproj/workflow-controller:v3.5.11
 - repo.blackduck.com/containers/argoproj/argoexec:v3.5.11
 - repo.blackduck.com/containers/bitnami/minio:2024.11.7-debian-12-r2 (when not using external workflow storage)
@@ -186,12 +186,12 @@ You can use this PowerShell script below to pull, tag, and push the above Black 
 $myPrivateRegistryPrefix = 'id.dkr.ecr.us-east-2.amazonaws.com/'
 if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$myPrivateRegistryPrefix/" }
 
-'codedx/codedx-tools:v2024.12.0',
-'codedx/codedx-prepare:v2.6.0',
-'codedx/codedx-newanalysis:v2.6.0',
-'codedx/codedx-results:v2.6.0',
-'codedx/codedx-tool-service:v2.6.0',
-'codedx/codedx-cleanup:v2.6.0',
+'codedx/codedx-tools:v2024.12.1',
+'codedx/codedx-prepare:v2.7.0',
+'codedx/codedx-newanalysis:v2.7.0',
+'codedx/codedx-results:v2.7.0',
+'codedx/codedx-tool-service:v2.7.0',
+'codedx/codedx-cleanup:v2.7.0',
 'bitnami/minio:2024.11.7-debian-12-r2',
 'argoproj/workflow-controller:v3.5.11',
 'argoproj/argoexec:v3.5.11' | ForEach-Object {
@@ -217,14 +217,14 @@ If you are logged in to the Black Duck Docker registry and your private registry
 $myPrivateRegistryPrefix = 'id.dkr.ecr.us-east-2.amazonaws.com/'
 if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$myPrivateRegistryPrefix/" }
 
-'codedx/codedx-tomcat:v2024.12.0',
-'codedx/codedx-tools:v2024.12.0',
-'codedx/codedx-prepare:v2.6.0',
-'codedx/codedx-newanalysis:v2.6.0',
-'codedx/codedx-results:v2.6.0',
-'codedx/codedx-tool-service:v2.6.0',
-'codedx/codedx-cleanup:v2.6.0',
-'codedx/codedx-mariadb:v1.36.0',
+'codedx/codedx-tomcat:v2024.12.1',
+'codedx/codedx-tools:v2024.12.1',
+'codedx/codedx-prepare:v2.7.0',
+'codedx/codedx-newanalysis:v2.7.0',
+'codedx/codedx-results:v2.7.0',
+'codedx/codedx-tool-service:v2.7.0',
+'codedx/codedx-cleanup:v2.7.0',
+'codedx/codedx-mariadb:v1.37.0',
 'bitnami/minio:2024.11.7-debian-12-r2',
 'argoproj/workflow-controller:v3.5.11',
 'argoproj/argoexec:v3.5.11',
