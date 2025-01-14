@@ -43,6 +43,30 @@ Returns the MinIO secret name (overwrites template).
 {{- end -}}
 
 {{/*
+Get the root user key by switching the default from root-user to access-key (overwrites template).
+*/}}
+{{- define "minio.rootUserKey" -}}
+{{- if and (.Values.auth.existingSecret) (.Values.auth.rootUserSecretKey) -}}
+    {{- printf "%s" (tpl .Values.auth.rootUserSecretKey $) -}}
+{{- else -}}
+    {{/* Use the legacy name for key instead of root-user. */}}
+    {{- "access-key" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get the root password key by switching the default from root-password to secret-key (overwrites template).
+*/}}
+{{- define "minio.rootPasswordKey" -}}
+{{- if and (.Values.auth.existingSecret) (.Values.auth.rootPasswordSecretKey) -}}
+    {{- printf "%s" (tpl .Values.auth.rootPasswordSecretKey $) -}}
+{{- else -}}
+    {{/* Use the legacy name for password instead of root-password. */}}
+    {{- "secret-key" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Returns the MinIO secret name.
 */}}
 {{- define "minio.ref.secretName" -}}

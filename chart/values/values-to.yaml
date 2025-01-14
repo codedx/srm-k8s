@@ -71,6 +71,36 @@ to:
     maxBackups: 20
   # -- the minimum seconds for an orchestrated analysis workflow step
   minimumWorkflowStepRunTimeSeconds: 3
+
+  # @ignore
+  systemSecurityContext:
+    # @ignore
+    podSecurityContext:
+      # -- the fsGroup for the system workflow pods
+      fsGroup: 1000
+      # -- the gid for the system workflow pods
+      runAsGroup: 1000
+      # -- the uid for the system workflow pods
+      runAsUser: 1000
+      # -- whether to run the system workflow pods as non-root
+      runAsNonRoot: true
+      # -- the seccomp profile for the system workflow pods
+      seccompProfile:
+        # -- the type of seccomp profile for the system workflow pods
+        type: RuntimeDefault
+      # -- the list of extra groups for the system workflow pods
+      supplementalGroups: []
+
+    # @ignore
+    securityContext:
+      # -- whether the system workflow pods use a read-only filesystem
+      readOnlyRootFilesystem: true
+      # -- whether the system workflow pods support privilege escalation
+      allowPrivilegeEscalation: false
+      # -- the system workflow pods capabilities
+      capabilities:
+        # -- capabilities to remove from the system workflow pods
+        drop: [ALL]
   service:
     # -- the K8s service type for the tool service
     type: ClusterIP
@@ -149,19 +179,25 @@ to:
 minio:
   # -- whether to enable the on-cluster MinIO component
   enabled: true
+  auth:
+    # -- whether to mount MinIO credential values as files
+    useCredentialsFiles: true
   global:
     minio:
       # -- the K8s secret name with the MinIO access and secret key with required fields access-key and secret-key
       # Command:
       # kubectl -n srm create secret generic minio-secret --from-literal=access-key=admin --from-literal=secret-key=password
       existingSecret:
+    security:
+      # -- true to avoid error when using a MinIO with a private container image registry
+      allowInsecureImages: true
   image:
     # -- the registry name and optional registry suffix for the MinIO Docker image
     registry: docker.io
     # -- the Docker image repository name for the MinIO workload
     repository: bitnami/minio
-    # -- the Docker image version for the MinIO workload (tag '2021.4.6-debian-10-r11' predates license change)
-    tag: 2021.4.6-debian-10-r11
+    # -- the Docker image version for the MinIO workload
+    tag: 2024.11.7-debian-12-r2
     # -- the K8s Docker image pull policy for the MinIO workload
     pullSecrets: []
     #  - private-registry
@@ -183,6 +219,9 @@ minio:
     enabled: true
     # -- the maximum number of unavailable instances of the MinIO component
     maxUnavailable: 0
+  podSecurityContext:
+    # -- whether to run the MinIO pod as a non-root user
+    runAsNonRoot: true
   # -- the MinIO component priority value, which must be set relative to other Tool Orchestration component priority values
   priorityClassValue: 10100
   resources:
@@ -192,7 +231,11 @@ minio:
       # -- the required memory for the MinIO workload
       memory: 5120Mi
   # -- the K8s secret name for web component TLS with required fields tls.crt and tls.key
-  tlsSecret:
+  tls:
+    # -- whether to enable MinIO TLS
+    enabled: false
+    # -- name of K8s secret resource with required fields tls.crt, tls.key, and ca.crt
+    existingSecret:
   # -- the pod tolerations for the MinIO component
   tolerations: []
 
@@ -218,6 +261,13 @@ argo-workflows:
     name: wc
     # -- the node selector for the Argo workflow controller
     nodeSelector: {}
+    podSecurityContext:
+      runAsUser: 1000
+      runAsNonRoot: true
+      # -- the seccomp profile for the SRM web pod
+      seccompProfile:
+        # -- the type of seccomp profile for the SRM web pod
+        type: RuntimeDefault
     pdb:
       # -- whether to create a pod disruption budget for the Argo component (a workflow controller can tolerate occasional downtime)
       enabled: false
@@ -229,6 +279,12 @@ argo-workflows:
         cpu: 500m
         # -- the required memory for the Argo workload
         memory: 500Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
     # -- the pod tolerations for the Argo component
     tolerations: []
     # -- the namespace for the Argo workflow service account
@@ -255,6 +311,10 @@ argo-workflows:
       # -- the Argo executor Docker image registry
       registry: docker.io
       repository: argoproj/argoexec
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: [ALL]
   images:
     # -- the K8s image pull secret to use for Argo Docker images
     pullSecrets: []

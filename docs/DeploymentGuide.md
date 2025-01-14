@@ -193,6 +193,7 @@
     + [Upgrading to v1.28](#upgrading-to-v128)
     + [Upgrading to v1.40](#upgrading-to-v140)
     + [Upgrading to v1.42](#upgrading-to-v142)
+    + [Upgrading to v1.43](#upgrading-to-v143)
   * [Helm Prep Wizard](#helm-prep-wizard-1)
   * [Add Certificates Wizard](#add-certificates-wizard)
   * [Add SAML Authentication Wizard](#add-saml-authentication-wizard)
@@ -247,7 +248,7 @@ Refer to what follows for the supported or tested versions of software that comp
 
 ## Kubernetes Requirements
 
-The Software Risk Manager deployment supports Kubernetes versions 1.22 through 1.31 and was tested with OpenShift 4.13. If you are not a cluster administrator, your cluster access must include the permissions defined in the sections below before installing Software Risk Manager on your cluster.
+The Software Risk Manager deployment supports Kubernetes versions 1.22 through 1.31 and was tested with OpenShift 4.17. If you are not a cluster administrator, your cluster access must include the permissions defined in the sections below before installing Software Risk Manager on your cluster.
 
 ### Kubernetes Privileges for Core Feature Deployment
 
@@ -3533,7 +3534,7 @@ metadata:
   namespace: cdx-svc
 spec:
   containers:
-    - image: bitnami/minio:2021.4.6-debian-10-r11
+    - image: bitnami/minio:2024.11.7-debian-12-r2
       name: host-code-dx-minio-volume
       command: ["sleep", "1d"]
       volumeMounts:
@@ -3592,7 +3593,7 @@ metadata:
   namespace: srm
 spec:
   containers:
-    - image: bitnami/minio:2021.4.6-debian-10-r11
+    - image: bitnami/minio:2024.11.7-debian-12-r2
       name: host-srm-minio-volume
       command: ["sleep", "1d"]
       volumeMounts:
@@ -3605,7 +3606,7 @@ spec:
   volumes:
     - name: volume
       persistentVolumeClaim:
-        claimName: srm-minio
+        claimName: srm-minio-snsd
 ```
 
 2) Run the following command to start the host-srm-minio-volume.yaml pod, replacing the `srm` namespace as necessary:
@@ -3803,11 +3804,12 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | mariadb.slave.resources.limits.memory | string | `"8192Mi"` | the required memory for the MariaDB replica database workload |
 | mariadb.slave.tolerations | list | `[]` | the pod tolerations for the MariaDB replica database component |
 | minio.enabled | bool | `true` | whether to enable the on-cluster MinIO component |
+| minio.auth.useCredentialsFiles | bool | `true` | whether to mount MinIO credential values as files |
 | minio.global.minio.existingSecret | string | `nil` | the K8s secret name with the MinIO access and secret key with required fields access-key and secret-key Command: kubectl -n srm create secret generic minio-secret --from-literal=access-key=admin --from-literal=secret-key=password |
 | minio.image.pullSecrets | list | `[]` | the K8s Docker image pull policy for the MinIO workload |
 | minio.image.registry | string | `"docker.io"` | the registry name and optional registry suffix for the MinIO Docker image |
 | minio.image.repository | string | `"bitnami/minio"` | the Docker image repository name for the MinIO workload |
-| minio.image.tag | string | `"2021.4.6-debian-10-r11"` | the Docker image version for the MinIO workload (tag '2021.4.6-debian-10-r11' predates license change) |
+| minio.image.tag | string | `"2024.11.7-debian-12-r2"` | the Docker image version for the MinIO workload |
 | minio.nodeSelector | object | `{}` | the node selector to use for the MinIO workload |
 | minio.persistence.existingClaim | string | `nil` | the existing claim to use for the MinIO persistent volume; a new persistent volume is generated when unset |
 | minio.persistence.size | string | `"64Gi"` | the size of the MinIO persistent volume  |
@@ -3819,7 +3821,8 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | minio.priorityClassValue | int | `10100` | the MinIO component priority value, which must be set relative to other Tool Orchestration component priority values |
 | minio.resources.limits.cpu | string | `"2000m"` | the required CPU for the MinIO workload |
 | minio.resources.limits.memory | string | `"500Mi"` | the required memory for the MinIO workload |
-| minio.tlsSecret | string | `nil` | the K8s secret name for web component TLS with required fields tls.crt and tls.key |
+| minio.tls.enabled | boolean | `false` | whether to use TLS for MinIO |
+| minio.tls.existingSecret | string | `nil` | the K8s secret name for MinIO component TLS with required fields tls.crt, tls.key, and ca.crt |
 | minio.tolerations | list | `[]` | the pod tolerations for the MinIO component |
 | networkPolicy.enabled | bool | `false` | whether to enable network policies for SRM components that support network policy |
 | networkPolicy.k8sApiPort | int | `443` | the port for the K8s API, required when using the Tool Orchestration feature |
@@ -3850,12 +3853,22 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | to.priorityClass.workflowValue | int | `10000` | the tool workflow priority value, which must be set relative to other Tool Orchestration component priority values |
 | to.resources.limits.cpu | string | `"1000m"` | the required CPU for the tool service workload |
 | to.resources.limits.memory | string | `"1024Mi"` | the required memory for the tool service workload |
+| to.resources.requests.storage | string | `"5Mi"` | the requested ephemeral storage for the tool service workload |
 | to.service.numReplicas | int | `1` | the number of tool service replicas |
 | to.service.toolServicePort | int | `3333` | the tool service port number |
 | to.service.type | string | `"ClusterIP"` | the K8s service type for the tool service |
 | to.serviceAccount.annotations | object | `{}` | the annotations to apply to the SRM tool service account |
 | to.serviceAccount.create | bool | `true` | whether to create a service account for the tool service |
 | to.serviceAccount.name | string | `nil` | the name of the service account to use; a name is generated using the fullname template when unset and create is true |
+| to.systemSecurityContext.podSecurityContext.fsGroup | int | `1000` | fsGroup for the system workflow pods |
+| to.systemSecurityContext.podSecurityContext.runAsGroup | int | `1000` | gid for the system workflow pods |
+| to.systemSecurityContext.podSecurityContext.runAsUser | int | `1000` | uid for the system workflow pods |
+| to.systemSecurityContext.podSecurityContext.runAsNonRoot | boolean | `true` | whether to run the system workflow pods as non-root |
+| to.systemSecurityContext.podSecurityContext.seccompProfile.type | string | `RuntimeDefault` | type of seccomp profile for the system workflow pods |
+| to.systemSecurityContext.podSecurityContext.supplementalGroups | array | `[]` | the list of extra groups for the system workflow pods |
+| to.systemSecurityContext.securityContext.readOnlyRootFilesystem | boolean | `true` | whether the system workflow pods use a read-only filesystem |
+| to.systemSecurityContext.securityContext.allowPrivilegeEscalation | boolean | `false` | whether the system workflow pods support privilege escalation |
+| to.systemSecurityContext.securityContext.capabilities.drop | array | `[]` | capabilities to remove from the system workflow pods |
 | to.tlsSecret | string | `nil` | the K8s secret name for tool service TLS with required fields tls.crt and tls.key Command: kubectl -n srm create secret tls to-tls-secret --cert=path/to/cert-file --key=path/to/key-file |
 | to.toSecret | string | `nil` | the K8s secret name containing the API key for the tool service with required field api-key Command: kubectl -n srm create secret generic tool-service-pd --from-literal api-key=password |
 | to.tolerations | list | `[]` | the pod tolerations for the tool service component |
@@ -3901,6 +3914,9 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | web.podSecurityContext.fsGroup | int | `1000` | the fsGroup for the SRM web pod |
 | web.podSecurityContext.runAsGroup | int | `1000` | the gid for the SRM web pod |
 | web.podSecurityContext.runAsUser | int | `1000` | the uid for the SRM web pod |
+| web.podSecurityContext.runAsNonRoot | boolean | `true` | whether to run the SRM web pod as non-root |
+| web.podSecurityContext.seccompProfile.type | string | `RuntimeDefault` | the type of seccomp profile for the SRM web pod |
+| web.podSecurityContext.supplementalGroups | array | `[]` | the list of extra groups for the SRM web pod |
 | web.priorityClass.create | bool | `false` | whether to create a PriorityClass resource for the web component |
 | web.priorityClass.value | int | `10100` | the web component priority value, which must be set relative to other Tool Orchestration component priority values |
 | web.props.context.path | string | `/srm` | the optional context path for the web component |
@@ -3920,6 +3936,8 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | web.scanfarm.key.validForDays | int | 45 | the duration of the Scan Farm API key |
 | web.scanfarm.key.regenSchedule | string | `"0 0 1 * *"` | the Scan Farm API key regeneration period (minute hour day-of-month month day-of-week) |
 | web.securityContext.readOnlyRootFilesystem | bool | `true` | whether the SRM web workload uses a read-only filesystem |
+| web.securityContext.allowPrivilegeEscalation | bool | `false` | whether the SRM web workload supports privilege escalation |
+| web.securityContext.capabilities.drop | array | `[ALL]` | capabilities to remove from the SRM web workload |
 | web.service.annotations | object | `{}` | the annotations to apply to the SRM web service |
 | web.service.port | int | `9090` | the port number of the SRM web service |
 | web.service.port_name | string | `http` | the name of the service port (set to 'https' for HTTPS ports, required for AWS ELB configuration) |
@@ -4401,7 +4419,7 @@ PS> $minioSvcName = Get-HelmChartFullnameContains $env:SRM_RELEASE_NAME 'minio'
 PS> New-Certificate $env:CERT_SIGNER $caPath $minioSvcName $minioSvcName './minio-tls.crt' './minio-tls.key' $env:SRM_NAMESPACE
 
 PS> # Create MinIO Secret (required for deployments using an on-cluster, built-in MinIO)
-PS> New-CertificateSecretResource $env:SRM_NAMESPACE $env:SRM_MINIO_SECRET_NAME './minio-tls.crt' './minio-tls.key'
+PS> New-GenericSecret $env:SRM_NAMESPACE $env:SRM_MINIO_SECRET_NAME -fileKeyValues @{'tls.crt'='./minio-tls.crt'; 'tls.key'='./minio-tls.key'; 'ca.crt'=$caPath}
 
 ```
 
@@ -4476,7 +4494,7 @@ PS> $minioSvcName = Get-HelmChartFullnameContains $SRM_RELEASE_NAME 'minio'
 PS> New-Certificate $CERT_SIGNER $caPath $minioSvcName $minioSvcName './minio-tls.crt' './minio-tls.key' $SRM_NAMESPACE
 
 PS> # Create MinIO Secret (required for deployments using an on-cluster, built-in MinIO)
-PS> New-CertificateSecretResource $SRM_NAMESPACE $SRM_MINIO_SECRET_NAME './minio-tls.crt' './minio-tls.key'
+PS> New-GenericSecret $SRM_NAMESPACE $SRM_MINIO_SECRET_NAME -fileKeyValues @{'tls.crt'='./minio-tls.crt'; 'tls.key'='./minio-tls.key'; 'ca.crt'=$caPath}
 
 ```
 
@@ -4576,7 +4594,7 @@ This version of Software Risk Manager works with the new Black Duck Repo (34.149
 |sig-repo.synopsys.com/synopsys/codedx/codedx-tool-service:v2.4.0|repo.blackduck.com/containers/codedx/codedx-tool-service:v2.4.0|
 |sig-repo.synopsys.com/synopsys/codedx/codedx-cleanup:v2.4.0|repo.blackduck.com/containers/codedx/codedx-cleanup:v2.4.0|
 |sig-repo.synopsys.com/synopsys/codedx/codedx-mariadb:v1.35.0|repo.blackduck.com/containers/codedx/codedx-mariadb:v1.35.0|
-|sig-repo.synopsys.com/synopsys/bitnami/minio:2021.4.6-debian-10-r11|repo.blackduck.com/containers/bitnami/minio:2021.4.6-debian-10-r11|
+|sig-repo.synopsys.com/synopsys/bitnami/minio:2024.11.7-debian-12-r2|repo.blackduck.com/containers/bitnami/minio:2024.11.7-debian-12-r2|
 |sig-repo.synopsys.com/synopsys/argoproj/workflow-controller:v3.5.11|repo.blackduck.com/containers/argoproj/workflow-controller:v3.5.11|
 |sig-repo.synopsys.com/synopsys/argoproj/argoexec:v3.5.11|repo.blackduck.com/containers/argoproj/argoexec:v3.5.11|
 |sig-repo.synopsys.com/synopsys/cnc-cache-service:2024.9.1|repo.blackduck.com/containers/cache-service:2024.9.1|
@@ -4595,6 +4613,13 @@ If you are upgrading from an earlier chart version, refer to any previous chart 
 
 This version of Software Risk Manager is hosted in a new GitHub location and uses a new chart repository. Refer to the [README](https://github.com/codedx/srm-k8s/tree/main?tab=readme-ov-file#new-repository-location) file for more details.
 
+### Upgrading to v1.43
+
+If you are upgrading from an earlier chart version, refer to any previous chart note(s) in addition to this one.
+
+This version of Software Risk Manager updates the default pod and container security contexts. It also references a newer version of the optional Bitnami MinIO component for deployments that do not use external workflow storage. 
+
+If you are using MinIO, this version will create a new MinIO volume that will not include your previous workflow storage. To retain your current workflow storage, edit your MinIO PVC by switching the `persistentVolumeReclaimPolicy` field value from `Delete` to `Retain` before deploying this version.
 
 ## Helm Prep Wizard
 

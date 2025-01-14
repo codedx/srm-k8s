@@ -158,6 +158,14 @@ web:
     runAsGroup: 1000
     # -- the uid for the SRM web pod
     runAsUser: 1000
+    # -- whether to run the SRM web pod as non-root
+    runAsNonRoot: true
+    # -- the seccomp profile for the SRM web pod
+    seccompProfile:
+      # -- the type of seccomp profile for the SRM web pod
+      type: RuntimeDefault
+    # -- the supplemental groups for the SRM web pod
+    supplementalGroups: []
 
   props:
     auth:
@@ -226,6 +234,12 @@ web:
   securityContext:
     # -- whether the SRM web workload uses a read-only filesystem
     readOnlyRootFilesystem: true
+    # -- whether the SRM web workload supports privilege escalation
+    allowPrivilegeEscalation: false
+    # -- the SRM web workflow capabilities
+    capabilities:
+      # -- capabilities to remove from the SRM web workload
+      drop: [ALL]
 
   service:
     # -- the annotations to apply to the SRM web service
@@ -327,6 +341,27 @@ mariadb:
     #  - private-registry
   # -- labels added to database pod(s)
   podLabels: {}
+  securityContext:
+    pod:
+      # -- the fsGroup for the SRM DB pod
+      fsGroup: 1001
+      # -- the uid for the SRM DB pod
+      runAsUser: 1001
+      # -- whether to run the SRM DB container as non-root
+      runAsNonRoot: true
+      # -- the seccomp profile for the SRM DB pod
+      seccompProfile:
+        # -- the type of seccomp profile for the SRM DB pod
+        type: RuntimeDefault
+    mariadbContainer:
+      # -- whether the SRM DB container supports privilege escalation
+      allowPrivilegeEscalation: false
+      # -- the SRM DB workflow capabilities
+      capabilities:
+        # -- capabilities to remove from the SRM DB container
+        drop: [ALL]
+      # -- whether the SRM DB pod uses a read-only filesystem
+      readOnlyRootFilesystem: true
   serviceAccount:
     # -- whether to create a service account for the MariaDB service
     create: true
@@ -468,6 +503,9 @@ mariadb:
 
 to:
   resources:
+    requests:
+      # -- the requested ephemeral storage for the tool service workload
+      storage: 5Mi
     limits:
       # -- the required CPU for the tool service workload
       cpu: 1000m

@@ -139,6 +139,13 @@ Returns the SCC name for the srm-web component.
 {{- end -}}
 
 {{/*
+Returns the SCC name for the srm-web component.
+*/}}
+{{- define "srm-web.database.scc" -}}
+{{- printf "%s-web-db-scc" ((include "srm.fullname" .) | trunc 54 | trimSuffix "-") }}
+{{- end -}}
+
+{{/*
 Returns the name of the MariaDB service account name.
 */}}
 {{- define "srm-web.database.serviceAccountName" -}}

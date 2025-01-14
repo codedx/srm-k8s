@@ -27,8 +27,7 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "srm-to.serviceAccountName" . | quote }}
       securityContext:
-        fsGroup: 1000
-        runAsUser: 1000
+        {{- toYaml .Values.to.systemSecurityContext.podSecurityContext | nindent 8 }}
       {{- if .Values.to.nodeSelector }}
       nodeSelector:
       {{- toYaml .Values.to.nodeSelector | nindent 8 }}
@@ -42,9 +41,14 @@ spec:
         image: "{{ .Values.to.image.registry }}/{{ .Values.to.image.repository.toolService }}:{{ .Values.to.image.tag }}"
         imagePullPolicy: Always
         resources:
+          requests:
+            ephemeral-storage: {{ .Values.to.resources.requests.storage }}
           limits:
             cpu: {{ include "srm.sizing.toolServiceCPU" . }}
             memory: {{ include "srm.sizing.toolServiceMemory" . }}
+            {{- if .Values.to.resources.limits.storage }}
+            ephemeral-storage: {{ .Values.to.resources.limits.storage }}
+            {{- end }}
         command: 
           - "/opt/codedx/service/bin/service"
         args:
@@ -101,6 +105,10 @@ spec:
           - "-serviceTlsKeyPath"
           - "/opt/codedx/service/tls/tls.key"
           {{- end }}
+          - "-systemPodSecurityContext"
+          - '{{ .Values.to.systemSecurityContext.podSecurityContext | toJson }}'
+          - "-systemSecurityContext"
+          - '{{ .Values.to.systemSecurityContext.securityContext | toJson }}'
           - "-workDir"
           - "/opt/codedx/service/work"
           - "-workflowControllerInstanceName"
@@ -131,6 +139,8 @@ spec:
           periodSeconds: 60
           failureThreshold: 4
           timeoutSeconds: 30
+        securityContext:
+          {{- toYaml .Values.to.systemSecurityContext.securityContext | nindent 10 }}
         volumeMounts:
         - name: tool-service-secret-volume
           mountPath: "/opt/codedx/service/secrets/adminApiKey"
@@ -156,11 +166,27 @@ spec:
         - name: tool-service-tls-volume
           mountPath: "/opt/codedx/service/tls"
         {{ end -}}
+        - name: ephemeral-tmp
+          mountPath: /tmp
+        - name: ephemeral-svc-tmp
+          mountPath: /opt/codedx/service/tmp
+        - name: ephemeral-work
+          mountPath: /opt/codedx/service/work
+        - name: ephemeral-logs
+          mountPath: /opt/codedx/service/logs
         ports:
         - containerPort: 3333
           name: http
       priorityClassName: {{ include "srm-to.service.priorityClassName" . | quote }}
       volumes:
+      - name: ephemeral-tmp
+        emptyDir: {}
+      - name: ephemeral-svc-tmp
+        emptyDir: {}
+      - name: ephemeral-work
+        emptyDir: {}
+      - name: ephemeral-logs
+        emptyDir: {}
       - name: tool-service-secret-volume
         secret:
           secretName: {{ include "srm-to.to.secret" . | quote }}
@@ -190,6 +216,4 @@ spec:
         secret:
           secretName: {{ .Values.to.tlsSecret }}
       {{ end -}}
-      - name: logs
-        emptyDir: {}
 {{- end -}}

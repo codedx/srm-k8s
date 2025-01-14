@@ -178,7 +178,7 @@ The SRM Tool Orchestration feature requires these Docker images:
 - repo.blackduck.com/containers/codedx/codedx-cleanup:v2.6.0
 - repo.blackduck.com/containers/argoproj/workflow-controller:v3.5.11
 - repo.blackduck.com/containers/argoproj/argoexec:v3.5.11
-- repo.blackduck.com/containers/bitnami/minio:2021.4.6-debian-10-r11 (when not using external workflow storage)
+- repo.blackduck.com/containers/bitnami/minio:2024.11.7-debian-12-r2 (when not using external workflow storage)
 
 You can use this PowerShell script below to pull, tag, and push the above Black Duck Docker image to your private registry; you must set the $myPrivateRegistryPrefix variable by replacing `id.dkr.ecr.us-east-2.amazonaws.com` with your Docker registry name and any prefix (e.g., my-srm) you require ($myPrivateRegistryPrefix must end with a forward slash):
 
@@ -192,7 +192,7 @@ if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$my
 'codedx/codedx-results:v2.6.0',
 'codedx/codedx-tool-service:v2.6.0',
 'codedx/codedx-cleanup:v2.6.0',
-'bitnami/minio:2021.4.6-debian-10-r11',
+'bitnami/minio:2024.11.7-debian-12-r2',
 'argoproj/workflow-controller:v3.5.11',
 'argoproj/argoexec:v3.5.11' | ForEach-Object {
 
@@ -225,7 +225,7 @@ if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$my
 'codedx/codedx-tool-service:v2.6.0',
 'codedx/codedx-cleanup:v2.6.0',
 'codedx/codedx-mariadb:v1.36.0',
-'bitnami/minio:2021.4.6-debian-10-r11',
+'bitnami/minio:2024.11.7-debian-12-r2',
 'argoproj/workflow-controller:v3.5.11',
 'argoproj/argoexec:v3.5.11',
 'cache-service:2024.9.1',

@@ -70,7 +70,7 @@
 # PS> New-Certificate $env:CERT_SIGNER $caPath $minioSvcName $minioSvcName './minio-tls.crt' './minio-tls.key' $env:SRM_NAMESPACE
 # 
 # PS> # Create MinIO Secret (required for deployments using an on-cluster, built-in MinIO)
-# PS> New-CertificateSecretResource $env:SRM_NAMESPACE $env:SRM_MINIO_SECRET_NAME './minio-tls.crt' './minio-tls.key'
+# PS> New-GenericSecret $env:SRM_NAMESPACE $env:SRM_MINIO_SECRET_NAME -fileKeyValues @{'tls.crt'='./minio-tls.crt'; 'tls.key'='./minio-tls.key'; 'ca.crt'=$caPath}
 
 mariadb:
   master:
@@ -143,8 +143,11 @@ mariadb:
       pid-file=/opt/bitnami/mariadb/tmp/mysqld.pid
 
 minio:
-  # @ignore (refer to values-to.yaml file for details)
-  tlsSecret: srm-minio-tls-secret
+  tls:
+    # @ignore (refer to values-to.yaml file for details)
+    enabled: true
+    # @ignore (refer to values-to.yaml file for details)
+    existingSecret: srm-minio-tls-secret
 
 to:
   # @ignore (refer to values-to.yaml file for details)
