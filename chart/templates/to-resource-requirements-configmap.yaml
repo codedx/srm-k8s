@@ -16,4 +16,8 @@ data:
   podTolerationKey: {{ .Values.to.tools.podTolerationKey | quote }}
   podTolerationValue: {{ .Values.to.tools.podTolerationValue | quote }}
   {{- end }}
+  init.limits.cpu: {{ .Values.to.tools.limits.init.cpu | quote }}
+  init.limits.memory: {{ .Values.to.tools.limits.init.memory | quote }}
+  wait.limits.cpu: {{ .Values.to.tools.limits.wait.cpu | quote }}
+  wait.limits.memory: {{ .Values.to.tools.limits.wait.memory | quote }}
 {{- end -}}

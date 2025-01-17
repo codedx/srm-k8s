@@ -565,6 +565,10 @@ Resource requirements containing CPU and memory instructions translate to Kubern
 - nodeSelectorValue – value portion of a label associated with a node selector.
 - podTolerationKey – key portion of a taint with the NoSchedule and NoExecute taint effects (e.g., dedicated).
 - podTolerationValue – value portion of a taint with the NoSchedule and NoExecute taint effects (e.g., tools).
+- init.limits.cpu - Kubernetes CPU limit for init workflow containers (e.g., 1).
+- init.limits.memory - Kubernetes memory limit for init workflow containers (e.g., 1G).
+- wait.limits.cpu - Kubernetes CPU limit for init workflow containers (e.g., 1).
+- wait.limits.memory - Kubernetes memory limit for init workflow containers (e.g., 1G).
 
 Below are the default CPU and memory settings for add-in tools. Refer to the [Tool Orchestration Add-in Tool Configuration](#tool-orchestration-add-in-tool-configuration) section for how to customize resource requirements for your Software Risk Manager deployment.
 
@@ -573,7 +577,9 @@ Below are the default CPU and memory settings for add-in tools. Refer to the [To
 | CPU | 500m | 2000m |
 | Memory | 500Mi | 2G |
 
->Note: There are no defaults for add-in node selectors and pod tolerations.
+>Note: There are no defaults for add-in node selectors, pod tolerations, or the CPU and memory limits for init/wait containers.
+
+If you are using a ResourceQuota definition, you should set the limits for the CPU and memory of init/wait containers, which support a tool's main container.
 
 ### Tool Orchestration Pod Security Admission Requirements
 
@@ -3873,6 +3879,10 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | to.toSecret | string | `nil` | the K8s secret name containing the API key for the tool service with required field api-key Command: kubectl -n srm create secret generic tool-service-pd --from-literal api-key=password |
 | to.tolerations | list | `[]` | the pod tolerations for the tool service component |
 | to.toolServicePort | int | `3333` | the port number for the tool service |
+| to.tools.limits.init.cpu | string | `""` | the default CPU limit for init workflow containers |
+| to.tools.limits.init.memory | string | `""` | the default memory limit for init workflow containers|
+| to.tools.limits.wait.cpu | string | `""` | the default CPU limit for wait workflow containers |
+| to.tools.limits.wait.memory | string | `""` | the default memory limit for wait workflow containers |
 | to.tools.limits.tool.cpu | string | `"2"` | the default CPU limit for the tool workloads |
 | to.tools.limits.tool.memory | string | `"2G"` | the default memory limit for the tool workloads |
 | to.tools.nodeSelectorKey | string | `nil` | the node selector key to use for tool pods |

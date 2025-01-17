@@ -141,11 +141,21 @@ to:
         # -- the default memory request for the tool workloads
         memory: '500Mi'
     limits:
+      init:
+        # -- the default CPU limit for the init workload container
+        cpu: ''
+        # -- the default memory limit for the init workload container
+        memory: ''
       tool:
         # -- the default CPU limit for the tool workloads
         cpu: '2'
         # -- the default memory limit for the tool workloads
         memory: '2G'
+      wait:
+        # -- the default CPU limit for the wait workload container
+        cpu: ''
+        # -- the default memory limit for the wait workload container
+        memory: ''
   # -- the pod tolerations for the tool service component
   tolerations: []
   # -- the port number for the tool service
