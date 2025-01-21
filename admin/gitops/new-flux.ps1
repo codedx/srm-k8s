@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.22.0
+.VERSION 1.23.0
 .GUID 31739033-88f1-425d-be17-ed5ad608d005
 .AUTHOR Black Duck
 .COPYRIGHT Copyright 2024 Black Duck Software, Inc. All rights reserved.
@@ -18,11 +18,11 @@ param (
 
 	[Parameter(ParameterSetName = 'Helm')]
 	[Parameter(ParameterSetName = 'Git')]
-	[Parameter(Mandatory=$true)][string] $namespace,
+	[string] $namespace,
 
 	[Parameter(ParameterSetName = 'Helm')]
 	[Parameter(ParameterSetName = 'Git')]
-	[Parameter(Mandatory=$true)][string] $releaseName,
+	[string] $releaseName,
 
 	[Parameter(ParameterSetName = 'Helm')]
 	[string]   $helmChartRepoUrl = 'https://codedx.github.io/srm-k8s',
@@ -139,6 +139,14 @@ if (-not (Test-Path $configJsonPath -PathType Leaf)) {
 }
 
 $config = [Config]::FromJsonFile($configJsonPath)
+
+if ($namespace -eq "") {
+	$namespace = $config.namespace
+}
+
+if ($releaseName -eq "") {
+	$releaseName = $config.releaseName
+}
 
 if (-not (Test-Path $workDirChartValuesCombined -PathType Container)) {
 	Write-ErrorMessageAndExit "Unable to continue because an expected directory ($workDirChartValuesCombined) was not found. Did you invoke your run-helm-prep.ps1 script?"
