@@ -44,8 +44,21 @@ spec:
         - name: web-secret
           mountPath: {{ include "srm-web.admin.password.path" . }}
           subPath: {{ include "srm-web.admin.password.filename" . }}
+        {{- if .Values.web.caConfigMap }}
+        - name: web-ca
+          mountPath: /certs/ca.crt
+          subPath: ca.crt
+        {{- end }}
       volumes:
       - name: web-secret
         secret:
           secretName: {{ include "srm-web.web.secret" . | quote }}
+      {{- if .Values.web.caConfigMap }}
+      - name: web-ca
+        configMap:
+          name: {{ .Values.web.caConfigMap | quote }}
+          items:
+          - key: ca.crt
+            path: ca.crt
+      {{- end }}
 {{- end -}}

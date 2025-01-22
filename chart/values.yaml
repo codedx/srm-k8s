@@ -96,6 +96,9 @@ web:
       # auth.saml2.privateKeyPassword = """private-key-password"""
       samlSecret: ""
 
+  # -- the configmap name containing the CA cert with required field ca.crt for SRM web
+  caConfigMap: ""
+
   # -- the K8s secret name containing the Java keystore contents and its password with required fields cacerts and cacerts-password
   # Note: cacerts must trust the database cert when using 'REQUIRE SSL' with an external database
   # Command: kubectl -n srm create secret generic srm-web-cacerts-secret --from-file cacerts=./cacerts --from-literal cacerts-password=changeit

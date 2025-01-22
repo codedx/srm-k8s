@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.9.0
+.VERSION 1.10.0
 .GUID 0ab56564-8d45-485c-829a-bffed0882237
 .AUTHOR Black Duck
 .COPYRIGHT Copyright 2024 Black Duck Software, Inc. All rights reserved.
@@ -319,7 +319,6 @@ Add-StepTransitions $graph $s[[ExternalDatabaseOneWayAuth]] $s[[UseScanFarm]]
 Add-StepTransitions $graph $s[[ExternalDatabaseTrustCert]] $s[[UseScanFarm]]
 Add-StepTransitions $graph $s[[ExternalDatabaseCert]] $s[[UseScanFarm]]
 
-Add-StepTransitions $graph $s[[GetKubernetesPort]] $s[[AuthenticationType]]
 Add-StepTransitions $graph $s[[UseNetworkPolicyOption]] $s[[UseTlsOption]]
 Add-StepTransitions $graph $s[[UseNetworkPolicyOption]] $s[[AuthenticationType]]
 

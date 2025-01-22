@@ -1,7 +1,11 @@
 class UseTlsOption : Step {
 
 	static [string] hidden $description = @'
-Specify whether you want to enable TLS between communications that support TLS.
+Specify whether you want to use CertificateSigningRequests to enable TLS between
+communications that support TLS. This requires a certificate signing capability
+running on your cluster.
+
+Note: The Scan Farm feature's scan and storage services do not support TLS.
 '@
 
 	UseTlsOption([Config] $config) : base(
@@ -35,10 +39,6 @@ Specify whether you want to enable TLS between communications that support TLS.
 		$this.config.skipTls = $false
 		$this.config.webServicePortNumber = 9090
 		$this.config.RemoveNote($this.GetType().Name)
-	}
-
-	[bool]CanRun() {
-		return $this.config.skipScanFarm
 	}
 }
 

@@ -162,6 +162,8 @@ to:
 
 web:
   # @ignore (refer to main values file for details)
+  caConfigMap: srm-ca-configmap
+  # @ignore (refer to main values file for details)
   cacertsSecret: srm-web-cacerts-secret
   # @ignore (refer to main values file for details)
   tlsSecret: srm-web-tls-secret
@@ -170,3 +172,11 @@ web:
     port: 9443
     # @ignore (refer to main values file for details)
     port_name: https
+
+scan-services:
+  # @ignore (refer to main values file for details)
+  trust-stores:
+    # @ignore (refer to main values file for details)
+    configmapName: srm-ca-configmap
+    # @ignore (refer to main values file for details)
+    enabled: true

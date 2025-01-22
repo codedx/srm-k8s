@@ -6,6 +6,10 @@ echo 'Waiting for SRM Web connectivity...'
 sleep 45 # delay for potential termination of existing web workload (terminationGracePeriodSeconds=30)
 while [ 1 ]; do if (timeout 2 bash -c "</dev/tcp/{{ include "srm-web.fullname" . }}/{{ .Values.web.service.port }}" echo $?); then echo 'Connected to SRM Web'; break; else echo 'SRM Web has not yet responded; retrying...'; sleep 2; fi; done
 
+{{- if .Values.web.caConfigMap }}
+export CURL_CA_BUNDLE=/certs/ca.crt
+{{- end }}
+
 echo 'Waiting for SRM Web Ready status...'
 while [ 1 ]; do READYRESPONSE=$(curl -f {{ include "srm-web.serviceurl" . }}/x/system-status); echo $READYRESPONSE | grep '"state":"ready"'; if [ $? -eq 0 ]; then echo 'SRM Web is ready'; break; else echo "SRM Web is not yet ready: $READYRESPONSE"; echo 'retrying...'; sleep 2; fi; done
 

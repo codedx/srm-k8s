@@ -58,8 +58,13 @@ function New-ScanFarmConfig($config) {
 	New-ScanFarmStorageConfig $config
 
 	$webSvcName = $config.GetWebServiceName()
-	$webSvcUrl = "http://$webSvcName`:$($config.webServicePortNumber)/srm"
 
+  $webSvcProtocol = "http"
+  if (-not $config.skipTLS) {
+    $webSvcProtocol = "https"
+  }
+
+	$webSvcUrl = "$webSvcProtocol`://$webSvcName`:$($config.webServicePortNumber)/srm"
 
 	@"
 features:
