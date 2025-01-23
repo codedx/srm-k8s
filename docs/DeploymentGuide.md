@@ -77,6 +77,7 @@
 - [Network Policies](#network-policies)
 - [TLS Pre-work](#tls-pre-work)
   * [Istio](#istio)
+    + [Istio - Mesh Visualization](#istio---mesh-visualization)
   * [Cert-Manager](#cert-manager)
     + [Cert-Manager Self-signed CA Example](#cert-manager-self-signed-ca-example)
 - [Licensing](#licensing)
@@ -1555,21 +1556,19 @@ The Software Risk Manager deployment includes optional support for TLS connectio
 
 ## Istio
 
-You can configure an [Istio Service Mesh](https://istio.io/latest/) that provides TLS support. The Core and Tool Orchestration features have been tested with Istio; however, the Tool Orchestration feature's Istio compatibility requires using [Istio's Ambient mode](https://istio.io/latest/blog/2022/introducing-ambient-mesh/).
+You can use [Istio Service Mesh Ambient Mode](https://istio.io/latest/docs/ambient/) to enable mTLS between Software Risk Manager components. Do not enable Software Risk Manager network policies when using Istio service mesh.
 
->Note: Using the Software Risk Manager network policies with Istio enabled is currently unsupported.
+Use helm to deploy Istio by following the [Istio Ambient installation instructions](https://istio.io/latest/docs/ambient/install/helm-installation/).
 
-You may need to install the Kubernetes Gateway API CRDs: kubectl kustomize "github.com/kubernetes-sigs/gateway-api/config/crd/experimental?ref=v1.1.0" | kubectl apply -f -;
-
-You can deploy Istio in Ambient mode using the [Helm installation instructions](https://istio.io/latest/docs/ambient/install/helm-installation/).
-
-You can add Software Risk Manager components to the mesh using the namespace label `istio.io/dataplane-mode=ambient`. For example, you can run the following command to label the `srm` namespace:
+Add Software Risk Manager components to the mesh using the namespace label `istio.io/dataplane-mode=ambient`. For example, if you plan to use the `srm` namespace, run the following command to enable ambient mode for SRM components:
 
 ```
 kubectl label namespace srm istio.io/dataplane-mode=ambient
 ```
 
-You can enable mTLS between Software Risk Manager components running in the Software Risk Manager namespace by creating a PeerAuthentication policy resource. For example, you can generate a resource from the following YAML for the `srm` namespace:
+>Note: The examples in this section use the default `srm` namespace.
+
+By default, Istio uses [PERMISSIVE](https://istio.io/latest/docs/concepts/security/#peer-authentication) as the default mTLS mode. You can switch to [STRICT](https://istio.io/latest/docs/concepts/security/#peer-authentication) mode with the following PeerAuthentication resource:
 
 ```
 apiVersion: security.istio.io/v1beta1
@@ -1582,7 +1581,93 @@ spec:
     mode: STRICT
 ```
 
-You can install [Prometheus](https://istio.io/latest/docs/ops/integrations/prometheus/) and [Kiali](https://istio.io/latest/docs/ops/integrations/kiali/) to [Visualize Your Mesh](https://istio.io/latest/docs/tasks/observability/kiali/#generating-a-graph). You can then enable the Security badge Display option to see the location of mTLS connections.
+If you are using an ingress controller with STRICT mode enabled at the namespace level, use PERMISSIVE mode for the web workload:
+
+```
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: web
+  namespace: srm
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: srm-web
+      app.kubernetes.io/component: web
+  mtls:
+    mode: PERMISSIVE
+```
+
+If you are using the Scan Farm feature with STRICT mode enabled at the namespace level, use PERMISSIVE for the scan, storage, and cache services workloads:
+
+```
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: scan-service
+  namespace: srm
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: scan-service
+      app.kubernetes.io/component: scan-service
+  mtls:
+    mode: PERMISSIVE
+```
+
+```
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: storage-service
+  namespace: srm
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: storage-service
+      app.kubernetes.io/component: storage-service
+  mtls:
+    mode: PERMISSIVE
+```
+
+```
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: cache-service
+  namespace: srm-release-2024-12-1
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cache-service
+      app.kubernetes.io/component: cache-service
+  mtls:
+    mode: PERMISSIVE
+```
+
+If you are using the Scan Farm feature and proxying your object storage with STRICT mode enabled at the namespace level, use PERMISSIVE for the object storage workload:
+
+```
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: minio
+  namespace: srm
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: minio
+  mtls:
+    mode: PERMISSIVE
+```
+
+>Note: Edit the above resource if your MinIO workload does not include the `app.kubernetes.io/name: minio` label.
+
+### Istio - Mesh Visualization
+
+You can install [Prometheus](https://istio.io/latest/docs/ops/integrations/prometheus/) and [Kiali](https://istio.io/latest/docs/ops/integrations/kiali/) to [Visualize Your Mesh](https://istio.io/latest/docs/tasks/observability/kiali/#generating-a-graph).
+
+Once installed, open the Kiali dashboard and select Traffic Graph. Enable the Security badge under Display, use Software Risk Manager, and return to the traffic graph to confirm the expected mTLS connections.
 
 ## Cert-Manager
 
