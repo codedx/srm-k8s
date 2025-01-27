@@ -2,10 +2,16 @@ class UseTlsOption : Step {
 
 	static [string] hidden $description = @'
 Specify whether you want to use CertificateSigningRequests to enable TLS between
-communications that support TLS. This requires a certificate signing capability
+SRM components that support TLS. This requires a certificate signing capability
 running on your cluster.
 
-Note: The Scan Farm feature's scan and storage services do not support TLS.
+If you alternatively plan to use Istio's Ambient mode to enable mTLS between SRM
+components, avoid using CertificateSigningRequests for TLS by answering No here.
+
+Note: The Scan Farm feature's scan and storage services do not support TLS via
+CertificateSigningRequests. If you want to use TLS with those services, do not
+enable TLS here. Instead, enable mTLS between SRM components by deploying an
+Istio service mesh using Ambient mode; see the SRM documentation for more info.
 '@
 
 	UseTlsOption([Config] $config) : base(

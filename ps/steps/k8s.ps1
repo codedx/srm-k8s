@@ -166,6 +166,10 @@ class UseNetworkPolicyOption : Step {
 Specify whether you want to create Network Policies, which determine 
 how Kubernetes workloads can communication on your cluster. Your cluster 
 must support Network Policies for the resources to apply.
+
+Note: SRM network policies are incompatible with Istio service mesh. If
+you plan to use Istio Ambient mode to establish a service mesh for mTLS
+communication between SRM components, do not use SRM network policies.
 '@
 
 	UseNetworkPolicyOption([Config] $config) : base(
