@@ -3741,7 +3741,7 @@ $ kubectl config use-context <context-name>
 ```
 $ pwsh
 PS> /path/to/git/srm-k8s/admin/migrate/copy-tool-orch-resources.ps1 `
-  -codeDxNamespace 'cdx-svc' `
+  -sourceNamespace 'cdx-svc' `
   -srmNamespace 'srm' `
   -srmKubeConfigPath '/path/to/SoftwareRiskManager/.kube/config' `
   -srmKubeContextName '<name>'
