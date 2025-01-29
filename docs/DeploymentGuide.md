@@ -172,6 +172,16 @@
   * [Start Software Risk Manager Tool Orchestration (if installed)](#start-software-risk-manager-tool-orchestration-if-installed)
   * [Start Software Risk Manager Web](#start-software-risk-manager-web)
 - [Cannot Run PowerShell Core](#cannot-run-powershell-core)
+- [Moving a Software Risk Manager Deployment](#moving-a-software-risk-manager-deployment)
+  * [Deploy a new Software Risk Manager Instance](#deploy-a-new-software-risk-manager-instance)
+  * [Stop Source Software Risk Manager Web Workload](#stop-source-software-risk-manager-web-workload)
+  * [Copy Source Software Risk Manager Web Volume Files](#copy-source-software-risk-manager-web-volume-files)
+  * [Copy Source Software Risk Manager Database Backup](#copy-source-software-risk-manager-database-backup)
+  * [Stop Destination Software Risk Manager Web Workload](#stop-destination-software-risk-manager-web-workload)
+  * [Replace Destination Software Risk Manager Web Volume Files](#replace-destination-software-risk-manager-web-volume-files)
+  * [Replace Destination Software Risk Manager Database](#replace-destination-software-risk-manager-database)
+  * [Move Tool Orchestration Resources (if installed)](#move-tool-orchestration-resources-if-installed)
+  * [Start Destination Software Risk Manager Web Workload](#start-destination-software-risk-manager-web-workload)
 - [Software Risk Manager Helm Chart](#software-risk-manager-helm-chart)
   * [Chart Dependencies](#chart-dependencies)
   * [Values](#values)
@@ -3797,6 +3807,179 @@ $ pwsh ./helm-prep-wizard.ps1
 
 $ # run Helm Prep Script
 $ pwsh "/root/.k8s-srm/run-helm-prep.ps1"
+```
+
+# Moving a Software Risk Manager Deployment
+
+Follow the instructions below if you need to move your Software Risk Manager deployment from one cluster (i.e., source cluster) to another (i.e., destination cluster). 
+
+>Note: The move procedure does not include transferring Scan Farm feature storage or Tool Orchestration log data, so you should separately back up that data if it is something you want to keep.
+
+## Deploy a new Software Risk Manager Instance
+
+Your first step in moving your instance is to install Software Risk Manager from scratch on the destination cluster. You must install the exact same version of Software Risk Manager that is running on your source cluster.
+
+Complete the entire installation and verify that the destination web pod shows a Ready state prior to continuing.
+
+## Stop Source Software Risk Manager Web Workload
+
+Stop your source Software Risk Manager web workload by scaling to zero replicas with the following command, replacing the `srm` namespace and the `srm-web` deployment name as necessary:
+
+```
+kubectl -n srm scale --replicas=0 deployment/srm-web
+```
+
+## Copy Source Software Risk Manager Web Volume Files
+
+Wait for the web workload pod to terminate and then mount the web workload's storage in a utility workload by creating a pod from the following YAML, replacing the `srm` namespace, the `srm-appdata` deployment name, and the `securityContext` as necessary:
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: host-srm-web-appdata-volume
+  namespace: srm
+spec:
+  containers:
+    - image: codedx/codedx-tomcat:v2024.12.0
+      name: host-srm-web-appdata-volume
+      command: ["sleep", "1d"]
+      volumeMounts:
+      - mountPath: "/var/srm"
+        name: volume
+  securityContext:
+    fsGroup: 1000
+    runAsGroup: 1000
+    runAsUser: 1000
+  volumes:
+    - name: volume
+      persistentVolumeClaim:
+        claimName: srm-appdata
+```
+
+Wait for the utility pod to reach a Ready state, then copy the volume data locally using the following commands, replacing the `srm` namespace as necessary:
+
+```
+$ cd /path/to/local/directory
+$ kubectl -n srm exec -it host-srm-web-appdata-volume -- bash
+$ cd /var/srm
+$ tar -cvzf /var/srm/appdata.tgz $(ls -d analysis-files keystore/master.key keystore/Secret tool-data/addin-tool-files 2> /dev/null)
+$ exit
+$ kubectl -n srm cp host-srm-web-appdata-volume:/var/srm/appdata.tgz appdata.tgz
+```
+
+Delete the utility pod using the following command, replacing the `srm` namespace name as necessary:
+
+```
+$ kubectl -n srm delete pod/host-srm-web-appdata-volume
+```
+
+## Copy Source Software Risk Manager Database Backup
+
+Log on to your Software Risk Manager database and run the following commands to create a backup file, replacing the `codedx` database name as necessary:
+
+```
+$ mysqldump --host=127.0.0.1 --port=3306 --user=root -p codedx > dump-codedx.sql
+$ sed 's/\sDEFINER=`[^`]*`@`[^`]*`//g' -i dump-codedx.sql
+```
+
+>Note: If you see a "Read-only file system" message, change directory to a writable location (e.g., cd /bitnami/mariadb)
+
+Copy your dump-codedx.sql file to a local directory. If you are using the on-cluster MariaDB database, run the following command, replacing the `srm` namespace and paths as necessary:
+
+```
+$ kubectl -n srm cp srm-mariadb-master-0:/bitnami/mariadb/dump-codedx.sql ./dump-codedx.sql
+```
+
+## Stop Destination Software Risk Manager Web Workload
+
+Stop your destination Software Risk Manager web workload by scaling to zero replicas with the following command, replacing the `srm` namespace and the `srm-web` deployment name as necessary:
+
+```
+kubectl -n srm scale --replicas=0 deployment/srm-web
+```
+
+## Replace Destination Software Risk Manager Web Volume Files
+
+Wait for the web workload pod to terminate and then mount the web workload's storage in a utility workload by creating a pod from the following YAML, replacing the `srm` namespace, the `srm-appdata` deployment name, and the `securityContext` as necessary:
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: host-srm-web-appdata-volume
+  namespace: srm
+spec:
+  containers:
+    - image: codedx/codedx-tomcat:v2024.12.0
+      name: host-srm-web-appdata-volume
+      command: ["sleep", "1d"]
+      volumeMounts:
+      - mountPath: "/var/srm"
+        name: volume
+  securityContext:
+    fsGroup: 1000
+    runAsGroup: 1000
+    runAsUser: 1000
+  volumes:
+    - name: volume
+      persistentVolumeClaim:
+        claimName: srm-appdata
+```
+
+Copy the source volume data to the utility pod using the following commands, replacing the `srm` namespace as necessary:
+
+```
+$ cd /path/to/local/directory
+$ kubectl -n srm cp appdata.tgz host-srm-web-appdata-volume:/var/srm/appdata.tgz
+$ kubectl -n srm exec -it host-srm-web-appdata-volume -- bash
+$ cd /var/srm
+$ tar xzvf appdata.tgz
+$ rm appdata.tgz
+$ exit
+```
+
+Delete the utility pod using the following command, replacing the `srm` namespace name as necessary:
+
+```
+$ kubectl -n srm delete pod/host-srm-web-appdata-volume
+```
+
+## Replace Destination Software Risk Manager Database
+
+Copy your dump-codedx.sql file to your Software Risk Manager database instance, log on, and run the following command to restore your backup file, replacing the `codedx` database name as necessary:
+
+```
+mysql -u root -p codedx < /path/to/dump-codedx.sql
+```
+
+If you used the Software Risk Manager helm chart to deploy MariaDB with replication enabled, you must follow the [reset replication instructions](#reset-replication).
+
+## Move Tool Orchestration Resources (if installed)
+
+Set your kube context to the cluster hosting your source deployment, replacing the context name placeholder:
+
+```
+$ kubectl config use-context <context-name>
+```
+
+Run the following command to copy Tool Orchestration resources from the `srm` namespace of the source cluster to the `srm` namespace of the destination, replacing namespace names as necessary, specifying a value for the `-srmKubeConfigPath` parameter, and the destination context name as the `-srmKubeContextName` parameter:
+
+```
+$ pwsh
+PS> /path/to/git/srm-k8s/admin/migrate/copy-tool-orch-resources.ps1 `
+  -sourceNamespace 'srm' `
+  -srmNamespace 'srm' `
+  -srmKubeConfigPath '/path/to/SoftwareRiskManager/.kube/config' `
+  -srmKubeContextName '<name>'
+```
+
+## Start Destination Software Risk Manager Web Workload
+
+Start your destination Software Risk Manager web workload by scaling to 1 replica with the following command, replacing the `srm` namespace and the `srm-web` deployment name as necessary:
+
+```
+kubectl -n srm scale --replicas=1 deployment/srm-web
 ```
 
 # Software Risk Manager Helm Chart
