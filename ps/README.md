@@ -9,7 +9,9 @@ You can run the following command to execute tests in the ps directory:
 ```
 $ pwsh
 PS> cd /path/to/srm-k8s/ps
-PS> Import-Module Pester
+PS> Install-Module Pester -Force
 PS> . .\external\powershell-algorithms\data-structures.ps1
 PS> $results = Invoke-Pester tests -PassThru
 ```
+
+>Note: Confirm that you have a newer Pester version (e.g., 5.7.1) should Invoke-Pester show this error message: "the BeforeAll command may only be used inside a Describe block."

@@ -1,7 +1,7 @@
 <#PSScriptInfo
-.VERSION 1.7.0
+.VERSION 1.8.0
 .GUID 62c5091b-7337-44aa-a87b-f9828ae1013a
-.AUTHOR Code Dx
+.AUTHOR Black Duck
 .DESCRIPTION This script helps you migrate from Code Dx to SRM (w/o the scan farm feature enabled)
 #>
 
@@ -52,8 +52,8 @@ param (
 
 	[int]                    $toolServiceReplicas = 3,
 
-	[switch]                 $skipTLS,
-	[switch]                 $skipServiceTLS,
+	[switch]                 $skipTls,
+	[switch]                 $skipServiceTls,
 	[string]                 $csrSignerNameCodeDx            = 'kubernetes.io/legacy-unknown',
 	[string]                 $csrSignerNameToolOrchestration = 'kubernetes.io/legacy-unknown',
 
@@ -292,7 +292,7 @@ $config.skipMinIO = $skipMinIO
 $config.skipNetworkPolicies = $skipNetworkPolicies
 $config.skipTls = $skipTls
 
-if (-not $config.skipTLS) {
+if (-not $config.skipTls) {
 	$valuesTlsFilePath = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../../chart/values/values-tls.yaml'))
 	$config.SetNote('UseTlsOption', "- You must do the prework in the comments at the top of '$valuesTlsFilePath' before invoking helm")
 }
@@ -320,7 +320,7 @@ $config.addExtraCertificates = $extraCodeDxTrustedCaCertPaths.Length -gt 0
 $config.extraTrustedCaCertPaths = $extraCodeDxTrustedCaCertPaths
 
 $config.webServiceType = $serviceTypeCodeDx
-$config.webServicePortNumber = $skipServiceTLS ? $codeDxServicePortNumber : $codeDxTlsServicePortNumber
+$config.webServicePortNumber = $skipServiceTls ? $codeDxServicePortNumber : $codeDxTlsServicePortNumber
 $config.webServiceAnnotations = Get-KeyValuesFromTable $serviceAnnotationsCodeDx
 
 $config.skipIngressEnabled = $skipIngressEnabled

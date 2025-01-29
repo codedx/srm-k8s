@@ -60,7 +60,7 @@ function New-ScanFarmConfig($config) {
 	$webSvcName = $config.GetWebServiceName()
 
   $webSvcProtocol = "http"
-  if (-not $config.skipTLS) {
+  if (-not $config.skipTls) {
     $webSvcProtocol = "https"
   }
 

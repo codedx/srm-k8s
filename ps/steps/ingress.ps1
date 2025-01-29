@@ -74,13 +74,13 @@ resource from which you can pattern a path-based route definition.
 
 		$this.config.ingressAnnotations = @()
 		if ($this.config.IsElbIngress()) {
-			# always use port 443 for AWS ELB provisioning (if skipTLS is false, service can be accessed w/o ELB via HTTP on 443)
+			# always use port 443 for AWS ELB provisioning (if skipTls is false, service can be accessed w/o ELB via HTTP on 443)
 			$this.config.webServicePortNumber = 443
 		}
 
 		if ($this.config.IsIngress()) {
 
-			if ($this.config.ingressType -eq [IngressType]::NginxIngressCommunity -and -not $this.config.skipTLS) {
+			if ($this.config.ingressType -eq [IngressType]::NginxIngressCommunity -and -not $this.config.skipTls) {
 
 				# retain two default annotations
 				$this.config.SetIngressAnnotation('nginx.ingress.kubernetes.io/proxy-read-timeout', '3600')
@@ -92,7 +92,7 @@ resource from which you can pattern a path-based route definition.
 			elseif ($this.config.ingressType -eq [IngressType]::OtherIngress) {
 
 				$tlsSvcs = @()
-				if (-not $this.config.skipTLS) {
+				if (-not $this.config.skipTls) {
 					$tlsSvcs += $this.config.GetWebServiceName()
 				}
 				if (-not $this.config.skipScanFarm) {
@@ -115,7 +115,7 @@ resource from which you can pattern a path-based route definition.
 		$this.config.authCookieSecure = $false
 
 		$this.config.webServicePortNumber = 9090
-		if (-not $this.config.skipTLS) {
+		if (-not $this.config.skipTls) {
 			$this.config.webServicePortNumber = 9443
 		}
 	}
@@ -327,7 +327,7 @@ AWS Certificates console.
 		$isNetworkElb = $this.config.ingressType -eq [IngressType]::NetworkElb
 
 		$backendProtocol = 'http'
-		if (-not $this.config.skipTLS) {
+		if (-not $this.config.skipTls) {
 			$backendProtocol = $isNetworkElb ? 'ssl' : 'https'
 		}
 		$this.config.SetWebServiceAnnotation('service.beta.kubernetes.io/aws-load-balancer-backend-protocol', $backendProtocol)

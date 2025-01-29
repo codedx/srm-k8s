@@ -32,7 +32,7 @@ Istio service mesh using Ambient mode; see the SRM documentation for more info.
 		$this.config.webServicePortNumber = 9090
 		$this.config.skipTls = ([YesNoQuestion]$question).choice -eq 1
 
-		if (-not $this.config.skipTLS) {
+		if (-not $this.config.skipTls) {
 			$this.config.webServicePortNumber = 9443
 
 			$valuesTlsFilePath = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../chart/values/values-tls.yaml'))
@@ -82,7 +82,7 @@ Signing Request Kubernetes resources, refer to the comments in this file:
 	}
 
 	[bool]CanRun() {
-		return -not $this.config.skipTLS
+		return -not $this.config.skipTls
 	}
 }
 
@@ -110,6 +110,6 @@ components in the SRM namespace.
 	}
 
 	[bool]CanRun() {
-		return -not $this.config.skipTLS
+		return -not $this.config.skipTls
 	}
 }

@@ -85,8 +85,8 @@ Describe 'Migration config' -Tag 'upgrade' {
 			'-serviceTypeCodeDx' = 'ClusterIP'
 			'-codedxAdminPwd' = 'password'
 			'-codedxDatabaseUserPwd' = 'password'
-			'-skipTLS' = $true
-			'-skipServiceTLS' = $true
+			'-skipTls' = $true
+			'-skipServiceTls' = $true
 			'-skipPSPs' = $true
 			'-skipNetworkPolicies' = $true
 			'-skipIngressEnabled' = $true
@@ -206,8 +206,8 @@ Describe 'Migration config' -Tag 'upgrade' {
 			'-serviceTypeCodeDx' = 'ClusterIP'
 			'-codedxAdminPwd' = 'password'
 			'-codedxDatabaseUserPwd' = 'password'
-			'-skipTLS' = $true
-			'-skipServiceTLS' = $true
+			'-skipTls' = $true
+			'-skipServiceTls' = $true
 			'-skipPSPs' = $true
 			'-skipNetworkPolicies' = $true
 			'-skipIngressEnabled' = $true
