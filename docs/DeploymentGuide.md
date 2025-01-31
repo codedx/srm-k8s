@@ -205,6 +205,7 @@
     + [Upgrading to v1.40](#upgrading-to-v140)
     + [Upgrading to v1.42](#upgrading-to-v142)
     + [Upgrading to v1.43](#upgrading-to-v143)
+    + [Upgrading to v1.46](#upgrading-to-v146)
   * [Helm Prep Wizard](#helm-prep-wizard-1)
   * [Add Certificates Wizard](#add-certificates-wizard)
   * [Add SAML Authentication Wizard](#add-saml-authentication-wizard)
@@ -4884,7 +4885,7 @@ This version of Software Risk Manager works with the new Black Duck Repo (34.149
 |sig-repo.synopsys.com/synopsys/cnc-storage-service-migration:2024.9.1|repo.blackduck.com/containers/storage-service-migration:2024.9.1|
 |sig-repo.synopsys.com/synopsys/cnc-job-runner:2024.9.1|repo.blackduck.com/containers/job-runner:2024.9.1|
 
-The srm-k8s GitHub repository for this version of Software Risk Manager depends on an updated Guided Setup module with version 1.18.0. Scripts requiring the Guided Setup module will download it automatically; to manually download the module, refer to the instructions in [.install-guided-setup-module.ps1](../.install-guided-setup-module.ps1#L12).
+The srm-k8s GitHub repository for this version of Software Risk Manager depends on an updated Guided Setup module with version 1.17.0. Scripts requiring the Guided Setup module will download it automatically; to manually download the module, refer to the instructions in [.install-guided-setup-module.ps1](../.install-guided-setup-module.ps1#L12).
 
 ### Upgrading to v1.42
 
@@ -4899,6 +4900,10 @@ If you are upgrading from an earlier chart version, refer to any previous chart 
 This version of Software Risk Manager updates the default pod and container security contexts. It also references a newer version of the optional Bitnami MinIO component for deployments that do not use external workflow storage. 
 
 If you are using MinIO, this version will create a new MinIO volume that will not include your previous workflow storage. To retain your current workflow storage, edit your MinIO PV by switching the `persistentVolumeReclaimPolicy` field value from `Delete` to `Retain` before deploying this version.
+
+### Upgrading to v1.46
+
+The srm-k8s GitHub repository for this version of Software Risk Manager depends on an updated Guided Setup module with version 1.18.0. Scripts requiring the Guided Setup module will download it automatically; to manually download the module, refer to the instructions in [.install-guided-setup-module.ps1](../.install-guided-setup-module.ps1#L12).
 
 ## Helm Prep Wizard
 
