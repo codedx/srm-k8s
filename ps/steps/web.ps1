@@ -1,3 +1,4 @@
+[ConfigAttribute(("useTriageAssistant"))]
 class UseTriageAssistant : Step {
 
 	static [string] hidden $description = @'

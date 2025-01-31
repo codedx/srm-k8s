@@ -1,3 +1,4 @@
+[ConfigAttribute(("skipScanFarm"))]
 class ScanFarmRedisRequirements : Step {
 
 	static [string] hidden $description = @'
@@ -40,6 +41,7 @@ requirements and recommendations for your Redis instance:
 	}
 }
 
+[ConfigAttribute(("scanFarmRedisHost","skipScanFarm"))]
 class ScanFarmRedisHost : Step {
 
 	static [string] hidden $description = @'
@@ -76,6 +78,7 @@ permit network traffic from the cache service.
 	}
 }
 
+[ConfigAttribute(("scanFarmRedisPort","skipScanFarm"))]
 class ScanFarmRedisPort : Step {
 
 	static [string] hidden $description = @'
@@ -114,6 +117,7 @@ use port 6378 for the primary endpoint.
 	}
 }
 
+[ConfigAttribute(("scanFarmRedisDatabase","skipScanFarm"))]
 class ScanFarmRedisDatabase : Step {
 
 	static [string] hidden $description = @'
@@ -149,6 +153,7 @@ Note: For more information, visit https://redis.io/commands/select/.
 	}
 }
 
+[ConfigAttribute(("scanFarmRedisUseAuth","skipScanFarm"))]
 class ScanFarmRedisAuth : Step {
 
 	static [string] hidden $description = @'
@@ -183,6 +188,7 @@ for your Redis server.
 	}
 }
 
+[ConfigAttribute(("scanFarmRedisPwd","scanFarmRedisUseAuth","skipScanFarm"))]
 class ScanFarmRedisPassword : Step {
 
 	static [string] hidden $description = @'
@@ -215,6 +221,7 @@ Specify the password for your Redis instance.
 		return -not $this.config.skipScanFarm -and $this.config.scanFarmRedisUseAuth
 	}
 }
+[ConfigAttribute(("scanFarmRedisSecure","scanFarmRedisVerifyHostname","skipScanFarm"))]
 class ScanFarmRedisTls : Step {
 
 	static [string] hidden $description = @'
@@ -256,6 +263,7 @@ with your Redis CA.
 	}
 }
 
+[ConfigAttribute(("scanFarmRedisSecure","scanFarmRedisServerCert","skipScanFarm"))]
 class ScanFarmRedisCert : Step {
 
 	static [string] hidden $description = @'

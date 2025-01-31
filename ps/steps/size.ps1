@@ -1,3 +1,4 @@
+[ConfigAttribute(("systemSize"))]
 class Size : Step {
 
 	static [string] hidden $description = @'

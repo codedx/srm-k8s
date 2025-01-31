@@ -1,4 +1,4 @@
-using module @{ModuleName='guided-setup'; RequiredVersion='1.17.0' }
+using module @{ModuleName='guided-setup'; RequiredVersion='1.18.0' }
 
 $ErrorActionPreference = 'Stop'
 $VerbosePreference = 'Continue'

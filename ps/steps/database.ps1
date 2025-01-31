@@ -1,3 +1,4 @@
+[ConfigAttribute(("skipDatabase"))]
 class UseExternalDatabase : Step {
 
 	static [string] hidden $description = @'
@@ -38,6 +39,7 @@ https://github.com/codedx/srm-k8s/blob/main/docs/DeploymentGuide.md#external-web
 	}
 }
 
+[ConfigAttribute(("dbSlaveReplicaCount","skipDatabase"))]
 class DatabaseReplicaCount : Step {
 
 	static [string] hidden $description = @'
@@ -76,6 +78,7 @@ number of database replicas to 0.
 	}
 }
 
+[ConfigAttribute(("externalDatabaseHost","skipDatabase"))]
 class ExternalDatabaseHost : Step {
 
 	static [string] hidden $description = @'
@@ -105,6 +108,7 @@ server.region.rds.amazonaws.com.
 	}
 }
 
+[ConfigAttribute(("externalDatabasePort","skipDatabase"))]
 class ExternalDatabasePort : Step {
 
 	static [string] hidden $description = @'
@@ -142,6 +146,7 @@ Note: The default port for MariaDB is 3306.
 	}
 }
 
+[ConfigAttribute(("externalDatabaseName","skipDatabase"))]
 class ExternalDatabaseName : Step {
 
 	static [string] hidden $description = @'
@@ -179,6 +184,7 @@ database setup instructions.
 	}
 }
 
+[ConfigAttribute(("externalDatabaseUser","skipDatabase"))]
 class ExternalDatabaseUser : Step {
 
 	static [string] hidden $description = @'
@@ -215,6 +221,7 @@ name during the SRM external database setup instructions.
 	}
 }
 
+[ConfigAttribute(("externalDatabasePwd","skipDatabase"))]
 class ExternalDatabasePwd : Step {
 
 	static [string] hidden $description = @'
@@ -250,6 +257,7 @@ statement you ran during the SRM external database setup instructions.
 	}
 }
 
+[ConfigAttribute(("externalDatabaseSkipTls","skipDatabase"))]
 class ExternalDatabaseOneWayAuth : Step {
 
 	static [string] hidden $description = @'
@@ -288,6 +296,7 @@ associated with your database CA.
 	}
 }
 
+[ConfigAttribute(("externalDatabaseSkipTls","externalDatabaseTrustCert","skipDatabase"))]
 class ExternalDatabaseTrustCert : Step {
 
 	static [string] hidden $description = @'
@@ -324,6 +333,7 @@ chain.
 	}
 }
 
+[ConfigAttribute(("externalDatabaseServerCert","externalDatabaseTrustCert"))]
 class ExternalDatabaseCert : Step {
 
 	static [string] hidden $description = @'

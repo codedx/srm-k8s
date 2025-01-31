@@ -37,15 +37,20 @@ class About : Step {
 	static [string] hidden $description = @'
 This wizard will ask you a series of questions based on the SRM features
 you plan to deploy. Follow this link to read the SRM Deployment Guide:
-
 https://github.com/codedx/srm-k8s/blob/main/docs/DeploymentGuide.md
 
 You should complete any required pre-work before continuing.
 
-Note: If you need to return to a previous screen to correct an error or 
-revisit a question, enter 'B' to choose the "Back to Previous Step"
-option. If you are responding to a prompt that is not multiple choice,
-press Enter to reveal the "Back to Previous Step" choice. 
+If you need to return to a previous screen to correct an error or revisit
+a question, enter 'B' to choose the "Back to Previous Step" option. If
+you are responding to a prompt that is not multiple choice,
+press Enter to reveal the "Back to Previous Step" choice.
+'@
+
+	static [string] hidden $previousConfigWarning = @'
+Note: This wizard will display parameters from your previous configuration
+file on subsequent screens for your reference. These may include passwords
+and keys shown in plaintext.
 '@
 
 	About([Config] $config) : base(
@@ -64,8 +69,18 @@ press Enter to reveal the "Back to Previous Step" choice.
 	[bool]HandleResponse([IQuestion] $question) {
 		return $true
 	}
+
+	[string]GetMessage() {
+
+		[string] $msg = [About]::description
+		if ($null -ne $this.previousConfig) {
+			$msg += "`n`n" + [About]::previousConfigWarning
+		}
+		return $msg
+	}
 }
 
+[ConfigAttribute(("workDir"))]
 class WorkDir : Step {
 
 	static [string] hidden $description = @'

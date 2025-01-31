@@ -1,3 +1,4 @@
+[ConfigAttribute(("createSCCs","k8sProvider"))]
 class ChooseEnvironment : Step {
 
 	static [string] hidden $description = @'
@@ -44,6 +45,7 @@ If your Kubernetes provider is not listed below, select the 'Other' option.
 	}
 }
 
+[ConfigAttribute(("kubeApiTargetPort","skipNetworkPolicies"))]
 class GetKubernetesPort: Step {
 
 	static [string] hidden $description = @'
@@ -82,6 +84,7 @@ Specify the API port for your Kubernetes API endpoint.
 	}
 }
 
+[ConfigAttribute(("namespace"))]
 class Namespace : Step {
 
 	static [string] hidden $description = @'
@@ -120,6 +123,7 @@ Note: Press Enter to use the example namespace.
 	}
 }
 
+[ConfigAttribute(("releaseName"))]
 class ReleaseName : Step {
 
 	static [string] hidden $description = @'
@@ -160,6 +164,7 @@ Note: Press Enter to use the example release name.
 	}
 }
 
+[ConfigAttribute(("skipNetworkPolicies"))]
 class UseNetworkPolicyOption : Step {
 
 	static [string] hidden $description = @'

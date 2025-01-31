@@ -1,3 +1,4 @@
+[ConfigAttribute(("srmLicenseFile"))]
 class SrmWebLicense : Step {
 	static [string] hidden $description = @'
 Your Software Risk Manager license determines the features available
@@ -25,6 +26,7 @@ in your deployment.
 	}
 }
 
+[ConfigAttribute(("scanFarmType","skipScanFarm"))]
 class ScanFarmType : Step {
 	static [string] hidden $description = @'
 The Scan Farm feature includes both SAST and SCA scanning, depending on
@@ -68,6 +70,7 @@ your license type.
 	}
 }
 
+[ConfigAttribute(("scanFarmSastLicenseFile","scanFarmType"))]
 class ScanFarmSastLicense : Step {
 	static [string] hidden $description = @'
 The SAST Scan Farm feature is enabled using a separate license file.
@@ -98,6 +101,7 @@ The SAST Scan Farm feature is enabled using a separate license file.
 	}
 }
 
+[ConfigAttribute(("scanFarmScaLicenseFile","scanFarmType"))]
 class ScanFarmScaLicense : Step {
 	static [string] hidden $description = @'
 The SCA Scan Farm feature is enabled using a separate license file.

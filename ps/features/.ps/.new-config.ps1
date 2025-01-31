@@ -1,11 +1,11 @@
 <#PSScriptInfo
-.VERSION 1.1.0
+.VERSION 1.2.0
 .GUID b38bfed0-123d-4a7a-a7f6-a7b6ed6ecdf5
 .AUTHOR Black Duck
 .COPYRIGHT Copyright 2024 Black Duck Software, Inc. All rights reserved.
 #>
 
-using module @{ModuleName='guided-setup'; RequiredVersion='1.17.0' }
+using module @{ModuleName='guided-setup'; RequiredVersion='1.18.0' }
 
 $ErrorActionPreference = 'Stop'
 $VerbosePreference = 'Continue'

@@ -1,3 +1,4 @@
+[ConfigAttribute(("externalDatabaseTrustCert","skipTls","useDefaultCACerts"))]
 class UseDefaultCACerts : Step {
 
 	static [string] hidden $description = @'
@@ -37,6 +38,7 @@ certificate authority.
 	}
 }
 
+[ConfigAttribute(("caCertsFilePath","useDefaultCACerts"))]
 class CACertsFile : Step {
 
 	[string] $startingCaCertsFilePath;
@@ -93,6 +95,7 @@ your Java home directory.
 	}
 }
 
+[ConfigAttribute(("caCertsFilePath","caCertsFilePwd"))]
 class CACertsFilePassword : Step {
 
 	static [string] hidden $description = @'
@@ -132,6 +135,7 @@ password, use the default Java cacerts file password (changeit).
 	}
 }
 
+[ConfigAttribute(("addExtraCertificates"))]
 class AddExtraCertificates : Step {
 
 	static [string] hidden $description = @'
@@ -166,6 +170,7 @@ you can add the certificates that SRM should trust.
 	}
 }
 
+[ConfigAttribute(("addExtraCertificates","extraTrustedCaCertPaths"))]
 class ExtraCertificates : Step {
 
 	[string[]] $startingTrustedCaCertPathsList
@@ -277,6 +282,7 @@ certificates.
 	}
 }
 
+[ConfigAttribute(("addExtraCertificates"))]
 class AbortAddCertificates : Step {
 
 	AbortAddCertificates([Config] $config) : base(

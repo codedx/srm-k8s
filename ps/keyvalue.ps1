@@ -18,4 +18,8 @@ class KeyValue {
 	static [KeyValue]New([string] $key, [string] $value) {
 		return new-object KeyValue($key, $value)
 	}
+
+	[string] ToString() {
+		return $this.ToTuple().ToString()
+	}
 }

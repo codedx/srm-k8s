@@ -1645,7 +1645,7 @@ apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
 metadata:
   name: cache-service
-  namespace: srm-release-2024-12-1
+  namespace: srm
 spec:
   selector:
     matchLabels:
@@ -4668,7 +4668,7 @@ $ kubectl -n $SRM_NAMESPACE create secret generic $SRM_WEB_CACERTS_SECRET_NAME -
 $ # Start pwsh session
 $ pwsh
 PS> $global:PSNativeCommandArgumentPassing='Legacy'
-PS> Install-Module guided-setup -RequiredVersion 1.17.0
+PS> Install-Module guided-setup -RequiredVersion 1.18.0
 
 PS> $caPath = Get-ChildItem ./ca.crt | Select-Object -ExpandProperty FullName
 
@@ -4743,7 +4743,7 @@ PS> # Create cacerts Secret
 PS> kubectl -n $SRM_NAMESPACE create secret generic $SRM_WEB_CACERTS_SECRET_NAME --from-file cacerts=$CACERTS_PATH --from-literal cacerts-password=changeit
 
 PS> $global:PSNativeCommandArgumentPassing='Legacy'
-PS> Install-Module guided-setup -RequiredVersion 1.17.0
+PS> Install-Module guided-setup -RequiredVersion 1.18.0
 
 PS> $caPath = Get-ChildItem ./ca.crt | Select-Object -ExpandProperty FullName
 
@@ -4884,7 +4884,7 @@ This version of Software Risk Manager works with the new Black Duck Repo (34.149
 |sig-repo.synopsys.com/synopsys/cnc-storage-service-migration:2024.9.1|repo.blackduck.com/containers/storage-service-migration:2024.9.1|
 |sig-repo.synopsys.com/synopsys/cnc-job-runner:2024.9.1|repo.blackduck.com/containers/job-runner:2024.9.1|
 
-The srm-k8s GitHub repository for this version of Software Risk Manager depends on an updated Guided Setup module with version 1.17.0. Scripts requiring the Guided Setup module will download it automatically; to manually download the module, refer to the instructions in [.install-guided-setup-module.ps1](../.install-guided-setup-module.ps1#L12).
+The srm-k8s GitHub repository for this version of Software Risk Manager depends on an updated Guided Setup module with version 1.18.0. Scripts requiring the Guided Setup module will download it automatically; to manually download the module, refer to the instructions in [.install-guided-setup-module.ps1](../.install-guided-setup-module.ps1#L12).
 
 ### Upgrading to v1.42
 

@@ -1,3 +1,4 @@
+[ConfigAttribute(("authCookieSecure","ingressAnnotations","ingressType","k8sProvider","skipIngressEnabled","skipScanFarm","skipTls","webServicePortNumber","webServiceType"))]
 class IngressKind : Step {
 
 	static [string] hidden $description = @'
@@ -121,6 +122,7 @@ resource from which you can pattern a path-based route definition.
 	}
 }
 
+[ConfigAttribute(("ingressClassName","skipIngressEnabled"))]
 class IngressClassName : Step {
 
 	static [string] hidden $description = @'
@@ -152,6 +154,7 @@ resources referencing the same hostname.
 	}
 }
 
+[ConfigAttribute(("authCookieSecure","ingressTlsType"))]
 class IngressTLS : Step {
 
 	static [string] hidden $description = @'
@@ -219,6 +222,7 @@ be limited to dev/test-related deployments.
 	}
 }
 
+[ConfigAttribute(("ingressTlsSecretName","ingressTlsType"))]
 class IngressTLSSecretName : Step {
 
 	static [string] hidden $description = @'
@@ -259,6 +263,7 @@ fake/invalid certificate.
 	}
 }
 
+[ConfigAttribute(("ingressTlsSecretName","ingressTlsType"))]
 class CertManagerIssuer : Step {
 
 	static [string] hidden $description = @'
@@ -305,6 +310,7 @@ Note: Your cert-manager issuer must already exist.
 	}
 }
 
+[ConfigAttribute(("ingressType","skipTls","webServiceAnnotations"))]
 class IngressCertificateArn : Step {
 
 	static [string] hidden $description = @'
@@ -352,6 +358,7 @@ AWS Certificates console.
 	}
 }
 
+[ConfigAttribute(("ingressHostname","skipIngressEnabled"))]
 class IngressHostname : Step {
 
 	static [string] hidden $description = @'

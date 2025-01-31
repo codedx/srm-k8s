@@ -1,3 +1,4 @@
+[ConfigAttribute(("k8sProvider","useNodeSelectors"))]
 class UseNodeSelectors : Step {
 
 	static [string] hidden $description = @'
@@ -71,6 +72,12 @@ class KeyValueStep : Step {
 
 		Write-HostSection $this.title ($this.GetMessage())
 
+		$footer = $this.GetMessageFooter()
+		if ("" -ne $footer) {
+			Write-Host $footer
+			Write-Host
+		}
+
 		$keyQuestion = $this.MakeQuestion($this.keyPrompt)
 		$keyQuestion.allowEmptyResponse = $true
 
@@ -106,6 +113,7 @@ class KeyValueStep : Step {
 	}
 }
 
+[ConfigAttribute(("useNodeSelectors"))]
 class NodeSelectorStep : KeyValueStep {
 
 	[string] $nodeNameExample
@@ -133,6 +141,7 @@ class NodeSelectorStep : KeyValueStep {
 	}
 }
 
+[ConfigAttribute(("webNodeSelector"))]
 class WebNodeSelector : NodeSelectorStep {
 
 	static [string] hidden $description = @'
@@ -160,6 +169,7 @@ Note: You can use the same node selector key and value for multiple workloads.
 	}
 }
 
+[ConfigAttribute(("masterDatabaseNodeSelector","skipDatabase"))]
 class MasterDatabaseNodeSelector : NodeSelectorStep {
 
 	static [string] hidden $description = @'
@@ -191,6 +201,7 @@ Note: You can use the same node selector key and value for multiple workloads.
 	}
 }
 
+[ConfigAttribute(("dbSlaveReplicaCount","subordinateDatabaseNodeSelector"))]
 class SubordinateDatabaseNodeSelector : NodeSelectorStep {
 
 	static [string] hidden $description = @'
@@ -222,6 +233,7 @@ Note: You can use the same node selector key and value for multiple workloads.
 	}
 }
 
+[ConfigAttribute(("skipToolOrchestration","toolServiceNodeSelector"))]
 class ToolServiceNodeSelector : NodeSelectorStep {
 
 	static [string] hidden $description = @'
@@ -253,6 +265,7 @@ Note: You can use the same node selector key and value for multiple workloads.
 	}
 }
 
+[ConfigAttribute(("minioNodeSelector","skipMinIO","skipToolOrchestration"))]
 class MinIONodeSelector : NodeSelectorStep {
 
 	static [string] hidden $description = @'
@@ -284,6 +297,7 @@ Note: You can use the same node selector key and value for multiple workloads.
 	}
 }
 
+[ConfigAttribute(("skipToolOrchestration","workflowControllerNodeSelector"))]
 class WorkflowControllerNodeSelector : NodeSelectorStep {
 
 	static [string] hidden $description = @'
@@ -315,6 +329,7 @@ Note: You can use the same node selector key and value for multiple workloads.
 	}
 }
 
+[ConfigAttribute(("skipToolOrchestration","toolNodeSelector"))]
 class ToolNodeSelector : NodeSelectorStep {
 
 	static [string] hidden $description = @'
@@ -352,6 +367,7 @@ Note: You can use the same node selector key and value for multiple workloads.
 	}
 }
 
+[ConfigAttribute(("k8sProvider","useTolerations"))]
 class UseTolerations : Step {
 
 	static [string] hidden $description = @'
@@ -399,6 +415,7 @@ kubectl taint nodes your-cluster-node-name dedicated=webapp:NoExecute
 	}
 }
 
+[ConfigAttribute(("useTolerations"))]
 class PodTolerationStep : KeyValueStep {
 
 	[string] $nodeNameExample
@@ -427,6 +444,7 @@ class PodTolerationStep : KeyValueStep {
 	}
 }
 
+[ConfigAttribute(("webNoScheduleExecuteToleration"))]
 class WebTolerations : PodTolerationStep {
 
 	static [string] hidden $description = @'
@@ -456,6 +474,7 @@ Note: You can use the same pod toleration key and value for multiple workloads.
 	}
 }
 
+[ConfigAttribute(("masterDatabaseNoScheduleExecuteToleration","skipDatabase"))]
 class MasterDatabaseTolerations : PodTolerationStep {
 
 	static [string] hidden $description = @'
@@ -489,6 +508,7 @@ Note: You can use the same pod toleration key and value for multiple workloads.
 	}
 }
 
+[ConfigAttribute(("dbSlaveReplicaCount","subordinateDatabaseNoScheduleExecuteToleration"))]
 class SubordinateDatabaseTolerations : PodTolerationStep {
 
 	static [string] hidden $description = @'
@@ -522,6 +542,7 @@ Note: You can use the same pod toleration key and value for multiple workloads.
 	}
 }
 
+[ConfigAttribute(("skipToolOrchestration","toolServiceNoScheduleExecuteToleration"))]
 class ToolServiceTolerations : PodTolerationStep {
 
 	static [string] hidden $description = @'
@@ -555,6 +576,7 @@ Note: You can use the same pod toleration key and value for multiple workloads.
 	}
 }
 
+[ConfigAttribute(("minioNoScheduleExecuteToleration","skipMinIO","skipToolOrchestration"))]
 class MinIOTolerations : PodTolerationStep {
 
 	static [string] hidden $description = @'
@@ -588,6 +610,7 @@ Note: You can use the same pod toleration key and value for multiple workloads.
 	}
 }
 
+[ConfigAttribute(("skipToolOrchestration","workflowControllerNoScheduleExecuteToleration"))]
 class WorkflowControllerTolerations : PodTolerationStep {
 
 	static [string] hidden $description = @'
@@ -621,6 +644,7 @@ Note: You can use the same pod toleration key and value for multiple workloads.
 	}
 }
 
+[ConfigAttribute(("skipToolOrchestration","toolNoScheduleExecuteToleration"))]
 class ToolTolerations : PodTolerationStep {
 
 	static [string] hidden $description = @'

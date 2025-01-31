@@ -1,3 +1,4 @@
+[ConfigAttribute(("skipScanFarm","useDockerRedirection","useDockerRepositoryPrefix"))]
 class UseDockerRepositoryPrefix : Step {
 
 	static [string] hidden $description = @'
@@ -49,6 +50,7 @@ Note: If you are using a GCP Container Registry, answer Yes.
 	}
 }
 
+[ConfigAttribute(("dockerRepositoryPrefix","useDockerRepositoryPrefix"))]
 class DockerRepositoryPrefix : Step {
 
 	static [string] hidden $description = @'
@@ -85,6 +87,7 @@ id.dkr.ecr.us-east-2.amazonaws.com/my-srm/codedx/codedx-tomcat:version
 	}
 }
 
+[ConfigAttribute(("useDefaultDockerImages"))]
 class UseDefaultDockerImages : Step {
 
 	static [string] hidden $description = @'
@@ -153,6 +156,7 @@ the default value, or you can specify a specific Docker image version.
 	}
 }
 
+[ConfigAttribute(("imageVersionWeb","useDefaultDockerImages"))]
 class WebDockerImageVersion : DockerImageVersionStep {
 
 	WebDockerImageVersion([Config] $config) : base(
@@ -176,6 +180,7 @@ class WebDockerImageVersion : DockerImageVersionStep {
 	}
 }
 
+[ConfigAttribute(("imageVersionMariaDB","skipDatabase","useDefaultDockerImages"))]
 class MariaDBDockerImageVersion : DockerImageVersionStep {
 
 	MariaDBDockerImageVersion([Config] $config) : base(
@@ -199,6 +204,7 @@ class MariaDBDockerImageVersion : DockerImageVersionStep {
 	}
 }
 
+[ConfigAttribute(("imageVersionTo","skipToolOrchestration","useDefaultDockerImages"))]
 class ToolOrchestrationDockerImageVersion : DockerImageVersionStep {
 
 	ToolOrchestrationDockerImageVersion([Config] $config) : base(
@@ -222,6 +228,7 @@ class ToolOrchestrationDockerImageVersion : DockerImageVersionStep {
 	}
 }
 
+[ConfigAttribute(("imageVersionMinio","skipMinIO","skipToolOrchestration","useDefaultDockerImages"))]
 class MinioDockerImageVersion : DockerImageVersionStep {
 
 	MinioDockerImageVersion([Config] $config) : base(
@@ -245,6 +252,7 @@ class MinioDockerImageVersion : DockerImageVersionStep {
 	}
 }
 
+[ConfigAttribute(("imageVersionWorkflow","skipToolOrchestration","useDefaultDockerImages"))]
 class WorkflowDockerImageVersion : DockerImageVersionStep {
 
 	WorkflowDockerImageVersion([Config] $config) : base(

@@ -35,6 +35,7 @@ initial deployment and future upgrades.
 	}
 }
 
+[ConfigAttribute(("workDir"))]
 class Finish : Step {
 
 	static [string] hidden $description = @'

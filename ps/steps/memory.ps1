@@ -1,3 +1,4 @@
+[ConfigAttribute(("useMemoryDefaults"))]
 class DefaultMemory : Step {
 
 	static [string] hidden $description = @'
@@ -73,6 +74,7 @@ will cause SRM pods to get stuck in a Pending state.
 	}
 }
 
+[ConfigAttribute(("useMemoryDefaults"))]
 class MemoryStep : Step {
 
 	static [string] hidden $description = @'
@@ -128,6 +130,7 @@ Note: You can skip making a reservation by accepting the default value.
 	}
 }
 
+[ConfigAttribute(("webMemoryReservation"))]
 class WebMemory : MemoryStep {
 
 	WebMemory([Config] $config) : base(
@@ -153,6 +156,7 @@ class WebMemory : MemoryStep {
 	}
 }
 
+[ConfigAttribute(("dbMasterMemoryReservation","skipDatabase"))]
 class MasterDatabaseMemory : MemoryStep {
 
 	MasterDatabaseMemory([Config] $config) : base(
@@ -182,6 +186,7 @@ class MasterDatabaseMemory : MemoryStep {
 	}
 }
 
+[ConfigAttribute(("dbSlaveMemoryReservation","dbSlaveReplicaCount","skipDatabase"))]
 class SubordinateDatabaseMemory : MemoryStep {
 
 	SubordinateDatabaseMemory([Config] $config) : base(
@@ -211,6 +216,7 @@ class SubordinateDatabaseMemory : MemoryStep {
 	}
 }
 
+[ConfigAttribute(("skipToolOrchestration","toolServiceMemoryReservation"))]
 class ToolServiceMemory : MemoryStep {
 
 	ToolServiceMemory([Config] $config) : base(
@@ -240,6 +246,7 @@ class ToolServiceMemory : MemoryStep {
 	}
 }
 
+[ConfigAttribute(("minioMemoryReservation","skipMinIO","skipToolOrchestration"))]
 class MinIOMemory : MemoryStep {
 
 	MinIOMemory([Config] $config) : base(
@@ -269,6 +276,7 @@ class MinIOMemory : MemoryStep {
 	}
 }
 
+[ConfigAttribute(("skipToolOrchestration","workflowMemoryReservation"))]
 class WorkflowMemory : MemoryStep {
 
 	WorkflowMemory([Config] $config) : base(

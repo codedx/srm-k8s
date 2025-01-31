@@ -596,3 +596,11 @@ class Config {
 		return -not ([string]::IsNullOrEmpty($this.systemSize) -or $this.systemSize -eq [SystemSize]::Unspecified)
 	}
 }
+
+class ConfigAttribute : System.Attribute {
+    [string[]]$values
+
+    ConfigAttribute([string[]]$values) {
+        $this.values = $values
+    }
+}

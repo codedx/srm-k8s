@@ -1,3 +1,4 @@
+[ConfigAttribute(("useCPUDefaults"))]
 class DefaultCPU : Step {
 
 	static [string] hidden $description = @'
@@ -73,6 +74,7 @@ will cause SRM pods to get stuck in a Pending state.
 	}
 }
 
+[ConfigAttribute(("useCPUDefaults"))]
 class CPUStep : Step {
 
 	static [string] hidden $description = @'
@@ -130,6 +132,7 @@ Note: You can skip making a reservation by accepting the default value.
 	}
 }
 
+[ConfigAttribute(("webCPUReservation"))]
 class WebCPU : CPUStep {
 
 	WebCPU([Config] $config) : base(
@@ -155,6 +158,7 @@ class WebCPU : CPUStep {
 	}
 }
 
+[ConfigAttribute(("dbMasterCPUReservation","skipDatabase"))]
 class MasterDatabaseCPU : CPUStep {
 
 	MasterDatabaseCPU([Config] $config) : base([MasterDatabaseCPU].Name, 'Master Database CPU Reservation', $config) {}
@@ -181,6 +185,7 @@ class MasterDatabaseCPU : CPUStep {
 	}
 }
 
+[ConfigAttribute(("dbSlaveCPUReservation","dbSlaveReplicaCount","skipDatabase"))]
 class SubordinateDatabaseCPU : CPUStep {
 
 	SubordinateDatabaseCPU([Config] $config) : base([SubordinateDatabaseCPU].Name, 'Subordinate Database CPU Reservation', $config) {}
@@ -207,6 +212,7 @@ class SubordinateDatabaseCPU : CPUStep {
 	}
 }
 
+[ConfigAttribute(("skipToolOrchestration","toolServiceCPUReservation"))]
 class ToolServiceCPU : CPUStep {
 
 	ToolServiceCPU([Config] $config) : base([ToolServiceCPU].Name, 'Tool Service CPU Reservation', $config) {}
@@ -233,6 +239,7 @@ class ToolServiceCPU : CPUStep {
 	}
 }
 
+[ConfigAttribute(("minioCPUReservation","skipMinIO","skipToolOrchestration"))]
 class MinIOCPU : CPUStep {
 
 	MinIOCPU([Config] $config) : base([MinIOCPU].Name, 'MinIO CPU Reservation', $config) {}
@@ -259,6 +266,7 @@ class MinIOCPU : CPUStep {
 	}
 }
 
+[ConfigAttribute(("skipToolOrchestration","workflowCPUReservation"))]
 class WorkflowCPU : CPUStep {
 
 	WorkflowCPU([Config] $config) : base([WorkflowCPU].Name, 'Workflow Controller CPU Reservation', $config) {}

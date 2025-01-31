@@ -1,11 +1,11 @@
 <#PSScriptInfo
-.VERSION 1.8.0
+.VERSION 1.9.0
 .GUID 62c5091b-7337-44aa-a87b-f9828ae1013a
 .AUTHOR Black Duck
 .DESCRIPTION This script helps you migrate from Code Dx to SRM (w/o the scan farm feature enabled)
 #>
 
-using module @{ModuleName='guided-setup'; RequiredVersion='1.17.0' }
+using module @{ModuleName='guided-setup'; RequiredVersion='1.18.0' }
 
 param (
 	[string]                 $codeDxSetupScriptPath,

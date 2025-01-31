@@ -1,3 +1,4 @@
+[ConfigAttribute(("skipScanFarm","useDockerRedirection"))]
 class UseDockerRegistry : Step {
 
 	static [string] hidden $description = @'
@@ -35,6 +36,7 @@ on Docker Hub.
 	}
 }
 
+[ConfigAttribute(("dockerRegistry","skipScanFarm","useDockerRedirection"))]
 class DockerRegistryHost  : Step {
 
 	static [string] hidden $description = @'
@@ -101,6 +103,7 @@ $([DockerRegistryHost]::pullPushInstructionLink)
 	}
 }
 
+[ConfigAttribute(("skipDockerRegistryCredential","skipScanFarm","useDockerRedirection"))]
 class UseDockerRegistryCredential : Step {
 
 	static [string] hidden $description = @'
@@ -137,6 +140,7 @@ from an EKS cluster, a GCR accessed from a GKE cluster, etc.), answer No.
 	}
 }
 
+[ConfigAttribute(("dockerImagePullSecretName","skipDockerRegistryCredential","skipScanFarm","useDockerRedirection"))]
 class DockerImagePullSecret : Step {
 
 	static [string] hidden $description = @'
@@ -165,6 +169,7 @@ create to store your private Docker registry credential.
 	}
 }
 
+[ConfigAttribute(("dockerRegistryUser","skipDockerRegistryCredential","skipScanFarm","useDockerRedirection"))]
 class DockerRegistryUser  : Step {
 
 	static [string] hidden $description = @'
@@ -192,6 +197,7 @@ Specify the username of a user with pull access to your private registry.
 	}
 }
 
+[ConfigAttribute(("dockerRegistryPwd","dockerRegistryUser","skipDockerRegistryCredential","skipScanFarm","useDockerRedirection"))]
 class DockerRegistryPwd  : Step {
 
 	DockerRegistryPwd([Config] $config) : base(

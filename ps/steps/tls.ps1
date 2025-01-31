@@ -1,3 +1,4 @@
+[ConfigAttribute(("skipTls","webServicePortNumber"))]
 class UseTlsOption : Step {
 
 	static [string] hidden $description = @'
@@ -49,6 +50,7 @@ Istio service mesh using Ambient mode; see the SRM documentation for more info.
 }
 
 
+[ConfigAttribute(("clusterCertificateAuthorityCertPath","skipTls"))]
 class CertsCAPath : Step {
 
 	static [string] hidden $description = @'
@@ -86,6 +88,7 @@ Signing Request Kubernetes resources, refer to the comments in this file:
 	}
 }
 
+[ConfigAttribute(("csrSignerName","skipTls"))]
 class SignerName : Step {
 
 	static [string] hidden $description = @'

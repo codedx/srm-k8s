@@ -1,3 +1,4 @@
+[ConfigAttribute(("useLdap","useSaml"))]
 class AuthenticationType : Step {
 
 	static [string] hidden $description = @'
@@ -33,6 +34,7 @@ against a SAML 2.0 Identity Provider (IdP) or an LDAP directory.
 	}
 }
 
+[ConfigAttribute(("useLdap"))]
 class LdapInstructions : Step {
 	static [string] hidden $description = @'
 SRM supports authentication against an LDAP directory, but you must 
@@ -67,6 +69,7 @@ https://github.com/codedx/srm-k8s/blob/main/docs/DeploymentGuide.md#specify-ldap
 	}
 }
 
+[ConfigAttribute(("samlHostBasePath","useSaml"))]
 class SamlAuthenticationHostBasePath : Step {
 	
 	static [string] hidden $description = @'
@@ -103,6 +106,7 @@ Note: Do not enter the /login/callback/saml portion here; enter the host base pa
 	}
 }
 
+[ConfigAttribute(("samlIdentityProviderMetadataPath","useSaml"))]
 class SamlIdpMetadata : Step {
 
 	static [string] hidden $description = @'
@@ -134,6 +138,7 @@ Specify the IdP metadata you downloaded from your SAML identity provider.
 	}
 }
 
+[ConfigAttribute(("samlAppName","samlHostBasePath","useSaml"))]
 class SamlAppName : Step {
 
 	static [string] hidden $description = @'
@@ -166,6 +171,7 @@ SAML identity provider and is associated with your SRM application.
 	}
 }
 
+[ConfigAttribute(("samlKeystorePwd","useSaml"))]
 class SamlKeystorePwd : Step {
 
 	static [string] hidden $description = @'
@@ -201,6 +207,7 @@ the key pair that SRM will use to connect to your SAML identify provider.
 	}
 }
 
+[ConfigAttribute(("samlPrivateKeyPwd","useSaml"))]
 class SamlPrivateKeyPwd : Step {
 
 	static [string] hidden $description = @'
@@ -236,6 +243,7 @@ will use to connect to your SAML identify provider.
 	}
 }
 
+[ConfigAttribute(("useSaml"))]
 class SamlExtraConfig : Step {
 	static [string] hidden $description = @'
 The setup script will configure the following SRM SAML properties based on 
@@ -305,6 +313,7 @@ SAML configuration.
 	}
 }
 
+[ConfigAttribute(("useSaml"))]
 class UseSaml : Step {
 
 	static [string] hidden $description = @'
@@ -334,6 +343,7 @@ Software Risk Manager can also be configured to authenticate against a SAML 2.0 
 	}
 }
 
+[ConfigAttribute(("useSaml"))]
 class AbortAddSaml : Step {
 
 	AbortAddSaml([Config] $config) : base(
@@ -353,6 +363,7 @@ class AbortAddSaml : Step {
 	}
 }
 
+[ConfigAttribute(("authCookieSecure"))]
 class AuthCookieSecure : Step {
 
 	static [string] hidden $description = @'

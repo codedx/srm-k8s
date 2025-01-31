@@ -1,3 +1,4 @@
+[ConfigAttribute(("skipScanFarm"))]
 class UseScanFarm : Step {
 
 	static [string] hidden $description = @'
@@ -50,6 +51,7 @@ must separately provision/configure:
 	}
 }
 
+[ConfigAttribute(("clusterCertificateAuthorityCertPath","csrSignerName","skipScanFarm","skipTls","webServicePortNumber"))]
 class ScanFarmTlsRemoval : Step {
 
 	static [string] hidden $description = @'
@@ -101,6 +103,7 @@ feature. Your component TLS configuration must be removed.
 	}
 }
 
+[ConfigAttribute(("repoUsername","skipScanFarm"))]
 class RepoUsername : Step {
 
 	static [string] hidden $description = @'
@@ -138,6 +141,7 @@ the Black Duck Docker registry to your private Docker registry.
 	}
 }
 
+[ConfigAttribute(("repoPwd","skipScanFarm"))]
 class RepoPassword : Step {
 
 	static [string] hidden $description = @'
@@ -211,6 +215,7 @@ Prep script to stage your helm deployment.
 	}
 }
 
+[ConfigAttribute(("skipScanFarm"))]
 class AbortScanFarm : Step {
 
 	AbortScanFarm([Config] $config) : base(

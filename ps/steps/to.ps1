@@ -1,3 +1,4 @@
+[ConfigAttribute(("skipToolOrchestration"))]
 class UseToolOrchestration : Step {
 
 	static [string] hidden $description = @'
@@ -28,6 +29,7 @@ Orchestration feature is a separately licensed component.
 	}
 }
 
+[ConfigAttribute(("skipToolOrchestration","toolServiceReplicas"))]
 class ToolServiceReplicaCount : Step {
 
 	static [string] hidden $description = @'

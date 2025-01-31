@@ -1,3 +1,4 @@
+[ConfigAttribute(("useEphemeralStorageDefaults"))]
 class DefaultEphemeralStorage : Step {
 
 	static [string] hidden $description = @'
@@ -69,6 +70,7 @@ will cause SRM pods to get stuck in a Pending state.
 	}
 }
 
+[ConfigAttribute(("useEphemeralStorageDefaults"))]
 class EphemeralStorageStep : Step {
 
 	static [string] hidden $description = @'
@@ -132,6 +134,7 @@ Note: You can skip making a reservation by accepting the default value.
 	}
 }
 
+[ConfigAttribute(("webEphemeralStorageReservation"))]
 class WebEphemeralStorage : EphemeralStorageStep {
 
 	WebEphemeralStorage([Config] $config) : base(
@@ -157,6 +160,7 @@ class WebEphemeralStorage : EphemeralStorageStep {
 	}
 }
 
+[ConfigAttribute(("dbMasterEphemeralStorageReservation","skipDatabase"))]
 class MasterDatabaseEphemeralStorage : EphemeralStorageStep {
 
 	MasterDatabaseEphemeralStorage([Config] $config) : base(
@@ -182,6 +186,7 @@ class MasterDatabaseEphemeralStorage : EphemeralStorageStep {
 	}
 }
 
+[ConfigAttribute(("dbSlaveEphemeralStorageReservation","dbSlaveReplicaCount","skipDatabase"))]
 class SubordinateDatabaseEphemeralStorage : EphemeralStorageStep {
 
 	SubordinateDatabaseEphemeralStorage([Config] $config) : base(
@@ -207,6 +212,7 @@ class SubordinateDatabaseEphemeralStorage : EphemeralStorageStep {
 	}
 }
 
+[ConfigAttribute(("skipToolOrchestration","toolServiceEphemeralStorageReservation"))]
 class ToolServiceEphemeralStorage : EphemeralStorageStep {
 
 	ToolServiceEphemeralStorage([Config] $config) : base(
@@ -232,6 +238,7 @@ class ToolServiceEphemeralStorage : EphemeralStorageStep {
 	}
 }
 
+[ConfigAttribute(("minioEphemeralStorageReservation","skipMinIO","skipToolOrchestration"))]
 class MinIOEphemeralStorage : EphemeralStorageStep {
 
 	MinIOEphemeralStorage([Config] $config) : base(
@@ -257,6 +264,7 @@ class MinIOEphemeralStorage : EphemeralStorageStep {
 	}
 }
 
+[ConfigAttribute(("skipToolOrchestration","workflowEphemeralStorageReservation"))]
 class WorkflowEphemeralStorage : EphemeralStorageStep {
 
 	WorkflowEphemeralStorage([Config] $config) : base(

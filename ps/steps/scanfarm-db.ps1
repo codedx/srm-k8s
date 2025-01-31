@@ -1,3 +1,4 @@
+[ConfigAttribute(("scanFarmDatabaseHost","skipScanFarm"))]
 class ScanFarmDatabaseHost : Step {
 
 	static [string] hidden $description = @'
@@ -32,6 +33,7 @@ Note: Locate your database near the scan farm software to improve performance.
 	}
 }
 
+[ConfigAttribute(("scanFarmDatabasePort","skipScanFarm"))]
 class ScanFarmDatabasePort : Step {
 
 	static [string] hidden $description = @'
@@ -69,6 +71,7 @@ Note: The default port for PostgreSQL is 5432.
 	}
 }
 
+[ConfigAttribute(("scanFarmDatabaseUser","skipScanFarm"))]
 class ScanFarmDatabaseUsername : Step {
 
 	static [string] hidden $description = @'
@@ -96,6 +99,7 @@ Specify the username for your external PostgreSQL database.
 	}
 }
 
+[ConfigAttribute(("scanFarmDatabasePwd","skipScanFarm"))]
 class ScanFarmDatabasePwd : Step {
 
 	static [string] hidden $description = @'
@@ -130,6 +134,7 @@ database.
 	}
 }
 
+[ConfigAttribute(("scanFarmDatabaseSslMode","skipScanFarm"))]
 class ScanFarmDatabaseTls : Step {
 
 	static [string] hidden $description = @'
@@ -175,6 +180,7 @@ related to specifying a hostname in the certificate.
 	}
 }
 
+[ConfigAttribute(("scanFarmDatabaseServerCert","scanFarmDatabaseSslMode","skipScanFarm"))]
 class ScanFarmDatabaseCert : Step {
 
 	static [string] hidden $description = @'
@@ -206,6 +212,7 @@ Specify a file path to the CA file for your PostgreSQL host.
 	}
 }
 
+[ConfigAttribute(("scanFarmScanDatabaseCatalog","skipScanFarm"))]
 class ScanFarmScanServiceDatabaseName : Step {
 
 	static [string] hidden $description = @'
@@ -238,6 +245,7 @@ to provision the database using the credential you provided.
 	}
 }
 
+[ConfigAttribute(("scanFarmStorageDatabaseCatalog","skipScanFarm"))]
 class ScanFarmStorageServiceDatabaseName : Step {
 
 	static [string] hidden $description = @'

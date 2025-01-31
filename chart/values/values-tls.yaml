@@ -40,7 +40,7 @@
 # $ # Start pwsh session
 # $ pwsh
 # PS> $global:PSNativeCommandArgumentPassing='Legacy'
-# PS> Install-Module guided-setup -RequiredVersion 1.17.0
+# PS> Install-Module guided-setup -RequiredVersion 1.18.0
 #
 # PS> $caPath = Get-ChildItem ./ca.crt | Select-Object -ExpandProperty FullName
 # 

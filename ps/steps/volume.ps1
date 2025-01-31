@@ -1,3 +1,4 @@
+[ConfigAttribute(("useVolumeSizeDefaults"))]
 class DefaultVolumeSize : Step {
 
 	static [string] hidden $description = @'
@@ -79,6 +80,7 @@ specifying 64 means creating two 64 GiB volumes.
 	}
 }
 
+[ConfigAttribute(("useVolumeSizeDefaults"))]
 class VolumeSizeStep : Step {
 
 	static [string] hidden $description = @'
@@ -111,6 +113,7 @@ Specify the amount of volume storage in gibibytes.
 	}
 }
 
+[ConfigAttribute(("webVolumeSizeGiB"))]
 class WebVolumeSize : VolumeSizeStep {
 
 	WebVolumeSize([Config] $config) : base([WebVolumeSize].Name, 'Web Volume Size', $config) {}
@@ -132,6 +135,7 @@ class WebVolumeSize : VolumeSizeStep {
 	}
 }
 
+[ConfigAttribute(("dbVolumeSizeGiB","skipDatabase"))]
 class MasterDatabaseVolumeSize : VolumeSizeStep {
 
 	MasterDatabaseVolumeSize([Config] $config) : base([MasterDatabaseVolumeSize].Name, 'Master Database Volume Size', $config) {}
@@ -157,6 +161,7 @@ class MasterDatabaseVolumeSize : VolumeSizeStep {
 	}
 }
 
+[ConfigAttribute(("dbSlaveReplicaCount","dbSlaveVolumeSizeGiB","skipDatabase"))]
 class SubordinateDatabaseVolumeSize : VolumeSizeStep {
 
 	static [string] hidden $description = @'
@@ -196,6 +201,7 @@ the data volume.
 	}
 }
 
+[ConfigAttribute(("dbSlaveBackupVolumeSizeGiB","dbSlaveReplicaCount","skipDatabase"))]
 class SubordinateDatabaseBackupVolumeSize : VolumeSizeStep {
 
 	static [string] hidden $description = @'
@@ -235,6 +241,7 @@ the backup volume.
 	}
 }
 
+[ConfigAttribute(("minioVolumeSizeGiB","skipMinIO","skipToolOrchestration"))]
 class MinIOVolumeSize : VolumeSizeStep {
 
 	MinIOVolumeSize([Config] $config) : base([MinIOVolumeSize].Name, 'MinIO Volume Size', $config) {}
@@ -260,6 +267,7 @@ class MinIOVolumeSize : VolumeSizeStep {
 	}
 }
 
+[ConfigAttribute(("k8sProvider","storageClassName"))]
 class StorageClassName : Step {
 
 	static [string] hidden $description = @'

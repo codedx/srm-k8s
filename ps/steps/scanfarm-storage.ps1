@@ -1,3 +1,4 @@
+[ConfigAttribute(("scanFarmStorageType","skipScanFarm"))]
 class ScanFarmStorage : Step {
 
 	static [string] hidden $description = @'
@@ -48,6 +49,7 @@ You can use the following storage providers:
 	}
 }
 
+[ConfigAttribute(("scanFarmStorageBucketName","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmStorageBucketName : Step {
 
 	static [string] hidden $description = @'
@@ -100,6 +102,7 @@ blob container in your Azure storage account.
 	}
 }
 
+[ConfigAttribute(("scanFarmCacheBucketName","scanFarmStorageBucketName","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmCacheBucketName : Step {
 
 	static [string] hidden $description = @'
@@ -170,6 +173,7 @@ define the policy using the last modified date (not the creation date).
 	}
 }
 
+[ConfigAttribute(("scanFarmS3UseServiceAccountName","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmS3AccessMethod : Step {
 
 	static [string] hidden $description = @'
@@ -210,6 +214,7 @@ https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.
 	}
 }
 
+[ConfigAttribute(("scanFarmS3ServiceAccountName","scanFarmS3UseServiceAccountName","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmS3IamRoleServiceAccount : Step {
 
 	static [string] hidden $description = @'
@@ -247,6 +252,7 @@ https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.
 	}
 }
 
+[ConfigAttribute(("scanFarmS3AccessKey","scanFarmS3UseServiceAccountName","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmS3AccessKey : Step {
 
 static [string] hidden $description = @'
@@ -277,6 +283,7 @@ system.
 	}
 }
 
+[ConfigAttribute(("scanFarmS3SecretKey","scanFarmS3UseServiceAccountName","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmS3SecretKey : Step {
 
 static [string] hidden $description = @'
@@ -313,6 +320,7 @@ system.
 	}
 }
 
+[ConfigAttribute(("scanFarmS3Region","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmS3Region : Step {
 
 	static [string] hidden $description = @'
@@ -341,6 +349,7 @@ Specify the region where your S3-compliant storage bucket resides.
 	}
 }
 
+[ConfigAttribute(("scanFarmGcsProjectName","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmGcsProjectName : Step {
 
 	static [string] hidden $description = @'
@@ -369,6 +378,7 @@ The Scan Farm depends on a GCP project when using GCS storage.
 	}
 }
 
+[ConfigAttribute(("scanFarmGcsSvcAccountKey","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmGcsKey : Step {
 
 	static [string] hidden $description = @'
@@ -407,6 +417,7 @@ account key: https://cloud.google.com/iam/docs/keys-create-delete
 	}
 }
 
+[ConfigAttribute(("scanFarmAzureSubscriptionId","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmAzureSubscription : Step {
 
 	static [string] hidden $description = @'
@@ -438,6 +449,7 @@ az account show
 	}
 }
 
+[ConfigAttribute(("scanFarmAzureTenantId","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmAzureTenantId : Step {
 
 	static [string] hidden $description = @'
@@ -469,6 +481,7 @@ az account show
 	}
 }
 
+[ConfigAttribute(("scanFarmAzureResourceGroup","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmAzureResourceGroup : Step {
 
 	static [string] hidden $description = @'
@@ -501,6 +514,7 @@ Azure storage account.
 	}
 }
 
+[ConfigAttribute(("scanFarmAzureStorageAccount","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmAzureStorageAccountName : Step {
 
 	static [string] hidden $description = @'
@@ -529,6 +543,7 @@ The Scan Farm depends on an Azure storage account when using Azure storage.
 	}
 }
 
+[ConfigAttribute(("scanFarmAzureStorageAccountKey","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmAzureStorageAccountKey : Step {
 
 	static [string] hidden $description = @'
@@ -566,6 +581,7 @@ storage account.
 	}
 }
 
+[ConfigAttribute(("scanFarmAzureEndpoint","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmAzureEndpoint : Step {
 
 	static [string] hidden $description = @'
@@ -600,6 +616,7 @@ https://<storage-account-name>.blob.core.windows.net
 	}
 }
 
+[ConfigAttribute(("scanFarmAzureClientId","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmAzureClientId : Step {
 
 	static [string] hidden $description = @'
@@ -633,6 +650,7 @@ typically looks like this: 9b1f8b8d-db8f-4683-8023-2dd7962b1e96
 	}
 }
 
+[ConfigAttribute(("scanFarmAzureClientSecret","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmAzureClientSecret : Step {
 
 	static [string] hidden $description = @'
@@ -671,6 +689,7 @@ in Microsoft Entra ID with access to your storage account.
 	}
 }
 
+[ConfigAttribute(("scanFarmMinIOHostname","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmObjectStorageHostname : Step {
 
 	static [string] hidden $description = @'
@@ -702,6 +721,7 @@ Note: Do not enter a URL or port here; specify the storage hostname only.
 	}
 }
 
+[ConfigAttribute(("scanFarmMinIOPort","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmObjectStoragePort : Step {
 
 	static [string] hidden $description = @'
@@ -736,6 +756,7 @@ Note: If you are using MinIO, its default port is 9000.
 	}
 }
 
+[ConfigAttribute(("scanFarmStorageIsProxied","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmS3StorageProxy : Step {
 
 	static [string] hidden $description = @'
@@ -779,6 +800,7 @@ your storage.
 	}
 }
 
+[ConfigAttribute(("scanFarmStorageContextPath","scanFarmStorageIsProxied","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmS3StorageContextPath : Step {
 
 	static [string] hidden $description = @'
@@ -817,6 +839,7 @@ https://github.com/codedx/srm-k8s/blob/main/docs/DeploymentGuide.md#bitnami-mini
 	}
 }
 
+[ConfigAttribute(("scanFarmStorageExternalUrl","scanFarmStorageIsProxied","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmS3StorageExternalURL : Step {
 
 	static [string] hidden $description = @'
@@ -854,6 +877,7 @@ by specifying https://my-minio:9000/upload/.
 	}
 }
 
+[ConfigAttribute(("scanFarmMinIORootUsername","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmObjectStorageAccessKey : Step {
 
 	static [string] hidden $description = @'
@@ -884,6 +908,7 @@ access and access to cache bucket lifecycle rules.
 	}
 }
 
+[ConfigAttribute(("scanFarmMinIORootPwd","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmObjectStorageSecretKey : Step {
 
 	static [string] hidden $description = @'
@@ -920,6 +945,7 @@ access and access to cache bucket lifecycle rules.
 	}
 }
 
+[ConfigAttribute(("scanFarmStorageHasInClusterUrl","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmInClusterStorage : Step {
 
 	static [string] hidden $description = @'
@@ -958,6 +984,7 @@ only when SRM and your storage service runs on the same cluster.
 	}
 }
 
+[ConfigAttribute(("scanFarmStorageHasInClusterUrl","scanFarmStorageInClusterUrl","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmInClusterStorageUrl : Step {
 
 	static [string] hidden $description = @'
@@ -995,6 +1022,7 @@ specify a fully qualified URL that will resolve from SRM's namespace.
 }
 
 
+[ConfigAttribute(("scanFarmMinIOSecure","scanFarmMinIOVerifyHostname","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmObjectStorageTLS : Step {
 
 	static [string] hidden $description = @'
@@ -1036,6 +1064,7 @@ with your object storage's CA.
 	}
 }
 
+[ConfigAttribute(("scanFarmMinIOSecure","scanFarmMinIOServerCert","scanFarmStorageType","skipScanFarm"))]
 class ScanFarmObjectStorageCert : Step {
 
 	static [string] hidden $description = @'

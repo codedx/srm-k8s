@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.3.0
+.VERSION 1.4.0
 .GUID 5131d739-d851-40f7-8349-0f71edec68e6
 .AUTHOR Black Duck
 .COPYRIGHT Copyright 2024 Black Duck Software, Inc. All rights reserved.
@@ -31,7 +31,7 @@ function Test-AvailableModule($name, $version) {
 }
 
 $guidedSetupModuleName = 'guided-setup'
-$guidedSetupRequiredVersion = '1.17.0' # must match constant in using-module statements
+$guidedSetupRequiredVersion = '1.18.0' # must match constant in using-module statements
 
 $verbosePref = $global:VerbosePreference
 try {

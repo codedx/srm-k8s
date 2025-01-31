@@ -1,11 +1,14 @@
 <#PSScriptInfo
-.VERSION 1.10.0
+.VERSION 1.11.0
 .GUID 0ab56564-8d45-485c-829a-bffed0882237
 .AUTHOR Black Duck
 .COPYRIGHT Copyright 2024 Black Duck Software, Inc. All rights reserved.
 #>
 
-using module @{ModuleName='guided-setup'; RequiredVersion='1.17.0' }
+using module @{ModuleName='guided-setup'; RequiredVersion='1.18.0' }
+param (
+	[string] $previousConfigPath
+)
 
 $ErrorActionPreference = 'Stop'
 $VerbosePreference = 'Continue'
@@ -53,6 +56,15 @@ Write-Host 'Loading...' -NoNewline
 # Check for keytool (required for validating certs and cacerts file)
 if ($null -eq (Get-AppCommandPath keytool)) {
 	Write-ErrorMessageAndExit "Restart this script after adding Java JRE (specifically Java's keytool program) to your PATH environment variable."
+}
+
+$previousConfig = $null
+if ("" -ne $previousConfigPath) {
+
+	$previousConfig = [Config]::FromJsonFile($previousConfigPath)
+	if ($previousConfig.isLocked) {
+		$previousConfig.Unlock((Read-HostSecureText -Prompt "`nEnter config file password"))	
+	}
 }
 
 $config = [Config]::new()
@@ -236,7 +248,9 @@ $s = @{}
 [WebNodeSelector],
 [WebTolerations] | ForEach-Object {
 	Write-Debug "Creating $_ object..."
-	$s[$_] = new-object -type $_ -args $config
+	$step = new-object -type $_ -args $config
+	$step.previousConfig = $previousConfig
+	$s[$_] = $step
 	Add-Step $graph $s[$_]
 }
 

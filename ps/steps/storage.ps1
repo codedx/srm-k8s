@@ -1,3 +1,4 @@
+[ConfigAttribute(("skipMinIO","skipToolOrchestration","workflowStorageType"))]
 class UseExternalStorage : Step {
 
 	static [string] hidden $description = @'
@@ -42,6 +43,7 @@ an older MinIO version that you can use.
 	}
 }
 
+[ConfigAttribute(("externalWorkflowStorageEndpoint","skipMinIO"))]
 class ExternalStorageEndpoint : Step {
 
 	static [string] hidden $description = @'
@@ -73,6 +75,7 @@ endpoint might look like 'my-minio-hostname:9000'.
 	}
 }
 
+[ConfigAttribute(("externalWorkflowStorageEndpointSecure","skipMinIO"))]
 class ExternalStorageTLS : Step {
 
 	static [string] hidden $description = @'
@@ -107,6 +110,7 @@ connection protected by TLS.
 	}
 }
 
+[ConfigAttribute(("externalWorkflowStorageUsername","workflowStorageType"))]
 class ExternalStorageUsername : Step {
 
 	static [string] hidden $description = @'
@@ -137,6 +141,7 @@ the account should have permission to create that bucket.
 	}
 }
 
+[ConfigAttribute(("externalWorkflowStoragePwd","workflowStorageType"))]
 class ExternalStoragePassword : Step {
 
 	static [string] hidden $description = @'
@@ -173,6 +178,7 @@ the account should have permission to create that bucket.
 	}
 }
 
+[ConfigAttribute(("externalWorkflowStorageBucketName","skipMinIO"))]
 class ExternalStorageBucket : Step {
 
 	static [string] hidden $description = @'
@@ -203,6 +209,7 @@ credential you specified.
 	}
 }
 
+[ConfigAttribute(("externalWorkflowStorageEndpointSecure","externalWorkflowStorageTrustCert","skipMinIO"))]
 class ExternalStorageTrustCert : Step {
 
 	static [string] hidden $description = @'
@@ -238,6 +245,7 @@ to specify a file that includes the endpoint's certificate chain.
 	}
 }
 
+[ConfigAttribute(("externalWorkflowStorageCertChainPath","externalWorkflowStorageTrustCert","skipMinIO"))]
 class ExternalStorageCertificate : Step {
 
 	static [string] hidden $description = @'
@@ -270,6 +278,7 @@ The file should include the entire certificate chain.
 	}
 }
 
+[ConfigAttribute(("serviceAccountToolService","workflowStorageType"))]
 class ServiceAccountNameToolService : Step {
 
 	static [string] hidden $description = @'
@@ -301,6 +310,7 @@ https://github.com/codedx/srm-k8s/blob/main/docs/DeploymentGuide.md#aws-irsa
 	}
 }
 
+[ConfigAttribute(("serviceAccountWorkflow","workflowStorageType"))]
 class ServiceAccountNameWorkflow : Step {
 
 	static [string] hidden $description = @'
