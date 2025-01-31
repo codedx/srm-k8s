@@ -3820,7 +3820,15 @@ Follow the instructions below if you need to move your Software Risk Manager dep
 
 Your first step in moving your instance is to install Software Risk Manager from scratch on the destination cluster. You must install the exact same version of Software Risk Manager that is running on your source cluster.
 
-Complete the entire installation and verify that the destination web pod shows a Ready state prior to continuing.
+If your destination Software Risk Manager deployment will differ from your source deployment, you should rerun the Helm Prep Wizard, respecifying parameter values as appropriate. You can use the Helm Prep Wizard's `-priorConfigPath` parameter to show the source deployment configuration related to the questions you will be asked about your destination deployment. You may have to reason about how the configuration applies. For example, when asked whether to enable network policies, interpret a `true` for skipNetworkPolicies as indicative of your previous response to not enable network policies.
+
+You can run the Helm Prep Wizard with a reference to your source deployment config.json file like this:
+
+```
+$ pwsh /path/to/git/srm-k8s/helm-prep-wizard.ps1 -previousConfigPath /path/to/source/deployment/config.json
+```
+
+If you ran the Helm Prep Wizard, follow its instructions to prepare for your Helm install. If not, install the destination Software Risk Manager using your config.json settings with the Helm Prep script and/or invoke helm. Complete the installation and verify that the destination web pod shows a Ready state prior to continuing.
 
 ## Stop Source Software Risk Manager Web Workload
 
