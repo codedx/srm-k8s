@@ -3473,7 +3473,7 @@ $ kubectl -n cdx-app wait --for=condition=Ready pod/host-code-dx-appdata-volume
 $ cd /path/to/local/work/directory
 $ kubectl -n cdx-app exec -it host-code-dx-appdata-volume -- bash
 $ cd /var/cdx
-$ tar -cvzf /var/cdx/appdata.tgz $(ls -d analysis-files keystore/master.key keystore/Secret tool-data/addin-tool-files 2> /dev/null)
+$ tar -cvzf /var/cdx/appdata.tgz $(ls -d analysis-files notification-templates attachments keystore/master.key keystore/Secret tool-data/addin-tool-files 2> /dev/null)
 $ exit
 $ kubectl -n cdx-app cp host-code-dx-appdata-volume:/var/cdx/appdata.tgz appdata.tgz
 ```
@@ -3872,7 +3872,7 @@ Wait for the utility pod to reach a Ready state, then copy the volume data local
 $ cd /path/to/local/directory
 $ kubectl -n srm exec -it host-srm-web-appdata-volume -- bash
 $ cd /var/srm
-$ tar -cvzf /var/srm/appdata.tgz $(ls -d analysis-files keystore/master.key keystore/Secret tool-data/addin-tool-files 2> /dev/null)
+$ tar -cvzf /var/srm/appdata.tgz $(ls -d analysis-files notification-templates attachments keystore/master.key keystore/Secret tool-data/addin-tool-files 2> /dev/null)
 $ exit
 $ kubectl -n srm cp host-srm-web-appdata-volume:/var/srm/appdata.tgz appdata.tgz
 ```
