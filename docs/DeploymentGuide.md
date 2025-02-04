@@ -377,7 +377,7 @@ The Software Risk Manager web workload requires a Persistent Volume resource to 
 
 ### Core Internet Access Requirements
 
-Software Risk Manager uses internet access in the background for some activities, such as keeping tool data up-to-date and periodically checking for a new Software Risk Manager release.
+Software Risk Manager uses [internet access](https://documentation.blackduck.com/bundle/srm/page/install_guide/SRMConfiguration/internet-access.html) in the background for some activities, such as keeping tool data up-to-date and periodically checking for a new Software Risk Manager release.
 
 Software Risk Manager does not require internet access; however, internet access is highly recommended to ensure full functionality.
 
