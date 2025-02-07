@@ -21,8 +21,8 @@ while [ 1 ]; do curl -f {{ include "srm-web.serviceurl" . }}/x/system-info; if [
 
 NAME='scan-service-srm-api-key'
 ID_PATTERN="\"id\":([0-9]*),\"name\":\"$NAME\""
-KEYRESPONSE=$(curl -f -H "Authorization: Basic $ADMINCRED" {{ include "srm-web.serviceurl" . }}/x/admin/users/key?includeInternal=1)
-if [ 0 -ne $? ]; then echo 'Failed to make request to "{{ include "srm-web.serviceurl" . }}/x/admin/users/key?includeInternal=1" - does your admin K8s secret "{{ include "srm-web.web.secret" . }}" have the correct password?'; exit 1; fi
+KEYRESPONSE=$(curl -f -H "Authorization: Basic $ADMINCRED" {{ include "srm-web.serviceurl" . }}/api/admin/users/key?includeInternal=true)
+if [ 0 -ne $? ]; then echo 'Failed to make request to "{{ include "srm-web.serviceurl" . }}/api/admin/users/key?includeInternal=true" - does your admin K8s secret "{{ include "srm-web.web.secret" . }}" have the correct password?'; exit 1; fi
 
 KEY_DURATION="{{ .Values.web.scanfarm.key.validForDays }}d"
 echo "Key duration is $KEY_DURATION, with regen schedule '{{ .Values.web.scanfarm.key.regenSchedule }}'"
