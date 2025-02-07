@@ -500,20 +500,24 @@ class Config {
 		$this.webServiceAnnotations = $this.GetAllExcept($this.webServiceAnnotations, $key) + [KeyValue]::new($key, $value)
 	}
 
+	[string]GetWorkDir() {
+		return Resolve-Path -LiteralPath $this.workDir | Select-Object -ExpandProperty 'Path'
+	}
+
 	[string]GetValuesWorkDir() {
-		return Join-Path $this.workDir 'chart-values'
+		return Join-Path ($this.GetWorkDir()) 'chart-values'
 	}
 
 	[string]GetValuesCombinedWorkDir() {
-		return Join-Path $this.workDir 'chart-values-combined'
+		return Join-Path ($this.GetWorkDir()) 'chart-values-combined'
 	}
 
 	[string]GetK8sWorkDir() {
-		return Join-Path $this.workDir 'chart-resources'
+		return Join-Path ($this.GetWorkDir()) 'chart-resources'
 	}
 
 	[string]GetTempWorkDir() {
-		return Join-Path $this.workDir 'chart-temp'
+		return Join-Path ($this.GetWorkDir()) 'chart-temp'
 	}
 
 	[KeyValue[]]GetAllExcept([KeyValue[]] $keyValues, [string] $key) {
