@@ -127,7 +127,7 @@ web:
     # -- the Docker image repository name for the SRM web workload
     repository: codedx/codedx-tomcat
     # -- the Docker image version for the SRM web workload
-    tag: v2024.12.1
+    tag: v2024.12.2
     # -- the K8s Docker image pull policy for the SRM web workload
     pullPolicy: IfNotPresent
 
