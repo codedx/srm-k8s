@@ -2654,6 +2654,8 @@ Specify the SCA version by entering the version number in the following properti
 - web.scanfarm.sca
 - scan-services.scan-service.environment.TOOL_DETECT_VERSION
 
+>Note: The previous SCA versions of 8.9.0 and 9.2.0 will not be supported after March 31, 2025.
+
 For example, if you want to continue using SAST 2024.3.0 after upgrading Software Risk Manager, add the following to your srm-extra-props.yaml file:
 
 ```
@@ -4219,8 +4221,8 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | web.resources.limits.cpu | string | `"4000m"` | the required CPU for the web workload (must be >= 2 vCPUs) |
 | web.resources.limits.ephemeral-storage | string | `"2868Mi"` | the ephemeral storage for the web workload |
 | web.resources.limits.memory | string | `"16384Mi"` | the required memory for the web workload |
-| web.scanfarm.sast.version | string | `"2024.9.1"` | the SAST component version to use |
-| web.scanfarm.sca.version | string | `"9.2.0"` | the SCA component version to use for build-less scans (must match scan service's TOOL_DETECT_VERSION environment variable) |
+| web.scanfarm.sast.version | string | `"2024.12.0"` | the SAST component version to use |
+| web.scanfarm.sca.version | string | `"10.0.0"` | the SCA component version to use for build-less scans (must match scan service's TOOL_DETECT_VERSION environment variable) |
 | web.scanfarm.key.validForDays | int | 45 | the duration of the Scan Farm API key |
 | web.scanfarm.key.regenSchedule | string | `"0 0 1 * *"` | the Scan Farm API key regeneration period (minute hour day-of-month month day-of-week) |
 | web.securityContext.readOnlyRootFilesystem | bool | `true` | whether the SRM web workload uses a read-only filesystem |
@@ -4911,7 +4913,15 @@ If you are using MinIO, this version will create a new MinIO volume that will no
 
 ### Upgrading to v1.46
 
+If you are upgrading from an earlier chart version, refer to any previous chart note(s) in addition to this one.
+
 The srm-k8s GitHub repository for this version of Software Risk Manager depends on an updated Guided Setup module with version 1.18.0. Scripts requiring the Guided Setup module will download it automatically; to manually download the module, refer to the instructions in [.install-guided-setup-module.ps1](../.install-guided-setup-module.ps1#L12).
+
+### Upgrading to v1.49
+
+If you are upgrading from an earlier chart version, refer to any previous chart note(s) in addition to this one.
+
+This chart switches the Scan Farm SAST component from version 2024.9.1 to 2024.12.0 and the Scan Farm SCA version from 9.2.0 to 10.0.0. Refer to [Specify Scan Farm Engine Versions](#specify-scan-farm-engine-versions) if you'd prefer to use a previous SAST version that SRM supports.
 
 ## Helm Prep Wizard
 

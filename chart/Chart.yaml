@@ -12,8 +12,8 @@ dependencies:
   repository: https://codedx.github.io/srm-k8s
   condition: features.mariadb
 - name: scan-services
-  version: "2024.9.1"
-  repository: https://repo.blackduck.com/artifactory/sig-cloudnative
+  version: "2024.12.0"
+  repository: https://repo.blackduck.com/cloudnative
   condition: features.scanfarm
 - name: argo-workflows
   version: 0.42.4
