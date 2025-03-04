@@ -9,18 +9,25 @@ function Get-ScanFarmLicenseSecretName($config) {
 function New-ScanFarmLicenseSecret($config) {
 
 	$licenseFiles = @{}
-	if (-not [string]::IsNullOrEmpty($config.scanFarmSastLicenseFile)) {
-		$licenseFiles['license.dat'] = $config.scanFarmSastLicenseFile
+
+	if ($config.scanFarmLicenseFormatType -eq [ScanFarmLicenseFormatType]::CombinedKeygen) {
+
+		# the combined keygen license file will include available licenses for SCA and SAST
+		$licenseFiles['license.json'] = $config.scanFarmCombinedLicenseFile
+	} else {
+
+		if (-not [string]::IsNullOrEmpty($config.scanFarmSastLicenseFile)) {
+			$licenseFiles['license.dat'] = $config.scanFarmSastLicenseFile
+		}
+
+		if (-not [string]::IsNullOrEmpty($config.scanFarmScaLicenseFile)) {
+			$licenseFiles['license.json'] = $config.scanFarmScaLicenseFile
+		}
 	}
 
 	$urlOverride = @{}
-	if (-not [string]::IsNullOrEmpty($config.scanFarmScaLicenseFile)) {
-
-		$licenseFiles['license.json'] = $config.scanFarmScaLicenseFile
-
-		if (-not [string]::IsNullOrEmpty($config.scanFarmScaApiUrlOverride)) {
-			$urlOverride['dev-sca-api-url'] = $config.scanFarmScaApiUrlOverride
-		}
+	if (-not [string]::IsNullOrEmpty($config.scanFarmScaApiUrlOverride)) {
+		$urlOverride['dev-sca-api-url'] = $config.scanFarmScaApiUrlOverride
 	}
 
 	New-GenericSecret $config.namespace (Get-ScanFarmLicenseSecretName $config) $urlOverride $licenseFiles `
@@ -35,6 +42,13 @@ scan-services:
   scan-service:
     licenseSecretName: $(Get-ScanFarmLicenseSecretName $config)
 "@ | Out-File (Get-ScanFarmLicenseValuesPath $config)
+
+	@"
+scan-services:
+  global:
+    keygen:
+      enabled: $($config.scanFarmLicenseFormatType -eq [ScanFarmLicenseFormatType]::CombinedKeygen ? 'true' : 'false')
+"@ | Out-File (Get-ScanFarmLicenseTypeValuesPath $config)
 }
 
 function New-LicenseConfig($config) {
