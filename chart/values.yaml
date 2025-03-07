@@ -107,7 +107,7 @@ web:
   database:
     rdsAuth:
       # -- whether to enable RDS IAM authentication
-      enabled: true
+      enabled: false
       # -- the AWS IAM role name (e.g., arn:aws:iam::123:role/DB-Role) linked to the web service account when web.serviceAccount.create=true
       iamRoleArn: ""
 
