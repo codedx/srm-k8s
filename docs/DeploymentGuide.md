@@ -4405,7 +4405,7 @@ The Helm Prep Wizard generates a config.json file used as input to the Helm Prep
 
 Refer to the [lock/unlock scripts](../admin/config) to edit [protected config.json fields](../ps/config.ps1#L66).
 
-![config.json version: 1.6.0](https://img.shields.io/badge/config.json%20version-1.6.0-informational?style=flat-square)
+![config.json version: 1.7.0](https://img.shields.io/badge/config.json%20version-1.7.0-informational?style=flat-square)
 
 |Parameter|Feature|Description|Example|Since|
 |:---|:---|:---|:---|:---|
@@ -4417,6 +4417,8 @@ Refer to the [lock/unlock scripts](../admin/config) to edit [protected config.js
 |srmLicenseFile|Core|file path to the SRM web license file||1.0|
 |scanFarmSastLicenseFile|Scan Farm|file path to the SRM SAST license file||1.0|
 |scanFarmScaLicenseFile|Scan Farm|file path to the SRM SCA license file||1.0|
+|scanFarmCombinedLicenseFile|Scan Farm|file path to the SRM SCA/SAST Keygen license file||1.7|
+|scanFarmLicenseFormatType|Scan Farm|type of Scan Farm license, either Legacy or CombinedKeygen||1.7|
 ||||||
 |repoUsername|Scan Farm|username for the Black Duck Repo||1.0|
 |repoPwd|Scan Farm|password for the Black Duck Repo||1.0|
