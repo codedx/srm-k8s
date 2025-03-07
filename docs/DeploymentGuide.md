@@ -4624,6 +4624,8 @@ Refer to the [lock/unlock scripts](../admin/config) to edit [protected config.js
 |workflowControllerNoScheduleExecuteToleration|Tool Orchestration|pod toleration for Argo workflow controller||1.0|
 |toolNoScheduleExecuteToleration|Tool Orchestration|pod toleration for Tool Orchestration tools||1.0|
 ||||||
+|authCookieSecure|Core|whether to set the Secure attribute on the authentication cookie|false|1.5|
+||||||
 |notes|Core|notes associated with deployment||1.0|
 ||||||
 |scanFarmScaApiUrlOverride|Core (Dev/Test Only)|override for SCA scan farm endpoint||1.0|
