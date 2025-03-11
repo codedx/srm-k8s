@@ -2654,6 +2654,8 @@ Specify the SCA version by entering the version number in the following properti
 - web.scanfarm.sca
 - scan-services.scan-service.environment.TOOL_DETECT_VERSION
 
+>Note: The previous SCA versions of 8.9.0 and 9.2.0 will not be supported after March 31, 2025.
+
 For example, if you want to continue using SAST 2024.3.0 after upgrading Software Risk Manager, add the following to your srm-extra-props.yaml file:
 
 ```
@@ -4056,7 +4058,7 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | mariadb.image.pullSecrets | list | `[]` | the K8s image pull secret to use for MariaDB Docker images |
 | mariadb.image.registry | string | `"docker.io"` | the registry name and optional registry suffix for the MariaDB Docker image |
 | mariadb.image.repository | string | `"codedx/codedx-mariadb"` | the Docker image repository name for the MariaDB workload |
-| mariadb.image.tag | string | `"v1.37.0"` | the Docker image version for the MariaDB workload |
+| mariadb.image.tag | string | `"v1.38.0"` | the Docker image version for the MariaDB workload |
 | mariadb.master.masterCaConfigMap | string | `nil` | the configmap name containing the CA cert with required field ca.crt Command: kubectl -n srm create configmap master-ca-configmap --from-file ca.crt=/path/to/ca.crt |
 | mariadb.master.masterTlsSecret | string | `nil` | the K8s secret name containing the public and private TLS key with required fields tls.crt and tls.key Command: kubectl -n srm create secret tls master-tls-secret --cert=path/to/cert-file --key=path/to/key-file |
 | mariadb.master.nodeSelector | object | `{}` | the node selector to use for the MariaDB primary database workload |
@@ -4125,7 +4127,7 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | to.image.repository.sendResults | string | `"codedx/codedx-results"` | the Docker image repository name for the SRM send-results workload |
 | to.image.repository.toolService | string | `"codedx/codedx-tool-service"` | the Docker image repository name for the SRM tool service workload |
 | to.image.repository.tools | string | `"codedx/codedx-tools"` | the Docker image repository name for the SRM tools workload |
-| to.image.tag | string | `"v2.8.0"` | the Docker image version for the SRM Tool Orchestration workloads (tools use the web.image.tag version)|
+| to.image.tag | string | `"v2.9.0"` | the Docker image version for the SRM Tool Orchestration workloads (tools use the web.image.tag version)|
 | to.logs.maxBackups | int | `20` | the maximum number of tool service log files to retain |
 | to.logs.maxSizeMB | int | `10` | the maximum size of a tool service log file |
 | to.minimumWorkflowStepRunTimeSeconds | int | `3` | the minimum seconds for an orchestrated analysis workflow step |
@@ -4190,7 +4192,7 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | web.image.pullPolicy | string | `"IfNotPresent"` | the K8s Docker image pull policy for the SRM web workload |
 | web.image.registry | string | `"docker.io"` | the registry name and optional registry suffix for the SRM web Docker image |
 | web.image.repository | string | `"codedx/codedx-tomcat"` | the Docker image repository name for the SRM web workload |
-| web.image.tag | string | `"v2024.12.3"` | the Docker image version for the SRM web workload |
+| web.image.tag | string | `"v2025.3.0"` | the Docker image version for the SRM web workload |
 | web.javaOpts | string | `"-XX:MaxRAMPercentage=75.0"` | the Java options for the SRM web workload |
 | web.licenseSecret | string | `""` | the K8s secret name containing the SRM license password with required field license.lic Command: kubectl -n srm create secret generic srm-web-license-secret --from-file license.lic=./license.lic |
 | web.loggingConfigMap | string | `""` | the K8s configmap containing the logging configuration file with required field logback.xml Command: kubectl -n srm create configmap srm-web-logging-cfgmap --from-file logback.xml=./logback.xml |
@@ -4221,8 +4223,8 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | web.resources.limits.cpu | string | `"4000m"` | the required CPU for the web workload (must be >= 2 vCPUs) |
 | web.resources.limits.ephemeral-storage | string | `"2868Mi"` | the ephemeral storage for the web workload |
 | web.resources.limits.memory | string | `"16384Mi"` | the required memory for the web workload |
-| web.scanfarm.sast.version | string | `"2024.9.1"` | the SAST component version to use |
-| web.scanfarm.sca.version | string | `"9.2.0"` | the SCA component version to use for build-less scans (must match scan service's TOOL_DETECT_VERSION environment variable) |
+| web.scanfarm.sast.version | string | `"2024.12.0"` | the SAST component version to use |
+| web.scanfarm.sca.version | string | `"10.0.0"` | the SCA component version to use for build-less scans (must match scan service's TOOL_DETECT_VERSION environment variable) |
 | web.scanfarm.key.validForDays | int | 45 | the duration of the Scan Farm API key |
 | web.scanfarm.key.regenSchedule | string | `"0 0 1 * *"` | the Scan Farm API key regeneration period (minute hour day-of-month month day-of-week) |
 | web.securityContext.readOnlyRootFilesystem | bool | `true` | whether the SRM web workload uses a read-only filesystem |
@@ -4405,7 +4407,7 @@ The Helm Prep Wizard generates a config.json file used as input to the Helm Prep
 
 Refer to the [lock/unlock scripts](../admin/config) to edit [protected config.json fields](../ps/config.ps1#L66).
 
-![config.json version: 1.6.0](https://img.shields.io/badge/config.json%20version-1.6.0-informational?style=flat-square)
+![config.json version: 1.7.0](https://img.shields.io/badge/config.json%20version-1.7.0-informational?style=flat-square)
 
 |Parameter|Feature|Description|Example|Since|
 |:---|:---|:---|:---|:---|
@@ -4417,6 +4419,8 @@ Refer to the [lock/unlock scripts](../admin/config) to edit [protected config.js
 |srmLicenseFile|Core|file path to the SRM web license file||1.0|
 |scanFarmSastLicenseFile|Scan Farm|file path to the SRM SAST license file||1.0|
 |scanFarmScaLicenseFile|Scan Farm|file path to the SRM SCA license file||1.0|
+|scanFarmCombinedLicenseFile|Scan Farm|file path to the SRM SCA/SAST Keygen license file||1.7|
+|scanFarmLicenseFormatType|Scan Farm|type of Scan Farm license, either Legacy or CombinedKeygen||1.7|
 ||||||
 |repoUsername|Scan Farm|username for the Black Duck Repo||1.0|
 |repoPwd|Scan Farm|password for the Black Duck Repo||1.0|
@@ -4621,6 +4625,8 @@ Refer to the [lock/unlock scripts](../admin/config) to edit [protected config.js
 |minioNoScheduleExecuteToleration|Tool Orchestration|pod toleration for MinIO||1.0|
 |workflowControllerNoScheduleExecuteToleration|Tool Orchestration|pod toleration for Argo workflow controller||1.0|
 |toolNoScheduleExecuteToleration|Tool Orchestration|pod toleration for Tool Orchestration tools||1.0|
+||||||
+|authCookieSecure|Core|whether to set the Secure attribute on the authentication cookie|false|1.5|
 ||||||
 |notes|Core|notes associated with deployment||1.0|
 ||||||
@@ -4913,7 +4919,15 @@ If you are using MinIO, this version will create a new MinIO volume that will no
 
 ### Upgrading to v1.46
 
+If you are upgrading from an earlier chart version, refer to any previous chart note(s) in addition to this one.
+
 The srm-k8s GitHub repository for this version of Software Risk Manager depends on an updated Guided Setup module with version 1.18.0. Scripts requiring the Guided Setup module will download it automatically; to manually download the module, refer to the instructions in [.install-guided-setup-module.ps1](../.install-guided-setup-module.ps1#L12).
+
+### Upgrading to v1.49
+
+If you are upgrading from an earlier chart version, refer to any previous chart note(s) in addition to this one.
+
+This chart switches the Scan Farm SAST component from version 2024.9.1 to 2024.12.0 and the Scan Farm SCA version from 9.2.0 to 10.0.0. Refer to [Specify Scan Farm Engine Versions](#specify-scan-farm-engine-versions) if you'd prefer to use a previous SAST version that SRM supports.
 
 ## Helm Prep Wizard
 

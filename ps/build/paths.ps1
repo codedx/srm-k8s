@@ -358,6 +358,10 @@ function Get-ScanFarmLicenseValuesPath($config) {
 	Join-Path $config.GetValuesWorkDir() 'scan-farm-lic.values.yaml'
 }
 
+function Get-ScanFarmLicenseTypeValuesPath($config) {
+	Join-Path $config.GetValuesWorkDir() 'scan-farm-lic-type.values.yaml'
+}
+
 function Get-LicenseSecretK8sPath($config) {
 	Join-Path $config.GetK8sWorkDir() 'srm-lic.k8s.yaml'
 }

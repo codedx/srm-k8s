@@ -24,7 +24,7 @@ param (
 	[string] $repoPwd,
 	[string] $srmNamespace = 'srm',
 	[string] $tool = 'coverity',
-	[string] $toolVersion = '2024.9.1',
+	[string] $toolVersion = '2024.12.0',
 	[int]    $maxUploadPartSize = 500*(1024*1024),
 	[string] $srmPath = '/srm',
 	[switch] $skipDownload, # use to resume after a successful download

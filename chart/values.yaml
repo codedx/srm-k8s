@@ -133,7 +133,7 @@ web:
     # -- the Docker image repository name for the SRM web workload
     repository: codedx/codedx-tomcat
     # -- the Docker image version for the SRM web workload
-    tag: v2024.12.3
+    tag: v2025.3.0
     # -- the K8s Docker image pull policy for the SRM web workload
     pullPolicy: IfNotPresent
 
@@ -230,10 +230,10 @@ web:
   scanfarm:
     sast:
       # -- the SAST component version to use for build-less scans (must match scan service's TOOL_COVERITY_VERSION environment variable)
-      version: 2024.9.1
+      version: 2024.12.0
     sca:
       # -- the SCA component version to use for build-less scans (must match scan service's TOOL_DETECT_VERSION environment variable)
-      version: 9.2.0
+      version: 10.0.0
     key:
       # -- the duration of the Scan Farm API key
       validForDays: 45
@@ -301,6 +301,11 @@ scan-services:
   # @ignore
   mode: "SRM"
 
+  # @ignore
+  keygen:
+    # @ignore
+    enabled: false
+
   scan-service:
     # @ignore
     retention:
@@ -308,13 +313,13 @@ scan-services:
       enabled: false
     environment:
       # -- must match web.scanfarm.sca.version
-      TOOL_DETECT_VERSION: "9.2.0"
+      TOOL_DETECT_VERSION: "10.0.0"
       # -- must match web.scanfarm.sast.version
-      TOOL_COVERITY_VERSION: "2024.9.1"
+      TOOL_COVERITY_VERSION: "2024.12.0"
       # @ignore
       SCANFARM_CONSUMER_TYPE: "Srm"
       # -- SRM version reported to scan service
-      SCANFARM_CONSUMER_VERSION: "2024.9.0"
+      SCANFARM_CONSUMER_VERSION: "2024.12.0"
 
   # @ignore
   cache-service:
@@ -342,7 +347,7 @@ mariadb:
     # -- the Docker image repository name for the MariaDB workload
     repository: codedx/codedx-mariadb
     # -- the Docker image version for the MariaDB workload
-    tag: v1.37.0
+    tag: v1.38.0
     # -- the K8s Docker image pull policy for the MariaDB workload
     pullPolicy: IfNotPresent
     # -- the K8s image pull secret to use for MariaDB Docker images

@@ -3,8 +3,8 @@ name: srm
 description: Software Risk Manager
 type: application
 icon: https://raw.githubusercontent.com/codedx/srm-k8s/refs/heads/main/docs/images/icon.svg
-version: 1.48.0
-appVersion: "v2024.12.3"
+version: 1.49.0
+appVersion: "v2025.3.0"
 
 dependencies:
 - name: mariadb
@@ -12,8 +12,8 @@ dependencies:
   repository: https://codedx.github.io/srm-k8s
   condition: features.mariadb
 - name: scan-services
-  version: "2024.9.1"
-  repository: https://repo.blackduck.com/artifactory/sig-cloudnative
+  version: "2024.12.0"
+  repository: https://repo.blackduck.com/cloudnative
   condition: features.scanfarm
 - name: argo-workflows
   version: 0.42.4
