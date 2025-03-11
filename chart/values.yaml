@@ -127,7 +127,7 @@ web:
     # -- the Docker image repository name for the SRM web workload
     repository: codedx/codedx-tomcat
     # -- the Docker image version for the SRM web workload
-    tag: v2024.12.3
+    tag: v2025.3.0
     # -- the K8s Docker image pull policy for the SRM web workload
     pullPolicy: IfNotPresent
 
@@ -341,7 +341,7 @@ mariadb:
     # -- the Docker image repository name for the MariaDB workload
     repository: codedx/codedx-mariadb
     # -- the Docker image version for the MariaDB workload
-    tag: v1.37.0
+    tag: v1.38.0
     # -- the K8s Docker image pull policy for the MariaDB workload
     pullPolicy: IfNotPresent
     # -- the K8s image pull secret to use for MariaDB Docker images
