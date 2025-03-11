@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.14.0
+.VERSION 1.15.0
 .GUID 11157c15-18d1-42c4-9d13-fa66ef61d5b2
 .AUTHOR Black Duck
 .COPYRIGHT Copyright 2024 Black Duck Software, Inc. All rights reserved.
@@ -115,6 +115,7 @@ try {
 	'srmLicenseFile',
 	'scanFarmSastLicenseFile',
 	'scanFarmScaLicenseFile',
+	'scanFarmCombinedLicenseFile',
 	'scanFarmRedisServerCert',
 	'caCertsFilePath' | ForEach-Object {
 		$fileValue = $config.$_
@@ -139,6 +140,11 @@ try {
 	$hasAdminPassword = -not [string]::IsNullOrEmpty($config.adminPwd)
 	if (-not $config.useGeneratedPwds -and -not $hasAdminPassword) {
 		Write-ErrorMessageAndExit 'You must specify an admin password in the adminPwd field of your config.json file when not using auto-generated passwords'
+	}
+
+	# validate scan farm license type
+	if (-not $config.skipScanFarm -and [ScanFarmLicenseFormatType]::Legacy,[ScanFarmLicenseFormatType]::CombinedKeygen -notcontains $config.scanFarmLicenseFormatType) {
+		Write-ErrorMessageAndExit 'You must specify a valid scan farm license type (i.e., ScanFarmLicenseFormatType) for the scanFarmLicenseFormatType field of your config.json file'
 	}
 
 	# Reset work directory

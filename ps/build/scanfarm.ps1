@@ -71,7 +71,7 @@ features:
   scanfarm: true
 scan-services:
   cache-service:
-    javaOpts: "-Dserver.ssl.enabled-protocols=TLSv1.2,TLSv1.3 -Dcom.synopsys.coverity.cache.srm.secure=false"
+    javaOpts: "-Dserver.ssl.enabled-protocols=TLSv1.2,TLSv1.3 -Dcom.blackduck.coverity.cache.srm.secure=false"
   scan-service:
     tools:
       sync:

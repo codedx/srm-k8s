@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.1.0
+.VERSION 1.2.0
 .GUID 4504dc63-bd21-46b8-994f-75f06d2766a0
 .AUTHOR Black Duck
 .COPYRIGHT Copyright 2024 Black Duck Software, Inc. All rights reserved.
@@ -37,6 +37,9 @@ function Get-PriorConfigVersion([Management.Automation.SemanticVersion] $version
 
 Write-Host "Loading $configPath..." -NoNewline
 $configDir = Split-Path $configPath
+if ('' -eq $configDir) {
+	$configDir = (Get-Location).Path
+}
 $config = [Config]::FromJsonFile($configPath)
 Write-Host "in-memory config.json has version $($config.configVersion)"
 
@@ -71,6 +74,12 @@ while ($null -ne $priorVersion) {
 
 	switch ($priorVersionLabel) {
 
+		('1.6.0') {
+			# 1.7 -> 1.6
+			$fieldsToRemove += 'scanFarmCombinedLicenseFile'
+			$fieldsToRemove += 'scanFarmLicenseFormatType'
+			break
+		}
 		('1.5.0') {
 			# 1.6 -> 1.5
 			$fieldsToRename += @([Tuple]::Create('repoUsername', 'sigRepoUsername'))
@@ -79,7 +88,7 @@ while ($null -ne $priorVersion) {
 		}
 		('1.4.0') {
 			# 1.5 -> 1.4
-			$fieldsToRemove += @('authCookieSecure')
+			$fieldsToRemove += 'authCookieSecure'
 			break
 		}
 		('1.3.0') {
@@ -106,6 +115,9 @@ while ($null -ne $priorVersion) {
 			$fieldsToRemove += 'salts'
 			$fieldsToRemove += 'isLocked'
 			break
+		}
+		default {
+			Write-ErrorMessageAndExit "Unable to downgrade to version $priorVersionLabel"
 		}
 	}
 

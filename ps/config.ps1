@@ -54,6 +54,11 @@ enum WorkflowStorageType {
 	AwsIAM
 }
 
+enum ScanFarmLicenseFormatType {
+	Legacy
+	CombinedKeygen
+}
+
 class Config {
 
 	static [int]   $kubeApiTargetPortDefault = 443
@@ -61,7 +66,7 @@ class Config {
 	static [int]   $volumeSizeGiBDefault = 0           # new default to support system size override when > 0
 	static [int]   $externalDatabasePortDefault = 3306
 
-	static [string]   $thisVersion = "1.6"
+	static [string]   $thisVersion = "1.7"
 
 	static [string[]] $protectedFields = @(
 		'repoUsername',
@@ -105,6 +110,8 @@ class Config {
 	[string]       $srmLicenseFile
 	[string]       $scanFarmSastLicenseFile
 	[string]       $scanFarmScaLicenseFile
+	[string]       $scanFarmCombinedLicenseFile
+	[string]       $scanFarmLicenseFormatType
 
 	[string]       $repoUsername
 	[string]       $repoPwd
@@ -349,6 +356,10 @@ class Config {
 		$this.serviceAccountWorkflow = ''
 		# v1.5 fields
 		$this.authCookieSecure = $false
+		# v1.6 no new fields, only field renames
+		# v1.7 fields
+		$this.scanFarmCombinedLicenseFile = ''
+		$this.scanFarmLicenseFormatType = [ScanFarmLicenseFormatType]::Legacy
 
 		# Note: the restore-version.ps1 script should account for any config.json format changes
 	}
