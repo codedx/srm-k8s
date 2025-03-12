@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.2.0
+.VERSION 1.3.0
 .GUID 4504dc63-bd21-46b8-994f-75f06d2766a0
 .AUTHOR Black Duck
 .COPYRIGHT Copyright 2024 Black Duck Software, Inc. All rights reserved.
@@ -125,7 +125,7 @@ while ($null -ne $priorVersion) {
 		$config = ([Config]::RenameJsonField($config, $_.Item1, $_.Item2))
 	}
 	$fieldsToRemove | ForEach-Object {
-		$config.PSObject.Properties.Remove($_)
+		$config = ([Config]::RemoveJsonField($config, $_))
 	}
 
 	$config.configVersion = "$($priorVersion.Major).$($priorVersion.Minor)"

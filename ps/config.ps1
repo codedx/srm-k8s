@@ -388,6 +388,23 @@ class Config {
 		return $json | ConvertTo-Json | ConvertFrom-Json
 	}
 
+	static [PSObject] RemoveJsonField($json, $fieldName) {
+
+		# convert JSON object to a hashtable
+		$json = $json | ConvertTo-Json | ConvertFrom-Json -AsHashtable
+		$hasField = $null -ne $json.$fieldName
+	
+		if ($hasField) {
+			$json.Remove($fieldName)
+	
+			# drop an outdated salt
+			$json.salts = $json.salts | Where-Object { $_.key -ne $fieldName }
+		}
+	
+		# convert hashtable back to a custom PSObject
+		return $json | ConvertTo-Json | ConvertFrom-Json
+	}
+
 	static [Config] FromJsonFile($configJsonFile) {
 
 		$configJson = Get-Content $configJsonFile | ConvertFrom-Json
