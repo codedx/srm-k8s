@@ -10,3 +10,13 @@ web:
   webSecret: $webSecretName
 "@ | Out-File (Get-WebValuesPath $config)
 }
+
+function New-ServiceAccountConfig($config) {
+
+	@"
+web:
+  serviceAccount:
+    create: $((!$config.skipWebServiceAccountCreate).ToString().ToLower())
+    name: "$($config.webServiceAccountName)"
+"@ | Out-File (Get-WebServiceAccountValuesPath $config)
+}

@@ -221,6 +221,10 @@ try {
 
 	New-ServiceConfig $config
 
+	if ('' -ne $config.webServiceAccountName) {
+		New-ServiceAccountConfig $config
+	}
+
 	if (-not $config.skipIngressEnabled) {
 		New-IngressConfig $config
 	}

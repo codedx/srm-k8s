@@ -106,10 +106,8 @@ web:
 
   database:
     rdsAuth:
-      # -- whether to enable RDS IAM authentication
+      # -- whether to enable RDS IAM authentication (set web.serviceAccount.name accordingly)
       enabled: false
-      # -- the AWS IAM role name (e.g., arn:aws:iam::123:role/DB-Role) linked to the web service account when web.serviceAccount.create=true
-      iamRoleArn: ""
 
     # -- the K8s secret name containing the database connection properties with required field db.props that
     # contains a HOCON-formatted file with SRM props swa.db.user and swa.db.password

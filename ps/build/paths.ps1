@@ -26,6 +26,10 @@ function Get-DatabaseCredentialValuesPath($config) {
 	Join-Path $config.GetValuesWorkDir() 'db-cred.values.yaml'
 }
 
+function Get-DatabaseRdsValuesPath($config) {
+	Join-Path $config.GetValuesWorkDir() 'db-rds.values.yaml'
+}
+
 function Get-DatabaseReplicationValuesPath($config) {
 	Join-Path $config.GetValuesWorkDir() 'db-replication.values.yaml'
 }
@@ -336,6 +340,10 @@ function Get-ToolsTolerationValuesPath($config) {
 
 function Get-WebServiceValuesPath($config) {
 	Join-Path $config.GetValuesWorkDir() 'web-svc.values.yaml'
+}
+
+function Get-WebServiceAccountValuesPath($config) {
+	Join-Path $config.GetValuesWorkDir() 'web-svc-acct.values.yaml'
 }
 
 function Get-IngressValuesPath($config) {
