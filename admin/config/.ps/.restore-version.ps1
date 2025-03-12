@@ -134,7 +134,7 @@ while ($null -ne $priorVersion) {
 	}
 	$fieldsToRemove | ForEach-Object {
 		Write-Host "  Removing field $_..."
-		$config.PSObject.Properties.Remove($_)
+		$config = ([Config]::RemoveJsonField($config, $_))
 	}
 
 	$config.configVersion = "$($priorVersion.Major).$($priorVersion.Minor)"
