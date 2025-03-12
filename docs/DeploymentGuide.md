@@ -41,7 +41,7 @@
 - [External Web Database Pre-work](#external-web-database-pre-work)
   * [External Web Database Pre-work - Instance Configuration](#external-web-database-pre-work---instance-configuration)
   * [External Web Database Pre-work - Password Authentication](#external-web-database-pre-work---password-authentication)
-  * [External Web Database Pre-work - RDS Authentication](#external-web-database-pre-work---rds-authentication)
+  * [External Web Database Pre-work - RDS IAM Authentication](#external-web-database-pre-work---rds-iam-authentication)
 - [Persistent Storage Pre-work](#persistent-storage-pre-work)
   * [Volume Configuration Pre-work](#volume-configuration-pre-work)
   * [AWS Persistent Storage Pre-work](#aws-persistent-storage-pre-work)
@@ -648,7 +648,7 @@ If you plan to have the SRM web application authenticate with a username and pas
 
 5. Apply any configuration changes required to allow a cluster workload to reach your external database instance over the network.
 
-## External Web Database Pre-work - RDS Authentication
+## External Web Database Pre-work - RDS IAM Authentication
 
 If you plan to have the SRM web application authenticate to an AWS RDS database via AWS IAM workload identity, follow the steps in this section after completing the [instance configuration](#external-web-database-pre-work---instance-configuration).
 
