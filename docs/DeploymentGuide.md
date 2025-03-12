@@ -206,6 +206,7 @@
     + [Upgrading to v1.42](#upgrading-to-v142)
     + [Upgrading to v1.43](#upgrading-to-v143)
     + [Upgrading to v1.46](#upgrading-to-v146)
+    + [Upgrading to v1.49](#upgrading-to-v149)
   * [Helm Prep Wizard](#helm-prep-wizard-1)
   * [Add Certificates Wizard](#add-certificates-wizard)
   * [Add SAML Authentication Wizard](#add-saml-authentication-wizard)
