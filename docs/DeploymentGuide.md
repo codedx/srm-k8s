@@ -629,7 +629,7 @@ If you plan to have the SRM web application authenticate with a username and pas
 
 >Note: If you have to reinstall Software Risk Manager and purge your Software Risk Manager data, you must repeat Steps 2 and 3 after deleting your Software Risk Manager Persistent Volume.
 
-1. Create a database user. You can customize the following statement to create a user named "srm," remove 'REQUIRE SSL' when not using TLS (your database instance may require transport security).
+1. Create a database user. You can customize the following statement that creates a user named "srm," remove 'REQUIRE SSL' when not using TLS (your database instance may require transport security).
     ```
     CREATE USER 'srm'@'%' IDENTIFIED BY 'enter-a-password-here' REQUIRE SSL;
     ```
@@ -656,20 +656,23 @@ If you plan to have the SRM web application authenticate to an AWS RDS database 
 
 1. [Enable RDS IAM authentication](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.Enabling.html) on your RDS database instance.
 
-2. Create a database user. You can customize the following statements to create an "srm" database user.
+2. Create a database user. You can customize the following statements that create an "srm" database user.
     ```
     CREATE USER 'srm' IDENTIFIED WITH AWSAuthenticationPlugin AS 'RDS';
     ALTER USER 'srm'@'%' REQUIRE SSL;
     ```
+
 3. Create a database catalog. The following statement creates a catalog named srmdb.
     ```
     CREATE DATABASE srmdb;
     ```
+
 4. Grant required privileges on the database catalog to the database user you created. The following statements grant permissions to the srm database user.
     ```
     GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, CREATE TEMPORARY TABLES, ALTER, REFERENCES, INDEX, DROP, TRIGGER ON srmdb.* to 'srm'@'%';
     FLUSH PRIVILEGES;
     ```
+
 5. [Download the AWS certificate](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html#UsingWithRDS.SSL.CertificatesAllRegions) for your database instance to make it available later in the Helm Prep Wizard.
 
 6. Apply any configuration changes (security group, network connectivity, etc.) required to allow a cluster workload to reach your RDS instance over the network.
