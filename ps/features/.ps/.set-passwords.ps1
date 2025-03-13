@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.2.0
+.VERSION 1.3.0
 .GUID 0ed65ef9-0f8f-43d3-9fdd-b778072c08f0
 .AUTHOR Black Duck
 .COPYRIGHT Copyright 2024 Black Duck Software, Inc. All rights reserved.
@@ -99,6 +99,9 @@ Add-StepTransitions $graph $s[[WelcomePasswords]] $s[[ResetAdminPassword]]
 Add-StepTransitions $graph $s[[ResetAdminPassword]] $s[[ExternalDatabasePwd]],$s[[ToolServiceKey]]
 Add-StepTransitions $graph $s[[ResetAdminPassword]] $s[[ExternalDatabasePwd]],$s[[Lock]]
 
+Add-StepTransitions $graph $s[[ResetAdminPassword]] $s[[ToolServiceKey]]
+Add-StepTransitions $graph $s[[ResetAdminPassword]] $s[[Lock]]
+
 Add-StepTransitions $graph $s[[ResetAdminPassword]] $s[[DatabaseUserPwd]],$s[[DatabaseRootPwd]],$s[[DatabaseReplicationPwd]],$s[[ToolServiceKey]]
 Add-StepTransitions $graph $s[[ResetAdminPassword]] $s[[DatabaseUserPwd]],$s[[DatabaseRootPwd]],$s[[ToolServiceKey]]
 
@@ -114,6 +117,9 @@ Add-StepTransitions $graph $s[[PwdProcedureOverview]] $s[[ResetWebPwdProcedure]]
 Add-StepTransitions $graph $s[[ResetMasterDBPwdProcedure]] $s[[PwdProcedureWrapUp]]
 Add-StepTransitions $graph $s[[ResetToolServiceKeyProcedure]] $s[[PwdProcedureWrapUp]]
 Add-StepTransitions $graph $s[[ResetExternalDatabaseProcedure]] $s[[PwdProcedureWrapUp]]
+
+Add-StepTransitions $graph $s[[ResetWebPwdProcedure]] $s[[ResetToolServiceKeyProcedure]]
+Add-StepTransitions $graph $s[[ResetWebPwdProcedure]] $s[[PwdProcedureWrapUp]]
 
 Add-StepTransitions $graph $s[[PwdProcedureWrapUp]] $s[[Finish]]
 

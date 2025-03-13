@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.11.0
+.VERSION 1.12.0
 .GUID 0ab56564-8d45-485c-829a-bffed0882237
 .AUTHOR Black Duck
 .COPYRIGHT Copyright 2024 Black Duck Software, Inc. All rights reserved.
@@ -96,6 +96,7 @@ $s = @{}
 [DockerRegistryPwd],
 [DockerRegistryUser],
 [DockerImagePullSecret],
+[ExternalDatabaseAuth],
 [ExternalDatabaseCert],
 [ExternalDatabaseHost],
 [ExternalDatabasePort],
@@ -103,6 +104,7 @@ $s = @{}
 [ExternalDatabaseUser],
 [ExternalDatabasePwd],
 [ExternalDatabaseOneWayAuth],
+[ExternalDatabaseServiceAccount],
 [ExternalDatabaseTrustCert],
 [ExternalStorageEndpoint],
 [ExternalStorageTLS],
@@ -275,7 +277,8 @@ Add-StepTransitions $graph $s[[ScanFarmCacheBucketName]] $s[[ScanFarmAzureSubscr
 
 Add-StepTransitions $graph $s[[UseToolOrchestration]] $s[[UseExternalStorage]]
 
-Add-StepTransitions $graph $s[[UseExternalDatabase]] $s[[ExternalDatabaseHost]],$s[[ExternalDatabasePort]],$s[[ExternalDatabaseName]],$s[[ExternalDatabaseUser]],$s[[ExternalDatabasePwd]],$s[[ExternalDatabaseOneWayAuth]],$s[[ExternalDatabaseTrustCert]],$s[[ExternalDatabaseCert]],$s[[UseScanFarm]]
+Add-StepTransitions $graph $s[[UseExternalDatabase]] $s[[ExternalDatabaseHost]],$s[[ExternalDatabasePort]],$s[[ExternalDatabaseName]],$s[[ExternalDatabaseUser]],$s[[ExternalDatabaseAuth]],$s[[ExternalDatabasePwd]],$s[[ExternalDatabaseOneWayAuth]],$s[[ExternalDatabaseTrustCert]],$s[[ExternalDatabaseCert]],$s[[UseScanFarm]]
+Add-StepTransitions $graph $s[[ExternalDatabaseAuth]] $s[[ExternalDatabaseServiceAccount]],$s[[ExternalDatabaseCert]]
 
 Add-StepTransitions $graph $s[[Welcome]] $s[[About]], `
 	$s[[Size]],
