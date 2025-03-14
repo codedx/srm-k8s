@@ -633,6 +633,9 @@ If you plan to have the SRM web application authenticate with a username and pas
     ```
     CREATE USER 'srm'@'%' IDENTIFIED BY 'enter-a-password-here' REQUIRE SSL;
     ```
+
+    >Note: If your database sets the `require_secure_transport` parameter to true, include `REQUIRE SSL`.
+
 2. Create a database catalog. The following statement creates a catalog named srmdb.
     ```
     CREATE DATABASE srmdb;
@@ -644,7 +647,9 @@ If you plan to have the SRM web application authenticate with a username and pas
     ```
 4. If your database configuration requires Software Risk Manager to trust a certificate (e.g., the [Amazon RDS root certificate](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html#UsingWithRDS.SSL.CertificatesAllRegions)), download the certificate to make it available later in the Helm Prep Wizard.
 
->Note: Using an external database with TLS is recommended. If you plan to use an unencrypted connection to an external MySQL database with the `caching_sha2_password` default_authentication_plugin, refer to [Specify MySQL Server Public Key Path](#specify-mysql-server-public-key-path).
+    >Note 1: If your database sets the `require_secure_transport` parameter to true, you must ensure that Software Risk Manager trusts its certificate.
+
+    >Note 2: Using an external database with TLS is recommended. If you plan to use an unencrypted connection to an external MySQL database with the `caching_sha2_password` default_authentication_plugin, refer to [Specify MySQL Server Public Key Path](#specify-mysql-server-public-key-path).
 
 5. Apply any configuration changes required to allow a cluster workload to reach your external database instance over the network.
 
