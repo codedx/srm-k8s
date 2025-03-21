@@ -368,10 +368,10 @@ class Config {
 
 		# convert JSON object to a hashtable
 		$json = $json | ConvertTo-Json | ConvertFrom-Json -AsHashtable
-		$hasOldField = $null -ne $json.$oldField
+		$hasOldField = $json.Keys -contains $oldField
 
 		if ($hasOldField) {
-			$json.$newField = $json.$oldField
+			$json[$newField] = $json[$oldField]
 			$json.Remove($oldField)
 
 			# update related salt to avoid an unlock problem
