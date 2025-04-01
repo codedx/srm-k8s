@@ -339,8 +339,8 @@ class ExternalDatabaseCert : Step {
 	static [string] hidden $description = @'
 Specify a file path to the CA associated with your database host.
 
-If you're using an AWS RDS database, you can download the 
-root certificate from the following URL:
+If you're using an AWS RDS database, you can download your AWS CA
+certificate from the following URL:
 https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html
 
 If you're using an Azure Database, use the following URL to locate the
@@ -348,13 +348,25 @@ certificate download link:
 https://learn.microsoft.com/en-us/azure/mysql/flexible-server/how-to-connect-tls-ssl
 '@
 
+	static [string] hidden $descriptionRdsIam = @'
+Specify a file path to the CA cert for your AWS RDS database host.
+
+You can download your AWS CA certificate from the following URL:
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html
+'@
+
 	ExternalDatabaseCert([Config] $config) : base(
 		[ExternalDatabaseCert].Name, 
 		$config,
 		'External Database Cert',
-		[ExternalDatabaseCert]::description,
+		'',
 		'Enter path to certificate to the certificate of your database CA') {}
-	
+
+	[string]GetMessage() {
+		return $this.config.externalDatabaseAuthType -eq [ExternalDatabaseAuthType]::RdsIam ?
+			[ExternalDatabaseCert]::descriptionRdsIam : [ExternalDatabaseCert]::description
+	}
+
 	[IQuestion]MakeQuestion([string] $prompt) {
 		return new-object CertificateFileQuestion($prompt, $false)
 	}

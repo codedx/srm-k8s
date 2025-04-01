@@ -657,7 +657,7 @@ If you plan to have the SRM web application authenticate with a username and pas
 
 If you plan to have the SRM web application authenticate to an AWS RDS database via AWS IAM workload identity, follow the steps in this section after completing the [instance configuration](#external-web-database-pre-work---instance-configuration).
 
->Note: If you have to reinstall Software Risk Manager and purge your Software Risk Manager data, you must repeat Steps 2 and 3 after deleting your Software Risk Manager Persistent Volume.
+>Note: If you have to reinstall Software Risk Manager and purge your Software Risk Manager data, you must repeat Steps 3 and 4 after deleting your Software Risk Manager Persistent Volume.
 
 1. [Enable RDS IAM authentication](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.Enabling.html) on your RDS database instance.
 
