@@ -15,11 +15,12 @@ function New-DatabasePropsFile($config) {
 		$dbUser = $config.externalDatabaseUser
 		$dbPwd = $config.externalDatabasePwd
 	}
-
-	@"
-swa.db.user = """$dbUser"""
-swa.db.password = """$dbPwd"""
-"@ | Out-File (Get-DatabasePropsPath $config)
+	
+	$dbPropsPathConfigContent = "swa.db.user = """"""$dbUser"""""""
+	if ($config.externalDatabaseAuthType -eq [ExternalDatabaseAuthType]::Password) {
+		$dbPropsPathConfigContent += "`nswa.db.password = """"""$dbPwd"""""""
+	}
+	$dbPropsPathConfigContent | Out-File (Get-DatabasePropsPath $config)
 }
 
 function New-DatabasePropsSecret($config) {
@@ -59,6 +60,15 @@ web:
     credentialSecret: $(Get-DatabasePropsSecretName $config)
     externalDbUrl: jdbc:mysql://$($config.externalDatabaseHost):$($config.externalDatabasePort)/$($config.externalDatabaseName)$urlOption
 "@ | Out-File (Get-DatabaseCredentialValuesPath $config)
+
+	if ($config.externalDatabaseAuthType -eq [ExternalDatabaseAuthType]::RdsIam) {
+		@"
+web:
+  database:
+    rdsAuth:
+      enabled: true
+"@ | Out-File (Get-DatabaseRdsValuesPath $config)
+	}
 
 	if ($config.externalDatabaseTrustCert) {
 		Import-TrustedCaCert (Get-CertsPath $config) $config.caCertsFilePwd $config.externalDatabaseServerCert

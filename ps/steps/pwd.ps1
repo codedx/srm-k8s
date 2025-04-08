@@ -567,7 +567,7 @@ Follow this step to reset your External Software Risk Manager database:
 		$config) {}
 
 	[bool]CanRun() {
-		return $this.config.skipDatabase
+		return $this.config.skipDatabase -and $this.config.externalDatabaseAuthType -eq [ExternalDatabaseAuthType]::Password
 	}
 
 	[string]GetMessage() {

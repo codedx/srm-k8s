@@ -105,6 +105,10 @@ web:
   cacertsSecret: ""
 
   database:
+    rdsAuth:
+      # -- whether to enable RDS IAM authentication (set web.serviceAccount.name accordingly)
+      enabled: false
+
     # -- the K8s secret name containing the database connection properties with required field db.props that
     # contains a HOCON-formatted file with SRM props swa.db.user and swa.db.password
     # File:

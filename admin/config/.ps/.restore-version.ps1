@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.3.0
+.VERSION 1.4.0
 .GUID 4504dc63-bd21-46b8-994f-75f06d2766a0
 .AUTHOR Black Duck
 .COPYRIGHT Copyright 2024 Black Duck Software, Inc. All rights reserved.
@@ -55,7 +55,7 @@ while ($null -ne $priorVersion) {
 
 	$priorVersionLabel = $priorVersion.toString()
 	$continueRollback = Read-HostChoice `
-		"Do you want to rollback to config.json version $priorVersionLabel`?" `
+		"`nDo you want to rollback to config.json version $priorVersionLabel`?" `
 		 ([tuple]::Create('Yes', "Revert config.json to version $priorVersionLabel"), 
 		  [tuple]::Create('No',  'Stop rollback process'))
 
@@ -74,6 +74,13 @@ while ($null -ne $priorVersion) {
 
 	switch ($priorVersionLabel) {
 
+		('1.7.0') {
+			# 1.8 -> 1.7
+			$fieldsToRemove += 'externalDatabaseAuthType'
+			$fieldsToRemove += 'skipWebServiceAccountCreate'
+			$fieldsToRemove += 'webServiceAccountName'
+			break
+		}
 		('1.6.0') {
 			# 1.7 -> 1.6
 			$fieldsToRemove += 'scanFarmCombinedLicenseFile'
@@ -122,9 +129,11 @@ while ($null -ne $priorVersion) {
 	}
 
 	$fieldsToRename | ForEach-Object {
+		Write-Host "  Renaming field $($_.Item1) to $($_.Item2)..."
 		$config = ([Config]::RenameJsonField($config, $_.Item1, $_.Item2))
 	}
 	$fieldsToRemove | ForEach-Object {
+		Write-Host "  Removing field $_..."
 		$config = ([Config]::RemoveJsonField($config, $_))
 	}
 

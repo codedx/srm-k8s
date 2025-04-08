@@ -25,6 +25,11 @@ enum IngressTlsType {
 	ExternalSecret
 }
 
+enum ExternalDatabaseAuthType {
+	Password
+	RdsIam
+}
+
 enum ScanFarmLicenseType {
 	None
 	Sast
@@ -66,7 +71,7 @@ class Config {
 	static [int]   $volumeSizeGiBDefault = 0           # new default to support system size override when > 0
 	static [int]   $externalDatabasePortDefault = 3306
 
-	static [string]   $thisVersion = "1.7"
+	static [string]   $thisVersion = "1.8"
 
 	static [string[]] $protectedFields = @(
 		'repoUsername',
@@ -97,7 +102,8 @@ class Config {
 		'samlPrivateKeyPwd',
 		'dockerRegistryUser',
 		'dockerRegistryPwd',
-		'caCertsFilePwd'
+		'caCertsFilePwd',
+		'webServiceAccountName'
 	)
 
 	[string]       $configVersion
@@ -207,6 +213,9 @@ class Config {
 	[string]       $externalDatabaseHost
 	[int]          $externalDatabasePort
 	[string]       $externalDatabaseName
+
+	[string]       $externalDatabaseAuthType
+
 	[string]       $externalDatabaseUser
 	[string]       $externalDatabasePwd
 	[bool]         $externalDatabaseSkipTls
@@ -321,6 +330,9 @@ class Config {
 
 	[KeyValue[]]  $notes = @()
 
+	[bool]        $skipWebServiceAccountCreate
+	[string]      $webServiceAccountName
+
 	[KeyValue[]]  $salts
 	[bool]        $isLocked
 
@@ -360,7 +372,10 @@ class Config {
 		# v1.7 fields
 		$this.scanFarmCombinedLicenseFile = ''
 		$this.scanFarmLicenseFormatType = [ScanFarmLicenseFormatType]::Legacy
-
+		# v1.8 fields
+		$this.externalDatabaseAuthType = [ExternalDatabaseAuthType]::Password
+		$this.skipWebServiceAccountCreate = $false
+		$this.webServiceAccountName = ''
 		# Note: the restore-version.ps1 script should account for any config.json format changes
 	}
 

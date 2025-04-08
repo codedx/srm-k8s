@@ -253,7 +253,7 @@ statement you ran during the SRM external database setup instructions.
 	}
 
 	[bool]CanRun() {
-		return $this.config.skipDatabase
+		return $this.config.skipDatabase -and $this.config.externalDatabaseAuthType -eq [ExternalDatabaseAuthType]::Password
 	}
 }
 
@@ -339,22 +339,34 @@ class ExternalDatabaseCert : Step {
 	static [string] hidden $description = @'
 Specify a file path to the CA associated with your database host.
 
-If you're using an AWS RDS database, you can download the 
-root certificate from the following URL:
-https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem. 
+If you're using an AWS RDS database, you can download your AWS CA
+certificate from the following URL:
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html
 
-If you're using an Azure Database, use the following URL to locate 
-the certificate download link:
-https://docs.microsoft.com/en-us/azure/mariadb/concepts-ssl-connection-security#default-settings
+If you're using an Azure Database, use the following URL to locate the
+certificate download link:
+https://learn.microsoft.com/en-us/azure/mysql/flexible-server/how-to-connect-tls-ssl
+'@
+
+	static [string] hidden $descriptionRdsIam = @'
+Specify a file path to the CA cert for your AWS RDS database host.
+
+You can download your AWS CA certificate from the following URL:
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html
 '@
 
 	ExternalDatabaseCert([Config] $config) : base(
 		[ExternalDatabaseCert].Name, 
 		$config,
 		'External Database Cert',
-		[ExternalDatabaseCert]::description,
+		'',
 		'Enter path to certificate to the certificate of your database CA') {}
-	
+
+	[string]GetMessage() {
+		return $this.config.externalDatabaseAuthType -eq [ExternalDatabaseAuthType]::RdsIam ?
+			[ExternalDatabaseCert]::descriptionRdsIam : [ExternalDatabaseCert]::description
+	}
+
 	[IQuestion]MakeQuestion([string] $prompt) {
 		return new-object CertificateFileQuestion($prompt, $false)
 	}
@@ -370,5 +382,90 @@ https://docs.microsoft.com/en-us/azure/mariadb/concepts-ssl-connection-security#
 
 	[bool]CanRun() {
 		return $this.config.externalDatabaseTrustCert
+	}
+}
+
+[ConfigAttribute(("externalDatabaseAuthType","externalDatabaseTrustCert","skipDatabase"))]
+class ExternalDatabaseAuth : Step {
+
+	static [string] hidden $description = @'
+Specify the type of authentication SRM will use to connect to your external
+database. If you are using an AWS RDS MariaDB or MySQL database, you can
+use AWS RDS IAM authentication. Otherwise, choose password authentication
+to authenticate using a database password you will provide. Refer to the
+appropriate database pre-work sections in the SRM Kubernetes Deployment Guide.
+'@
+
+	ExternalDatabaseAuth([Config] $config) : base(
+		[ExternalDatabaseAuth].Name, 
+		$config,
+		'External Database Authentication',
+		[ExternalDatabaseAuth]::description,
+		'How will SRM authenticate with the database?') {}
+
+	[IQuestion]MakeQuestion([string] $prompt) {
+
+		$choices = @(
+			[tuple]::create('Password', 'I will provide a password for database authentication')
+			[tuple]::create('AWS IAM', 'I will configure AWS IAM authentication for database authentication')
+		)
+		return new-object MultipleChoiceQuestion($prompt, $choices, 0)
+	}
+	
+	[bool]HandleResponse([IQuestion] $question) {
+
+		switch (([MultipleChoiceQuestion]$question).choice) {
+			0 {
+				$this.config.externalDatabaseAuthType = $this.config.externalDatabaseAuthType = [ExternalDatabaseAuthType]::Password
+			}
+			1 {
+				$this.config.externalDatabaseTrustCert = $true
+				$this.config.externalDatabaseAuthType = $this.config.externalDatabaseAuthType = [ExternalDatabaseAuthType]::RdsIam
+			}
+		}
+		return $true
+	}
+	
+	[void]Reset(){
+		$this.config.externalDatabaseTrustCert = $false
+		$this.config.externalDatabaseAuthType = [ExternalDatabaseAuthType]::Password
+	}
+
+	[bool]CanRun() {
+		return $this.config.skipDatabase
+	}
+}
+
+[ConfigAttribute(("externalDatabaseAuthType","skipDatabase","skipWebServiceAccountCreate","webServiceAccountName"))]
+class ExternalDatabaseServiceAccount : Step {
+
+	static [string] hidden $description = @'
+Specify the name of the Kubernetes ServiceAccount you created when you
+followed the pre-work listed in the SRM Kubernetes Deployment Guide
+under the "External Web Database Pre-work - RDS IAM Authentication"
+section.
+'@
+
+	ExternalDatabaseServiceAccount([Config] $config) : base(
+		[ExternalDatabaseServiceAccount].Name, 
+		$config,
+		'External Database Service Account Name',
+		[ExternalDatabaseServiceAccount]::description,
+		'Enter the name of the Kubernetes ServiceAccount resource you created') {}
+
+	[bool]HandleResponse([IQuestion] $question) {
+		$q = [Question]$question
+		$this.config.webServiceAccountName = $q.response
+		$this.config.skipWebServiceAccountCreate = $true
+		return $true
+	}
+
+	[void]Reset(){
+		$this.config.webServiceAccountName = ''
+		$this.config.skipWebServiceAccountCreate = $true
+	}
+
+	[bool]CanRun() {
+		return $this.config.skipDatabase -and $this.config.externalDatabaseAuthType -eq [ExternalDatabaseAuthType]::RdsIam
 	}
 }

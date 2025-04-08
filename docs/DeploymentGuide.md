@@ -39,6 +39,9 @@
     + [Tool Orchestration Add-in Resource Requirements](#tool-orchestration-add-in-resource-requirements)
     + [Tool Orchestration Pod Security Admission Requirements](#tool-orchestration-pod-security-admission-requirements)
 - [External Web Database Pre-work](#external-web-database-pre-work)
+  * [External Web Database Pre-work - Instance Configuration](#external-web-database-pre-work---instance-configuration)
+  * [External Web Database Pre-work - Password Authentication](#external-web-database-pre-work---password-authentication)
+  * [External Web Database Pre-work - RDS IAM Authentication](#external-web-database-pre-work---rds-iam-authentication)
 - [Persistent Storage Pre-work](#persistent-storage-pre-work)
   * [Volume Configuration Pre-work](#volume-configuration-pre-work)
   * [AWS Persistent Storage Pre-work](#aws-persistent-storage-pre-work)
@@ -604,6 +607,8 @@ Software Risk Manager includes a MariaDB database that requires no configuration
 
 If you prefer an external database, the web workload supports MariaDB version 10.6.x and MySQL version 8.0.x. Complete the following pre-work before installing Software Risk Manager with an external web database.
 
+## External Web Database Pre-work - Instance Configuration
+
 Your MariaDB/MySQL database must include the following variable configuration.
 
 - optimizer_search_depth=0
@@ -618,24 +623,166 @@ If you are using a database instance hosted by AWS, Azure, or GCP, refer to [how
 
 Refer to the Web Database Workload Requirements section for database instance configuration details. You must pre-create the database catalog and the Software Risk Manager database user with the following steps.
 
+## External Web Database Pre-work - Password Authentication
+
+If you plan to have the SRM web application authenticate with a username and password, follow the steps in this section after completing the [instance configuration](#external-web-database-pre-work---instance-configuration).
+
 >Note: If you have to reinstall Software Risk Manager and purge your Software Risk Manager data, you must repeat Steps 2 and 3 after deleting your Software Risk Manager Persistent Volume.
 
-1. Create a database user. You can customize the following statement to create a user named "srm," remove 'REQUIRE SSL' when not using TLS (your database instance may require transport security).
+1. Create a database user. You can customize the following statement that creates a user named "srm," remove 'REQUIRE SSL' when not using TLS (your database instance may require transport security).
+    ```
+    CREATE USER 'srm'@'%' IDENTIFIED BY 'enter-a-password-here' REQUIRE SSL;
+    ```
 
-   CREATE USER 'srm'@'%' IDENTIFIED BY 'enter-a-password-here' REQUIRE SSL;
+    >Note: If your database sets the `require_secure_transport` parameter to true, include `REQUIRE SSL`.
 
 2. Create a database catalog. The following statement creates a catalog named srmdb.
-
-   CREATE DATABASE srmdb;
-
+    ```
+    CREATE DATABASE srmdb;
+    ```
 3. Grant required privileges on the database catalog to the database user you created. The following statements grant permissions to the srm database user.
+    ```
+    GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, CREATE TEMPORARY TABLES, ALTER, REFERENCES, INDEX, DROP, TRIGGER ON srmdb.* to 'srm'@'%';
+    FLUSH PRIVILEGES;
+    ```
+4. If your database configuration requires Software Risk Manager to trust a certificate (e.g., the [Amazon RDS root certificate](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html#UsingWithRDS.SSL.CertificatesAllRegions)), download the certificate to make it available later in the Helm Prep Wizard.
 
-   GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, CREATE TEMPORARY TABLES, ALTER, REFERENCES, INDEX, DROP, TRIGGER ON srmdb.* to 'srm'@'%';
-   FLUSH PRIVILEGES;
+    >Note 1: If your database sets the `require_secure_transport` parameter to true, you must ensure that Software Risk Manager trusts its certificate.
 
-4. If your database configuration requires Software Risk Manager to trust a certificate (e.g., the [Amazon RDS root certificate](https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem)), download the certificate to make it available later in the Helm Prep Wizard.
+    >Note 2: Using an external database with TLS is recommended. If you plan to use an unencrypted connection to an external MySQL database with the `caching_sha2_password` default_authentication_plugin, refer to [Specify MySQL Server Public Key Path](#specify-mysql-server-public-key-path).
 
-Using an external database with TLS is recommended. If you plan to use an unencrypted connection to an external MySQL database with the `caching_sha2_password` default_authentication_plugin, refer to [Specify MySQL Server Public Key Path](#specify-mysql-server-public-key-path).
+5. Apply any configuration changes required to allow a cluster workload to reach your external database instance over the network.
+
+## External Web Database Pre-work - RDS IAM Authentication
+
+If you plan to have the SRM web application authenticate to an AWS RDS database via AWS IAM workload identity, follow the steps in this section after completing the [instance configuration](#external-web-database-pre-work---instance-configuration).
+
+>Note: If you have to reinstall Software Risk Manager and purge your Software Risk Manager data, you must repeat Steps 3 and 4 after deleting your Software Risk Manager Persistent Volume.
+
+1. [Enable RDS IAM authentication](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.Enabling.html) on your RDS database instance.
+
+2. Create a database user. You can customize the following statements that create an "srm" database user.
+    ```
+    CREATE USER 'srm' IDENTIFIED WITH AWSAuthenticationPlugin AS 'RDS';
+    ALTER USER 'srm'@'%' REQUIRE SSL;
+    ```
+
+3. Create a database catalog. The following statement creates a catalog named srmdb.
+    ```
+    CREATE DATABASE srmdb;
+    ```
+
+4. Grant required privileges on the database catalog to the database user you created. The following statements grant permissions to the srm database user.
+    ```
+    GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, CREATE TEMPORARY TABLES, ALTER, REFERENCES, INDEX, DROP, TRIGGER ON srmdb.* to 'srm'@'%';
+    FLUSH PRIVILEGES;
+    ```
+
+5. [Download the AWS certificate](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html#UsingWithRDS.SSL.CertificatesAllRegions) for your database instance to make it available later in the Helm Prep Wizard.
+
+6. Apply any configuration changes (security group, network connectivity, etc.) required to allow a cluster workload to reach your RDS instance over the network.
+
+7. [Create an IAM OIDC provider](https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html) for your cluster.
+
+8. [Create an IAM Policy](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_create-console.html) using the policy JSON below after replacing the placeholders with your AWS subscription and database details.
+
+    You must make the following replacements in the below policy JSON:
+    - \<your-aws-account-id>: replace with your AWS subscription account number (e.g. 111111111111)
+    - \<db-user-name>: replace with the AWSAuthenticationPlugin database username you created (e.g., srm)
+    - \<your-rds-DbClusterResourceId>: replace with the Resource ID (e.g., see your RDS' instance Configuration tab)
+    - \<your-rds-db-user-name>: replace with your AWS region name (e.g., us-east-2)
+    ```
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "rds-db:connect"
+          ],
+          "Resource": [
+            "arn:aws:rds-db:<your-aws-region>:<your-aws-account-id>:dbuser:<your-rds-DbClusterResourceId>/<your-rds-db-user-name>"
+          ]
+        }
+      ]
+    }
+    ```
+
+9. Create an IAM Role using of the `Web identity` trusted entity type. Specify your clusters OIDC provider, with an `sts.amazonaws.com` audience, and link the IAM Policy you created above.
+
+10. Update your new IAM Role by editing its trusted entity JSON to include an additional criterion that references the Kubernetes namespace and ServiceAccount name that you will eventually create and link to the role. 
+
+    The example below uses the following placeholders to show what your role's trust policy will look like by default.
+
+    - account-id: 111111111111
+    - region: aws-region
+    - oidc-id: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+    - namespace: srm
+    - service-account-name: srm-svc-acct
+
+    ```
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+              "Effect": "Allow",
+              "Principal": {
+                  "Federated": "arn:aws:iam::111111111111:oidc-provider/oidc.eks.aws-region.amazonaws.com/id/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                  "StringEquals": {
+                      "oidc.eks.aws-region.amazonaws.com/id/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA:aud": "sts.amazonaws.com"
+                  }
+              }
+          }
+      ]
+    }
+    ```
+
+    Edit your role by adding a criterion that references the SRM Kubernetes namespace and ServiceAccount name you plan to associate with the role. Note that you will create the namespace and service account resources later. Below is an updated example with an extra criterion that uses the `oidc-id` placeholder mentioned earlier, an `srm` namespace, and an `srm-svc-acct` ServiceAccount name. Specify your OIDC identifier and the namespace and service account name you plan to use.
+
+    ```
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+              "Effect": "Allow",
+              "Principal": {
+                  "Federated": "arn:aws:iam::111111111111:oidc-provider/oidc.eks.aws-region.amazonaws.com/id/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                  "StringEquals": {
+                      "oidc.eks.aws-region.amazonaws.com/id/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA:sub": "system:serviceaccount:srm:srm-svc-acct",
+                      "oidc.eks.aws-region.amazonaws.com/id/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA:aud": "sts.amazonaws.com"
+                  }
+              }
+          }
+      ]
+    }
+    ```
+
+11. Create a new file named `sa.yaml` with the following content, replacing the \<iam-role-arn> placeholder with the AWS ARN that represents your IAM role. If you used alternate namespace or service account names in the previous step, specify those values in place of what is shown below.
+
+    ```
+    apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: srm-svc-acct
+      namespace: srm
+      annotations:
+        eks.amazonaws.com/role-arn: <iam-role-arn> 
+    ```
+
+12. Create the namespace and service account that will be linked to your IAM role, replacing the namespace name if you used a value other than `srm`.
+
+    ```
+    $ kubectl create ns srm
+    $ kubectl apply -f /path/to/sa.yaml
+    ```
+
+13. Note the Kubernetes ServiceAccount name, namespace, and the certificate to trust when connecting to your RDS database to enter them in the Helm Prep Wizard when you select RDS IAM database authentication.
 
 # Persistent Storage Pre-work
 
@@ -4185,6 +4332,7 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | web.authentication.saml.samlSecret | string | `""` | the K8s secret name containing the SAML keystore passwords with required field saml-keystore.props that contains a HOCON-formatted file with SRM props auth.saml2.keystorePassword and auth.saml2.privateKeyPassword File: auth.saml2.keystorePassword = """keystore-password""" auth.saml2.privateKeyPassword = """private-key-password""" |
 | web.caConfigMap | string | `""` | the configmap name containing the CA cert with required field ca.crt for SRM web |
 | web.cacertsSecret | string | `""` | the K8s secret name containing the Java keystore contents and its password with required fields cacerts and cacerts-password Note: cacerts must trust the database cert when using 'REQUIRE SSL' with an external database Command: kubectl -n srm create secret generic srm-web-cacerts-secret --from-file cacerts=./cacerts --from-literal cacerts-password=changeit |
+| web.database.rdsAuth.enabled | bool | `false` | whether to enable RDS IAM authentication (set web.serviceAccount.name accordingly) |
 | web.database.credentialSecret | string | `""` | the K8s secret name containing the database connection properties with required field db.props that contains a HOCON-formatted file with SRM props swa.db.user and swa.db.password File:  swa.db.user = """username""" swa.db.password = """password""" Command: kubectl -n srm create secret generic srm-web-db-cred-secret --from-file db.props=./db.props |
 | web.database.externalDbUrl | string | `nil` | the URL for the external SRM web database (jdbc:mysql://my-srm-web-db-host:3306/my-srm-web-db-name?useSSL=true&requireSSL=true) |
 | web.database.publicKeyConfigMap | string | `""` | the K8s configmap name containing the RSA public key when using MySQL's caching_sha2_password plugin |
@@ -4406,7 +4554,7 @@ The Helm Prep Wizard generates a config.json file used as input to the Helm Prep
 
 Refer to the [lock/unlock scripts](../admin/config) to edit [protected config.json fields](../ps/config.ps1#L66).
 
-![config.json version: 1.7.0](https://img.shields.io/badge/config.json%20version-1.7.0-informational?style=flat-square)
+![config.json version: 1.8.0](https://img.shields.io/badge/config.json%20version-1.8.0-informational?style=flat-square)
 
 |Parameter|Feature|Description|Example|Since|
 |:---|:---|:---|:---|:---|
@@ -4515,6 +4663,7 @@ Refer to the [lock/unlock scripts](../admin/config) to edit [protected config.js
 |externalDatabaseHost|External DB|hostname of the external database||1.0|
 |externalDatabasePort|External DB|port number of the external database||1.0|
 |externalDatabaseName|External DB|name of database catalog for the external database||1.0|
+|externalDatabaseAuthType|External DB|type of database auth (Password or RdsIam)||1.8|
 |externalDatabaseUser|External DB|username for external database||1.0|
 |externalDatabasePwd|External DB|password for accessing external database||1.0|
 |externalDatabaseSkipTls|External DB|whether to skip TLS configuration for external database||1.0|
@@ -4628,6 +4777,9 @@ Refer to the [lock/unlock scripts](../admin/config) to edit [protected config.js
 |authCookieSecure|Core|whether to set the Secure attribute on the authentication cookie|false|1.5|
 ||||||
 |notes|Core|notes associated with deployment||1.0|
+||||||
+|skipWebServiceAccountCreate|Core|whether to skip web service account creation for web workload||1.8|
+|webServiceAccountName|Core|service account name for web workload||1.8|
 ||||||
 |scanFarmScaApiUrlOverride|Core (Dev/Test Only)|override for SCA scan farm endpoint||1.0|
 ||||||
