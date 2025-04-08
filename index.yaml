@@ -3,7 +3,7 @@ entries:
   mariadb:
   - apiVersion: v1
     appVersion: 10.3.25
-    created: "2025-03-29T21:40:52.290025878Z"
+    created: "2025-04-08T17:44:26.38534085Z"
     description: Fast, reliable, scalable, and easy to use open-source relational
       database system. MariaDB Server is intended for mission-critical, heavy-load
       production systems as well as for embedding into mass-deployed software. Highly
@@ -29,7 +29,7 @@ entries:
     version: 7.7.0
   - apiVersion: v1
     appVersion: 10.3.25
-    created: "2025-03-29T21:40:52.287880541Z"
+    created: "2025-04-08T17:44:26.383183667Z"
     description: Fast, reliable, scalable, and easy to use open-source relational
       database system. MariaDB Server is intended for mission-critical, heavy-load
       production systems as well as for embedding into mass-deployed software. Highly
@@ -55,7 +55,7 @@ entries:
     version: 7.6.0
   - apiVersion: v1
     appVersion: 10.3.25
-    created: "2025-03-29T21:40:52.285893463Z"
+    created: "2025-04-08T17:44:26.381034339Z"
     description: Fast, reliable, scalable, and easy to use open-source relational
       database system. MariaDB Server is intended for mission-critical, heavy-load
       production systems as well as for embedding into mass-deployed software. Highly
@@ -92,7 +92,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 2024.11.7
-    created: "2025-03-29T21:40:52.298006996Z"
+    created: "2025-04-08T17:44:26.393835943Z"
     dependencies:
     - name: common
       repository: oci://registry-1.docker.io/bitnamicharts
@@ -122,7 +122,7 @@ entries:
     version: 3.5.0
   - apiVersion: v1
     appVersion: 2020.3.25
-    created: "2025-03-29T21:40:52.29147771Z"
+    created: "2025-04-08T17:44:26.386923038Z"
     description: MinIO is an object storage server, compatible with Amazon S3 cloud
       storage service, mainly used for storing unstructured data (such as photos,
       videos, log files, etc.)
@@ -146,8 +146,36 @@ entries:
     version: 3.3.0
   srm:
   - apiVersion: v2
+    appVersion: v2025.3.3
+    created: "2025-04-08T17:44:27.168178059Z"
+    dependencies:
+    - condition: features.mariadb
+      name: mariadb
+      repository: https://codedx.github.io/srm-k8s
+      version: 7.7.0
+    - condition: features.scanfarm
+      name: scan-services
+      repository: https://repo.blackduck.com/cloudnative
+      version: 2024.12.0
+    - condition: features.to
+      name: argo-workflows
+      repository: https://argoproj.github.io/argo-helm
+      version: 0.42.4
+    - condition: features.minio
+      name: minio
+      repository: https://codedx.github.io/srm-k8s
+      version: 3.5.0
+    description: Software Risk Manager
+    digest: 8509f8bd07279a0fce9ab39f6ccb1adf30208232b0d49c2d4d07eb54eed1f2b4
+    icon: https://raw.githubusercontent.com/codedx/srm-k8s/refs/heads/main/docs/images/icon.svg
+    name: srm
+    type: application
+    urls:
+    - https://codedx.github.io/srm-k8s/srm-1.52.0.tgz
+    version: 1.52.0
+  - apiVersion: v2
     appVersion: v2025.3.2
-    created: "2025-03-29T21:40:52.9981685Z"
+    created: "2025-04-08T17:44:27.150094172Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -175,7 +203,7 @@ entries:
     version: 1.51.0
   - apiVersion: v2
     appVersion: v2025.3.1
-    created: "2025-03-29T21:40:52.983113815Z"
+    created: "2025-04-08T17:44:27.13345464Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -203,7 +231,7 @@ entries:
     version: 1.50.0
   - apiVersion: v2
     appVersion: v2025.3.0
-    created: "2025-03-29T21:40:52.956721631Z"
+    created: "2025-04-08T17:44:27.104619895Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -231,7 +259,7 @@ entries:
     version: 1.49.0
   - apiVersion: v2
     appVersion: v2024.12.3
-    created: "2025-03-29T21:40:52.940125105Z"
+    created: "2025-04-08T17:44:27.090123271Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -259,7 +287,7 @@ entries:
     version: 1.48.0
   - apiVersion: v2
     appVersion: v2024.12.2
-    created: "2025-03-29T21:40:52.924055602Z"
+    created: "2025-04-08T17:44:27.075937479Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -287,7 +315,7 @@ entries:
     version: 1.47.0
   - apiVersion: v2
     appVersion: v2024.12.1
-    created: "2025-03-29T21:40:52.907956848Z"
+    created: "2025-04-08T17:44:27.05953926Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -315,7 +343,7 @@ entries:
     version: 1.46.0
   - apiVersion: v2
     appVersion: v2024.12.1
-    created: "2025-03-29T21:40:52.891832068Z"
+    created: "2025-04-08T17:44:27.043508963Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -343,7 +371,7 @@ entries:
     version: 1.45.0
   - apiVersion: v2
     appVersion: v2024.12.1
-    created: "2025-03-29T21:40:52.876284026Z"
+    created: "2025-04-08T17:44:27.026957102Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -371,7 +399,7 @@ entries:
     version: 1.44.0
   - apiVersion: v2
     appVersion: v2024.12.1
-    created: "2025-03-29T21:40:52.860944734Z"
+    created: "2025-04-08T17:44:27.010825996Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -399,7 +427,7 @@ entries:
     version: 1.43.0
   - apiVersion: v2
     appVersion: v2024.12.0
-    created: "2025-03-29T21:40:52.844228256Z"
+    created: "2025-04-08T17:44:26.994761339Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -427,7 +455,7 @@ entries:
     version: 1.42.0
   - apiVersion: v2
     appVersion: v2024.9.6
-    created: "2025-03-29T21:40:52.834054398Z"
+    created: "2025-04-08T17:44:26.982614042Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -455,7 +483,7 @@ entries:
     version: 1.41.0
   - apiVersion: v2
     appVersion: v2024.9.5
-    created: "2025-03-29T21:40:52.821063051Z"
+    created: "2025-04-08T17:44:26.970207313Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -483,7 +511,7 @@ entries:
     version: 1.40.0
   - apiVersion: v2
     appVersion: v2024.9.4.1
-    created: "2025-03-29T21:40:52.795300371Z"
+    created: "2025-04-08T17:44:26.946155091Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -511,7 +539,7 @@ entries:
     version: 1.39.0
   - apiVersion: v2
     appVersion: v2024.9.4
-    created: "2025-03-29T21:40:52.781872667Z"
+    created: "2025-04-08T17:44:26.932391743Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -539,7 +567,7 @@ entries:
     version: 1.38.0
   - apiVersion: v2
     appVersion: v2024.9.3
-    created: "2025-03-29T21:40:52.770412329Z"
+    created: "2025-04-08T17:44:26.919506011Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -567,7 +595,7 @@ entries:
     version: 1.37.0
   - apiVersion: v2
     appVersion: v2024.9.3
-    created: "2025-03-29T21:40:52.754013298Z"
+    created: "2025-04-08T17:44:26.907114397Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -595,7 +623,7 @@ entries:
     version: 1.36.0
   - apiVersion: v2
     appVersion: v2024.9.3
-    created: "2025-03-29T21:40:52.739740481Z"
+    created: "2025-04-08T17:44:26.892575209Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -623,7 +651,7 @@ entries:
     version: 1.35.0
   - apiVersion: v2
     appVersion: v2024.9.2
-    created: "2025-03-29T21:40:52.726211149Z"
+    created: "2025-04-08T17:44:26.878221481Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -651,7 +679,7 @@ entries:
     version: 1.34.0
   - apiVersion: v2
     appVersion: v2024.9.2
-    created: "2025-03-29T21:40:52.712969443Z"
+    created: "2025-04-08T17:44:26.864384328Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -679,7 +707,7 @@ entries:
     version: 1.33.0
   - apiVersion: v2
     appVersion: v2024.9.2
-    created: "2025-03-29T21:40:52.701755476Z"
+    created: "2025-04-08T17:44:26.851652514Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -707,7 +735,7 @@ entries:
     version: 1.32.0
   - apiVersion: v2
     appVersion: v2024.9.0
-    created: "2025-03-29T21:40:52.68778607Z"
+    created: "2025-04-08T17:44:26.839519404Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -735,7 +763,7 @@ entries:
     version: 1.31.0
   - apiVersion: v2
     appVersion: v2024.6.4
-    created: "2025-03-29T21:40:52.673869413Z"
+    created: "2025-04-08T17:44:26.825217636Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -763,7 +791,7 @@ entries:
     version: 1.30.0
   - apiVersion: v2
     appVersion: v2024.6.3
-    created: "2025-03-29T21:40:52.648153177Z"
+    created: "2025-04-08T17:44:26.784211878Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -791,7 +819,7 @@ entries:
     version: 1.29.1
   - apiVersion: v2
     appVersion: v2024.6.3
-    created: "2025-03-29T21:40:52.636284071Z"
+    created: "2025-04-08T17:44:26.77119148Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -819,7 +847,7 @@ entries:
     version: 1.29.0
   - apiVersion: v2
     appVersion: v2024.6.2
-    created: "2025-03-29T21:40:52.622242856Z"
+    created: "2025-04-08T17:44:26.759353401Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -847,7 +875,7 @@ entries:
     version: 1.28.0
   - apiVersion: v2
     appVersion: 2024.6.1
-    created: "2025-03-29T21:40:52.608331985Z"
+    created: "2025-04-08T17:44:26.744913945Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -875,7 +903,7 @@ entries:
     version: 1.27.0
   - apiVersion: v2
     appVersion: 2024.6.0
-    created: "2025-03-29T21:40:52.595109347Z"
+    created: "2025-04-08T17:44:26.730725058Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -903,7 +931,7 @@ entries:
     version: 1.26.0
   - apiVersion: v2
     appVersion: 2024.3.5
-    created: "2025-03-29T21:40:52.581906845Z"
+    created: "2025-04-08T17:44:26.717184484Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -931,7 +959,7 @@ entries:
     version: 1.25.0
   - apiVersion: v2
     appVersion: 2024.3.4
-    created: "2025-03-29T21:40:52.570647812Z"
+    created: "2025-04-08T17:44:26.705043715Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -959,7 +987,7 @@ entries:
     version: 1.24.0
   - apiVersion: v2
     appVersion: 2024.3.3
-    created: "2025-03-29T21:40:52.556456724Z"
+    created: "2025-04-08T17:44:26.692302235Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -987,7 +1015,7 @@ entries:
     version: 1.23.0
   - apiVersion: v2
     appVersion: 2024.3.2
-    created: "2025-03-29T21:40:52.542205578Z"
+    created: "2025-04-08T17:44:26.678151248Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1015,7 +1043,7 @@ entries:
     version: 1.22.2
   - apiVersion: v2
     appVersion: 2024.3.2
-    created: "2025-03-29T21:40:52.5288885Z"
+    created: "2025-04-08T17:44:26.664298283Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1043,7 +1071,7 @@ entries:
     version: 1.22.1
   - apiVersion: v2
     appVersion: 2024.3.2
-    created: "2025-03-29T21:40:52.516651237Z"
+    created: "2025-04-08T17:44:26.651743207Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1071,7 +1099,7 @@ entries:
     version: 1.22.0
   - apiVersion: v2
     appVersion: 2024.3.2
-    created: "2025-03-29T21:40:52.502952203Z"
+    created: "2025-04-08T17:44:26.639684819Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1099,7 +1127,7 @@ entries:
     version: 1.21.1
   - apiVersion: v2
     appVersion: 2024.3.2
-    created: "2025-03-29T21:40:52.49038604Z"
+    created: "2025-04-08T17:44:26.624222439Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1127,7 +1155,7 @@ entries:
     version: 1.20.1
   - apiVersion: v2
     appVersion: 2024.3.1
-    created: "2025-03-29T21:40:52.475931468Z"
+    created: "2025-04-08T17:44:26.611362371Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1155,7 +1183,7 @@ entries:
     version: 1.20.0
   - apiVersion: v2
     appVersion: 2024.3.0
-    created: "2025-03-29T21:40:52.447471614Z"
+    created: "2025-04-08T17:44:26.588175765Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1183,7 +1211,7 @@ entries:
     version: 1.19.1
   - apiVersion: v2
     appVersion: 2024.3.0
-    created: "2025-03-29T21:40:52.434311572Z"
+    created: "2025-04-08T17:44:26.537885257Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1211,7 +1239,7 @@ entries:
     version: 1.19.0
   - apiVersion: v2
     appVersion: 2023.12.6
-    created: "2025-03-29T21:40:52.422003928Z"
+    created: "2025-04-08T17:44:26.523664781Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1239,7 +1267,7 @@ entries:
     version: 1.18.1
   - apiVersion: v2
     appVersion: 2023.12.6
-    created: "2025-03-29T21:40:52.411627851Z"
+    created: "2025-04-08T17:44:26.509562452Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1267,7 +1295,7 @@ entries:
     version: 1.18.0
   - apiVersion: v2
     appVersion: 2023.12.4
-    created: "2025-03-29T21:40:52.398608536Z"
+    created: "2025-04-08T17:44:26.495080745Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1295,7 +1323,7 @@ entries:
     version: 1.16.0
   - apiVersion: v2
     appVersion: 2023.12.3
-    created: "2025-03-29T21:40:52.385660728Z"
+    created: "2025-04-08T17:44:26.481747458Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1323,7 +1351,7 @@ entries:
     version: 1.15.0
   - apiVersion: v2
     appVersion: 2023.12.2
-    created: "2025-03-29T21:40:52.374009767Z"
+    created: "2025-04-08T17:44:26.467436509Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1351,7 +1379,7 @@ entries:
     version: 1.14.0
   - apiVersion: v2
     appVersion: 2023.12.2
-    created: "2025-03-29T21:40:52.357570734Z"
+    created: "2025-04-08T17:44:26.456693765Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1379,7 +1407,7 @@ entries:
     version: 1.13.0
   - apiVersion: v2
     appVersion: 2023.12.1
-    created: "2025-03-29T21:40:52.347265044Z"
+    created: "2025-04-08T17:44:26.443527603Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1407,7 +1435,7 @@ entries:
     version: 1.12.1
   - apiVersion: v2
     appVersion: 2023.12.1
-    created: "2025-03-29T21:40:52.334137122Z"
+    created: "2025-04-08T17:44:26.430764336Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1435,7 +1463,7 @@ entries:
     version: 1.12.0
   - apiVersion: v2
     appVersion: 2023.12.0
-    created: "2025-03-29T21:40:52.320856421Z"
+    created: "2025-04-08T17:44:26.417623465Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1463,7 +1491,7 @@ entries:
     version: 1.11.0
   - apiVersion: v2
     appVersion: 2023.8.8
-    created: "2025-03-29T21:40:52.309779216Z"
+    created: "2025-04-08T17:44:26.407324082Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1491,7 +1519,7 @@ entries:
     version: 1.10.0
   - apiVersion: v2
     appVersion: 2023.8.7
-    created: "2025-03-29T21:40:53.047384988Z"
+    created: "2025-04-08T17:44:27.217528307Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1519,7 +1547,7 @@ entries:
     version: 1.9.0
   - apiVersion: v2
     appVersion: 2023.8.7
-    created: "2025-03-29T21:40:53.034783642Z"
+    created: "2025-04-08T17:44:27.203957446Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1547,7 +1575,7 @@ entries:
     version: 1.8.0
   - apiVersion: v2
     appVersion: 2023.8.6
-    created: "2025-03-29T21:40:53.024352128Z"
+    created: "2025-04-08T17:44:27.191126902Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1575,7 +1603,7 @@ entries:
     version: 1.7.0
   - apiVersion: v2
     appVersion: 2023.8.6
-    created: "2025-03-29T21:40:53.011021427Z"
+    created: "2025-04-08T17:44:27.178439429Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1603,7 +1631,7 @@ entries:
     version: 1.6.0
   - apiVersion: v2
     appVersion: 2023.8.5
-    created: "2025-03-29T21:40:52.967030498Z"
+    created: "2025-04-08T17:44:27.11753693Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1631,7 +1659,7 @@ entries:
     version: 1.5.0
   - apiVersion: v2
     appVersion: 2023.8.4
-    created: "2025-03-29T21:40:52.807727377Z"
+    created: "2025-04-08T17:44:26.960046933Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1659,7 +1687,7 @@ entries:
     version: 1.4.0
   - apiVersion: v2
     appVersion: 2023.8.3
-    created: "2025-03-29T21:40:52.660038925Z"
+    created: "2025-04-08T17:44:26.811236935Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1687,7 +1715,7 @@ entries:
     version: 1.3.0
   - apiVersion: v2
     appVersion: 2023.8.1
-    created: "2025-03-29T21:40:52.461775347Z"
+    created: "2025-04-08T17:44:26.59833335Z"
     dependencies:
     - condition: features.mariadb
       name: mariadb
@@ -1713,4 +1741,4 @@ entries:
     urls:
     - https://codedx.github.io/srm-k8s/srm-1.2.0.tgz
     version: 1.2.0
-generated: "2025-03-29T21:40:52.283768761Z"
+generated: "2025-04-08T17:44:26.378535962Z"
