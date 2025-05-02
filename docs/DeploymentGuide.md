@@ -213,6 +213,7 @@
     + [Install and Configure Tools](#install-and-configure-tools)
     + [Create a Certificate](#create-a-certificate)
     + [Create a Local Private Registry](#create-a-local-private-registry)
+    + [Clone Repo](#clone-repo)
     + [Load Container Images](#load-container-images)
     + [Create a Cluster](#create-a-cluster)
     + [Install Ingress-Nginx](#install-ingress-nginx)
@@ -5076,6 +5077,14 @@ docker-compose -p registry -f .\registry-docker-compose.yml up -d
 
 ```
 docker login host.docker.internal:5000
+```
+
+### Clone Repo
+
+1. Run the following git command to clone the srm-k8s repo
+
+```
+git clone https://github.com/codedx/srm-k8s
 ```
 
 ### Load Container Images
