@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.12.0
+.VERSION 1.13.0
 .GUID 0ab56564-8d45-485c-829a-bffed0882237
 .AUTHOR Black Duck
 .COPYRIGHT Copyright 2024 Black Duck Software, Inc. All rights reserved.
@@ -82,6 +82,8 @@ $s = @{}
 [CACertsFilePassword],
 [CertsCAPath],
 [CertManagerIssuer],
+[CertificateIssuerName],
+[CertificateIssuerType],
 [ChooseEnvironment],
 [DatabaseReplicaCount],
 [DatabaseReplicationPwd],
@@ -295,8 +297,8 @@ Add-StepTransitions $graph $s[[Welcome]] $s[[About]], `
 	$s[[UseToolOrchestration]],$s[[ToolServiceReplicaCount]],
 	$s[[UseExternalStorage]],$s[[ServiceAccountNameToolService]],$s[[ServiceAccountNameWorkflow]],
 	$s[[ExternalStorageEndpoint]],$s[[ExternalStorageTLS]],$s[[ExternalStorageUsername]],$s[[ExternalStoragePassword]],$s[[ExternalStorageBucket]],$s[[ExternalStorageTrustCert]],$s[[ExternalStorageCertificate]],
-	$s[[UseNetworkPolicyOption]],$s[[GetKubernetesPort]],
 	$s[[UseTlsOption]],$s[[CertsCAPath]],$s[[SignerName]],
+	$s[[UseNetworkPolicyOption]],$s[[GetKubernetesPort]],
 	$s[[AuthenticationType]],$s[[SamlAuthenticationHostBasePath]],$s[[SamlIdpMetadata]],$s[[SamlAppName]],$s[[SamlKeystorePwd]],$s[[SamlPrivateKeyPwd]],$s[[SamlExtraConfig]],
 	$s[[IngressKind]],$s[[IngressClassName]],$s[[IngressTLS]],$s[[CertManagerIssuer]],$s[[IngressHostname]],
 	$s[[UseDefaultCACerts]],$s[[CACertsFile]],$s[[CACertsFilePassword]],$s[[AddExtraCertificates]],$s[[ExtraCertificates]],
@@ -336,7 +338,7 @@ Add-StepTransitions $graph $s[[ExternalDatabaseOneWayAuth]] $s[[UseScanFarm]]
 Add-StepTransitions $graph $s[[ExternalDatabaseTrustCert]] $s[[UseScanFarm]]
 Add-StepTransitions $graph $s[[ExternalDatabaseCert]] $s[[UseScanFarm]]
 
-Add-StepTransitions $graph $s[[UseNetworkPolicyOption]] $s[[UseTlsOption]]
+Add-StepTransitions $graph $s[[UseTlsOption]] $s[[UseNetworkPolicyOption]]
 Add-StepTransitions $graph $s[[UseNetworkPolicyOption]] $s[[AuthenticationType]]
 
 Add-StepTransitions $graph $s[[ScanFarmDatabaseTls]] $s[[ScanFarmScanServiceDatabaseName]]
@@ -346,13 +348,16 @@ Add-StepTransitions $graph $s[[ScanFarmRedisTls]] $s[[ScanFarmStorage]]
 Add-StepTransitions $graph $s[[UseDockerRegistry]] $s[[UseToolOrchestration]]
 Add-StepTransitions $graph $s[[UseDockerRegistryCredential]] $s[[UseToolOrchestration]]
 
-Add-StepTransitions $graph $s[[UseToolOrchestration]] $s[[UseNetworkPolicyOption]]
+Add-StepTransitions $graph $s[[UseToolOrchestration]] $s[[UseTlsOption]]
 
 Add-StepTransitions $graph $s[[UseExternalStorage]] $s[[ExternalStorageEndpoint]]
 
-Add-StepTransitions $graph $s[[UseExternalStorage]] $s[[UseNetworkPolicyOption]]
-Add-StepTransitions $graph $s[[ExternalStorageBucket]] $s[[UseNetworkPolicyOption]]
-Add-StepTransitions $graph $s[[ExternalStorageTrustCert]] $s[[UseNetworkPolicyOption]]
+Add-StepTransitions $graph $s[[UseExternalStorage]] $s[[UseTlsOption]]
+Add-StepTransitions $graph $s[[ExternalStorageBucket]] $s[[UseTlsOption]]
+Add-StepTransitions $graph $s[[ExternalStorageTrustCert]] $s[[UseTlsOption]]
+
+Add-StepTransitions $graph $s[[UseTlsOption]] $s[[AuthenticationType]]
+Add-StepTransitions $graph $s[[CertsCAPath]] $s[[CertificateIssuerName]],$s[[CertificateIssuerType]],$s[[UseNetworkPolicyOption]]
 
 Add-StepTransitions $graph $s[[UseTlsOption]] $s[[AuthenticationType]]
 

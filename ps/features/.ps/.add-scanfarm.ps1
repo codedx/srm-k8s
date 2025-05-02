@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.4.0
+.VERSION 1.5.0
 .GUID b89cccc3-6d33-4c1e-b78f-91b24d456d28
 .AUTHOR Black Duck
 .COPYRIGHT Copyright 2024 Black Duck Software, Inc. All rights reserved.
@@ -132,7 +132,6 @@ $s = @{}
 [ScanFarmScanServiceDatabaseName],
 [ScanFarmStorage],
 [ScanFarmStorageBucketName],
-[ScanFarmTlsRemoval],
 [ScanFarmType],
 [RepoUsername],
 [RepoPassword],
@@ -182,9 +181,7 @@ Add-StepTransitions $graph $s[[IngressKind]] $s[[IngressClassName]],$s[[IngressT
 Add-StepTransitions $graph $s[[IngressTLS]] $s[[IngressTLSSecretName]],$s[[IngressHostname]]
 Add-StepTransitions $graph $s[[IngressTLS]] $s[[IngressHostname]]
 
-Add-StepTransitions $graph $s[[IngressHostname]] $s[[ScanFarmTlsRemoval]],$s[[Lock]],$s[[Finish]]
 Add-StepTransitions $graph $s[[IngressHostname]] $s[[Lock]],$s[[Finish]]
-Add-StepTransitions $graph $s[[ScanFarmTlsRemoval]] $s[[Finish]]
 Add-StepTransitions $graph $s[[IngressHostname]] $s[[Finish]]
 
 if ($DebugPreference -eq 'Continue') {

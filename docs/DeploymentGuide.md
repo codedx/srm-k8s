@@ -79,10 +79,12 @@
 - [Password Pre-work](#password-pre-work)
 - [Network Policies](#network-policies)
 - [TLS Pre-work](#tls-pre-work)
-  * [Istio](#istio)
+  * [Istio Ambient Mode](#istio-ambient-mode)
     + [Istio - Mesh Visualization](#istio---mesh-visualization)
-  * [Cert-Manager](#cert-manager)
-    + [Cert-Manager Self-signed CA Example](#cert-manager-self-signed-ca-example)
+  * [Cert-Manager Certificates](#cert-manager-certificates)
+    + [Cert-Manager Certificates Example](#cert-manager-certificates-example)
+  * [Kubernetes CertificateSigningRequests](#kubernetes-certificatesigningrequests)
+    + [Kubernetes CertificateSigningRequests Example](#kubernetes-certificatesigningrequests-example)
 - [Licensing](#licensing)
 - [Installation - Quick Start](#installation---quick-start)
   * [Core Quick Start](#core-quick-start)
@@ -198,9 +200,6 @@
     + [Scan Service GetAccessToken Fails](#scan-service-getaccesstoken-fails)
 - [Appendix](#appendix)
   * [Config.json](#configjson)
-  * [Helm TLS Values (values-tls.yaml)](#helm-tls-values-values-tlsyaml)
-    + [Bash and PowerShell Commands](#bash-and-powershell-commands)
-    + [PowerShell Commands](#powershell-commands)
   * [Helm Chart Notes](#helm-chart-notes)
     + [Upgrading to v1.22 - v1.25](#upgrading-to-v122---v125)
     + [Upgrading to v1.26](#upgrading-to-v126)
@@ -210,11 +209,21 @@
     + [Upgrading to v1.43](#upgrading-to-v143)
     + [Upgrading to v1.46](#upgrading-to-v146)
     + [Upgrading to v1.49](#upgrading-to-v149)
-  * [Helm Prep Wizard](#helm-prep-wizard-1)
-  * [Add Certificates Wizard](#add-certificates-wizard)
-  * [Add SAML Authentication Wizard](#add-saml-authentication-wizard)
-  * [Scan Farm Wizard](#scan-farm-wizard)
-  * [Set Passwords Wizard](#set-passwords-wizard)
+  * [All-in-One Demo Config](#all-in-one-demo-config)
+    + [Install and Configure Tools](#install-and-configure-tools)
+    + [Create a Certificate](#create-a-certificate)
+    + [Create a Local Private Registry](#create-a-local-private-registry)
+    + [Load Container Images](#load-container-images)
+    + [Create a Cluster](#create-a-cluster)
+    + [Install Ingress-Nginx](#install-ingress-nginx)
+    + [Deploy Scan Farm Dependencies](#deploy-scan-farm-dependencies)
+    + [Deploy SRM](#deploy-srm)
+  * [Software Risk Manager Wizards](#software-risk-manager-wizards)
+    + [Helm Prep Wizard](#helm-prep-wizard-1)
+    + [Add Certificates Wizard](#add-certificates-wizard)
+    + [Add SAML Authentication Wizard](#add-saml-authentication-wizard)
+    + [Scan Farm Wizard](#scan-farm-wizard)
+    + [Set Passwords Wizard](#set-passwords-wizard)
 
 <!-- tocstop -->
 
@@ -1711,15 +1720,17 @@ The Software Risk Manager deployment supports network policies for non-Scan Farm
 
 # TLS Pre-work
 
-The Software Risk Manager deployment includes optional support for TLS connections between non-Scan Farm components using Istio or Kubernetes Certificate Signing Requests (CSR).
+The Software Risk Manager deployment includes optional support for TLS connections between components using Istio, or between non-Scan Farm components using cert-manager. You can use cert-manager's [support for Kubernetes Certificate Signing Requests (CSR)](https://cert-manager.io/docs/usage/kube-csr) or [Certificate resources](https://cert-manager.io/docs/usage/certificate).
 
-## Istio
+>Note: Using Istio Ambient Mode is the recommended approach for establishing TLS connections between SRM components.
 
-You can use [Istio Service Mesh Ambient Mode](https://istio.io/latest/docs/ambient/) to enable mTLS between Software Risk Manager components. Do not enable Software Risk Manager network policies when using Istio service mesh.
+## Istio Ambient Mode
+
+You can use [Istio Service Mesh Ambient Mode](https://istio.io/latest/docs/ambient/) to enable mTLS between Software Risk Manager components. Do not enable Software Risk Manager network policies when using Istio Ambient because the current policies do not include the [required network policy configuration for Istio Ambient](https://istio.io/latest/docs/ambient/usage/networkpolicy/).
 
 Use helm to deploy Istio by following the [Istio Ambient installation instructions](https://istio.io/latest/docs/ambient/install/helm-installation/).
 
-Add Software Risk Manager components to the mesh using the namespace label `istio.io/dataplane-mode=ambient`. For example, if you plan to use the `srm` namespace, run the following command to enable ambient mode for SRM components:
+When you run the Helm Prep Wizard, select Istio Ambient on the Configure TLS screen. The Helm Prep Script will generate a command similar to the following that will add the `istio.io/dataplane-mode=ambient` namespace label to your SRM namespace.
 
 ```
 kubectl label namespace srm istio.io/dataplane-mode=ambient
@@ -1748,25 +1759,20 @@ You can install [Prometheus](https://istio.io/latest/docs/ops/integrations/prome
 
 Once installed, open the Kiali dashboard and select Traffic Graph. Enable the Security badge under Display, use Software Risk Manager, and return to the traffic graph to confirm the expected mTLS connections.
 
-## Cert-Manager
+## Cert-Manager Certificates
 
-You can use the cert-manager support for Kubernetes CSRs, which is in an experimental state, to issue certificates for Software Risk Manager Core and Tool Orchestration components. Follow the cert-manager kube-csr [installation instructions](https://cert-manager.io/docs/usage/kube-csr/) and then define either an Issuer or ClusterIssuer [resource](https://cert-manager.io/docs/configuration/).
+The Helm Prep Wizard and Script (see [Full Installation](#installation---full)) includes support for certificates issued with [cert-manager](https://cert-manager.io/) for Software Risk Manager Core and Tool Orchestration components. There is no support for issuing certificates via CSRs for Scan Farm feature components.
 
-If you plan to enable TLS connections with Cert-Manager, you must have access to your CA public key and know your CSR signer name before you run the Helm Prep Wizard (see [Full Installation](#installation---full)).
+Before running the Helm Prep Wizard, you must follow the [cert-manager installation instructions](https://cert-manager.io/docs/installation/) and define either an Issuer or ClusterIssuer [resource](https://cert-manager.io/docs/concepts/issuer/). The wizard will also prompt you for the public key of your certificate authority.
 
-Refer to the comments at either the top of [values-tls.yaml](../chart/values/values-tls.yaml) or the [Helm TLS Values (values-tls.yaml) appendix](#helm-tls-values-values-tlsyaml) for how to create related certificate resources.
+### Cert-Manager Certificates Example
 
-### Cert-Manager Self-signed CA Example
+This example configuration uses cert-manager and creates a cluster-scoped ClusterIssuer with a self-signed CA.
 
-This cert-manager 1.14.2 example shows one way to use cert-manager to issue certificates for the Core and Tool Orchestration features. It creates a cluster-scoped ClusterIssuer using a self-signed CA.
-
-1. Install cert-manager v1.14.2:
+1. Install cert-manager v1.17.0
 
 ```
-$ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.2/cert-manager.crds.yaml
-$ helm repo add jetstack https://charts.jetstack.io --force-update
-$ helm repo update
-$ helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.14.2 --set featureGates="ExperimentalCertificateSigningRequestControllers=true"
+$ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.0/cert-manager.yaml
 ```
 
 2. Create a signing key and certificate with the common name Private CA:
@@ -1806,9 +1812,72 @@ kubectl apply -f ./clusterissuer.yaml
 kubectl get clusterissuer ca-issuer -o wide
 ```
 
-When you run the Helm Prep Wizard (see [Full Installation](#installation---full)) and enable TLS on the Configure TLS screen, specify `clusterissuers.cert-manager.io/ca-issuer` for your CSR signer name, on the SRM CSR Signer screen, and enter the path to your ca.crt for your Kubernetes CA cert.
+When you run the Helm Prep Wizard, select `Cert-Manager Certificates` on the Configure TLS screen, enter the path to your ca.crt file, specify your cluster issuer name as `ca-issuer`, and select `ClusterIssuer` as your cluster issuer type.
 
->Note: The wizard will include an installation note referencing additional pre-work documented in the values-tls.yaml file.
+## Kubernetes CertificateSigningRequests
+
+The Helm Prep Wizard and Script includes support for certificates issued via [Certificate Signing Requests](https://kubernetes.io/docs/reference/access-authn-authz/certificate-signing-requests/) for Software Risk Manager Core and Tool Orchestration components. There is no support for issuing certificates via CSRs for Scan Farm feature components.
+
+Before running the Helm Prep Wizard, you must install and configure a certificate signer whose name you will provide after selecting `K8s CSR` on the Configure TLS screen of the wizard. The wizard will also prompt you for the public key of your certificate authority.
+
+Refer to the following section for an example that uses cert-manager's kube-csr component.
+
+
+
+You can use the cert-manager support for Kubernetes CSRs, which is in an experimental state, to issue certificates for Software Risk Manager Core and Tool Orchestration components. .
+
+Follow the cert-manager kube-csr [installation instructions]() and then define either an Issuer or ClusterIssuer [resource](https://cert-manager.io/docs/configuration/)
+### Kubernetes CertificateSigningRequests Example
+
+This example [installs cert-manager's kube-csr](https://cert-manager.io/docs/usage/kube-csr/) component, with the experimental ExperimentalCertificateSigningRequestControllers feature gate enabled, to process CertificateSigningRequests with a cluster-scoped ClusterIssuer and a self-signed CA.
+
+1. Install cert-manager v1.17.0:
+
+```
+$ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.0/cert-manager.crds.yaml
+$ helm repo add jetstack https://charts.jetstack.io --force-update
+$ helm repo update
+$ helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.17.0 --set featureGates="ExperimentalCertificateSigningRequestControllers=true"
+```
+
+2. Create a signing key and certificate with the common name Private CA:
+
+```
+$ openssl genrsa -out ca.key 2048
+$ openssl req -x509 -new -key ca.key -subj "/CN=Private CA" -days 3650 -out ca.crt
+```
+
+3. Create a Kubernetes Secret named ca-key-pair in the cert-manager namespace:
+
+```
+$ kubectl -n cert-manager create secret tls ca-key-pair --cert=ca.crt --key=ca.key
+```
+
+4. Create a new file named clusterissuer.yaml with the following contents:
+
+```
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: ca-issuer
+spec:
+  ca:
+    secretName: ca-key-pair
+```
+
+5. Run the following command to create the ca-issuer ClusterIssuer:
+
+```
+kubectl apply -f ./clusterissuer.yaml
+```
+
+6. Wait for the following command to show a Ready status:
+
+```
+kubectl get clusterissuer ca-issuer -o wide
+```
+
+When you run the Helm Prep Wizard, select `K8s CSR` on the Configure TLS screen, enter the path to your ca.crt file, and specify `clusterissuers.cert-manager.io/ca-issuer` for your CSR signer name.
 
 # Licensing
 
@@ -4187,6 +4256,11 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | podLabels | object | `{}` | labels added to SRM pods of the Core and TO features |
 | sizing.size | string | `Small` | whether the deployment size is considered Unspecified, Small, Medium, Large, or Extra Large (see [System Size](#system-size)) |
 | sizing.version | string | `v1.0` | the version of the sizing guidance |
+| tls.certManager.enabled | bool | `false` | whether to create cert-manager Certificate resources (cert-manager CRD) |
+| tls.certManager.duration | string | `2160h` | the amount of time before the certificate is invalid |
+| tls.certManager.renewBefore | string | `360h` | the amount of time before the certificate enters the renewal period |
+| tls.certManager.issuerRef.name | string | `ca-issuer` | the name of the cert-manager cluster issuer or issuer |
+| tls.certManager.issuerRef.kind | string | `Issuer` | the type of cert-manager issuer, Issuer or ClusterIssuer |
 | to.caConfigMap | string | `nil` | the configmap name containing the CA cert with required field ca.crt for SRM web |
 | to.image.registry | string | `"docker.io"` | the registry name and optional registry suffix for the SRM Tool Orchestration Docker images |
 | to.image.repository.helmPreDelete | string | `"codedx/codedx-cleanup"` | the Docker image repository name for the SRM cleanup workload |
@@ -4474,7 +4548,7 @@ The Helm Prep Wizard generates a config.json file used as input to the Helm Prep
 
 Refer to the [lock/unlock scripts](../admin/config) to edit [protected config.json fields](../ps/config.ps1#L66).
 
-![config.json version: 1.8.0](https://img.shields.io/badge/config.json%20version-1.8.0-informational?style=flat-square)
+![config.json version: 1.9.0](https://img.shields.io/badge/config.json%20version-1.9.0-informational?style=flat-square)
 
 |Parameter|Feature|Description|Example|Since|
 |:---|:---|:---|:---|:---|
@@ -4571,6 +4645,9 @@ Refer to the [lock/unlock scripts](../admin/config) to edit [protected config.js
 |skipMinIO|Tool Orchestration|whether to use MinIO for workflow storage||1.0|
 |skipNetworkPolicies|Network Policy|whether to use Network Policies for specific components||1.0|
 |skipTls|TLS|whether to use TLS for specific components||1.0|
+|componentTlsType|TLS|the type of TLS used between supporting components|None|1.9|
+|certManagerIssuerName|TLS|the name of the cert-manager issuer||1.9|
+|certManagerIssuerType|TLS|the type of the cert-manager issuer|None|1.9|
 ||||||
 |workflowStorageType|Tool Orchestration|type of workflow storage to use (see WorkflowStorageType enum)|OnCluster|1.4|
 |serviceAccountToolService|Tool Orchestration|named service account for tool service||1.4|
@@ -4707,164 +4784,6 @@ Refer to the [lock/unlock scripts](../admin/config) to edit [protected config.js
 |isLocked|Config|whether some config.json field values are encrypted||1.1|
 |salts|Config|salts used to encrypt specific config.json field values||1.1|
 
-## Helm TLS Values (values-tls.yaml)
-
-When you run the Helm Prep Wizard and enable TLS via cert-manager on the Configure TLS screen, the wizard will include an installation note referencing the below pre-work from the values-tls.yaml file. You must run the applicable commands below before running the helm command generated by the Helm Prep Script.
-
-The [next section](#bash-and-powershell-commands) contains initial Bash shell commands followed by PowerShell commands. If you do not have Bash available, refer to the [following section](#powershell-commands) for a procedure that only uses PowerShell commands.
-
-### Bash and PowerShell Commands
-
-Here are the Bash and PowerShell commands you should run after adjusting variable values for your deployment:
-
->Note: You do not need to run these commands if you plan to use the commands in the next section.
-
-```
-$ export CACERTS_PATH='/path/to/cacerts'
-$ export CERT_MANAGER_NAMESPACE='cert-manager'
-$ export SRM_NAMESPACE='srm'
-$ export SRM_RELEASE_NAME='srm'
-$ export CERT_SIGNER='clusterissuers.cert-manager.io/ca-issuer'
-
-$ export CA_CONFIGMAP_NAME='srm-ca-configmap'
-$ export SRM_WEB_SECRET_NAME='srm-web-tls-secret'
-$ export SRM_DB_SECRET_NAME='srm-db-tls-secret'
-$ export SRM_TO_SECRET_NAME='srm-to-tls-secret'
-$ export SRM_MINIO_SECRET_NAME='srm-minio-tls-secret'
-$ export SRM_WEB_CACERTS_SECRET_NAME='srm-web-cacerts-secret'
-
-$ # Fetch CA cert from cert-manager (replace ca-key-pair accordingly)
-$ kubectl -n $CERT_MANAGER_NAMESPACE get secret ca-key-pair -o jsonpath="{.data.tls\.crt}" | base64 -d > ca.crt
-
-$ # Create SRM namespace (if necessary)
-$ kubectl create ns $SRM_NAMESPACE
- 
-$ # Create CA ConfigMap
-$ kubectl -n $SRM_NAMESPACE create configmap $CA_CONFIGMAP_NAME --from-file ca.crt=ca.crt
-$ # Create CA Secret by the same name, which is required for workflows to access object storage
-$ kubectl -n $SRM_NAMESPACE create secret generic $CA_CONFIGMAP_NAME --from-file ca.crt=ca.crt
-
-$ # Remove any previous srm-ca entry
-$ keytool -delete -keystore $CACERTS_PATH -alias 'srm-ca' -noprompt -storepass 'changeit'
-
-$ # Add ca.crt to cacerts file (your config.json caCertsFilePath parameter value)
-$ keytool -import -trustcacerts -keystore $CACERTS_PATH -file ca.crt -alias 'srm-ca' -noprompt -storepass 'changeit'
-
-$ # Create cacerts Secret
-$ kubectl -n $SRM_NAMESPACE create secret generic $SRM_WEB_CACERTS_SECRET_NAME --from-file cacerts=$CACERTS_PATH --from-literal cacerts-password=changeit
-
-$ # Start pwsh session
-$ pwsh
-PS> $global:PSNativeCommandArgumentPassing='Legacy'
-PS> Install-Module guided-setup -RequiredVersion 1.18.0
-
-PS> $caPath = Get-ChildItem ./ca.crt | Select-Object -ExpandProperty FullName
-
-PS> # Create SRM web certificate
-PS> $webSvcName = "$(Get-HelmChartFullnameEquals $env:SRM_RELEASE_NAME 'srm')-web"
-PS> New-Certificate $env:CERT_SIGNER $caPath $webSvcName $webSvcName './web-tls.crt' './web-tls.key' $env:SRM_NAMESPACE
-
-PS> # Create SRM web Secret
-PS> New-CertificateSecretResource $env:SRM_NAMESPACE $env:SRM_WEB_SECRET_NAME './web-tls.crt' './web-tls.key'
-
-PS> # Create primary DB certificate (required for deployments using an on-cluster MariaDB)
-PS> $dbSvcName = Get-HelmChartFullnameContains $env:SRM_RELEASE_NAME 'mariadb'
-PS> New-Certificate $env:CERT_SIGNER $caPath $dbSvcName $dbSvcName './db-tls.crt' './db-tls.key' $env:SRM_NAMESPACE
-
-PS> # Create DB Secret (required for deployments using an on-cluster MariaDB)
-PS> New-CertificateSecretResource $env:SRM_NAMESPACE $env:SRM_DB_SECRET_NAME './db-tls.crt' './db-tls.key'
-
-PS> # Create TO certificate (required for deployments using Tool Orchestration)
-PS> $toSvcName = "$(Get-HelmChartFullnameEquals $env:SRM_RELEASE_NAME 'srm')-to"
-PS> New-Certificate $env:CERT_SIGNER $caPath $toSvcName $toSvcName './to-tls.crt' './to-tls.key' $env:SRM_NAMESPACE
-
-PS> # Create TO Secret (required for deployments using Tool Orchestration)
-PS> New-CertificateSecretResource $env:SRM_NAMESPACE $env:SRM_TO_SECRET_NAME './to-tls.crt' './to-tls.key'
-
-PS> # Create MinIO certificate (required for deployments using an on-cluster, built-in MinIO)
-PS> $minioSvcName = Get-HelmChartFullnameContains $env:SRM_RELEASE_NAME 'minio'
-PS> New-Certificate $env:CERT_SIGNER $caPath $minioSvcName $minioSvcName './minio-tls.crt' './minio-tls.key' $env:SRM_NAMESPACE
-
-PS> # Create MinIO Secret (required for deployments using an on-cluster, built-in MinIO)
-PS> New-GenericSecret $env:SRM_NAMESPACE $env:SRM_MINIO_SECRET_NAME -fileKeyValues @{'tls.crt'='./minio-tls.crt'; 'tls.key'='./minio-tls.key'; 'ca.crt'=$caPath}
-
-```
-
-### PowerShell Commands
-
-Here are the PowerShell commands you should run after adjusting variable values for your deployment:
-
->Note: You do not need to run these commands if you plan to use the commands in the previous section.
-
-```
-PS> $CACERTS_PATH='/path/to/cacerts'
-PS> $CERT_MANAGER_NAMESPACE='cert-manager'
-PS> $SRM_NAMESPACE='srm'
-PS> $SRM_RELEASE_NAME='srm'
-PS> $CERT_SIGNER='clusterissuers.cert-manager.io/ca-issuer'
-
-PS> $CA_CONFIGMAP_NAME='srm-ca-configmap'
-PS> $SRM_WEB_SECRET_NAME='srm-web-tls-secret'
-PS> $SRM_DB_SECRET_NAME='srm-db-tls-secret'
-PS> $SRM_TO_SECRET_NAME='srm-to-tls-secret'
-PS> $SRM_MINIO_SECRET_NAME='srm-minio-tls-secret'
-PS> $SRM_WEB_CACERTS_SECRET_NAME='srm-web-cacerts-secret'
-
-PS> # Fetch CA cert from cert-manager (replace ca-key-pair accordingly)
-PS> kubectl -n $CERT_MANAGER_NAMESPACE get secret ca-key-pair -o jsonpath="{.data.tls\.crt}" | base64 -d > ca.crt
-
-PS> # Create SRM namespace (if necessary)
-PS> kubectl create ns $SRM_NAMESPACE
- 
-PS> # Create CA ConfigMap
-PS> kubectl -n $SRM_NAMESPACE create configmap $CA_CONFIGMAP_NAME --from-file ca.crt=ca.crt
-PS> # Create CA Secret by the same name, which is required for workflows to access object storage
-PS> kubectl -n $SRM_NAMESPACE create secret generic $CA_CONFIGMAP_NAME --from-file ca.crt=ca.crt
-
-PS> # Remove any previous srm-ca entry
-PS> keytool -delete -keystore $CACERTS_PATH -alias 'srm-ca' -noprompt -storepass 'changeit'
-
-PS> # Add ca.crt to cacerts file (your config.json caCertsFilePath parameter value)
-PS> keytool -import -trustcacerts -keystore $CACERTS_PATH -file ca.crt -alias 'srm-ca' -noprompt -storepass 'changeit'
-
-PS> # Create cacerts Secret
-PS> kubectl -n $SRM_NAMESPACE create secret generic $SRM_WEB_CACERTS_SECRET_NAME --from-file cacerts=$CACERTS_PATH --from-literal cacerts-password=changeit
-
-PS> $global:PSNativeCommandArgumentPassing='Legacy'
-PS> Install-Module guided-setup -RequiredVersion 1.18.0
-
-PS> $caPath = Get-ChildItem ./ca.crt | Select-Object -ExpandProperty FullName
-
-PS> # Create SRM web certificate
-PS> $webSvcName = "$(Get-HelmChartFullnameEquals $SRM_RELEASE_NAME 'srm')-web"
-PS> New-Certificate $CERT_SIGNER $caPath $webSvcName $webSvcName './web-tls.crt' './web-tls.key' $SRM_NAMESPACE
-
-PS> # Create SRM web Secret
-PS> New-CertificateSecretResource $SRM_NAMESPACE $SRM_WEB_SECRET_NAME './web-tls.crt' './web-tls.key'
-
-PS> # Create primary DB certificate (required for deployments using an on-cluster MariaDB)
-PS> $dbSvcName = Get-HelmChartFullnameContains $SRM_RELEASE_NAME 'mariadb'
-PS> New-Certificate $CERT_SIGNER $caPath $dbSvcName $dbSvcName './db-tls.crt' './db-tls.key' $SRM_NAMESPACE
-
-PS> # Create DB Secret (required for deployments using an on-cluster MariaDB)
-PS> New-CertificateSecretResource $SRM_NAMESPACE $SRM_DB_SECRET_NAME './db-tls.crt' './db-tls.key'
-
-PS> # Create TO certificate (required for deployments using Tool Orchestration)
-PS> $toSvcName = "$(Get-HelmChartFullnameEquals $SRM_RELEASE_NAME 'srm')-to"
-PS> New-Certificate $CERT_SIGNER $caPath $toSvcName $toSvcName './to-tls.crt' './to-tls.key' $SRM_NAMESPACE
-
-PS> # Create TO Secret (required for deployments using Tool Orchestration)
-PS> New-CertificateSecretResource $SRM_NAMESPACE $SRM_TO_SECRET_NAME './to-tls.crt' './to-tls.key'
-
-PS> # Create MinIO certificate (required for deployments using an on-cluster, built-in MinIO)
-PS> $minioSvcName = Get-HelmChartFullnameContains $SRM_RELEASE_NAME 'minio'
-PS> New-Certificate $CERT_SIGNER $caPath $minioSvcName $minioSvcName './minio-tls.crt' './minio-tls.key' $SRM_NAMESPACE
-
-PS> # Create MinIO Secret (required for deployments using an on-cluster, built-in MinIO)
-PS> New-GenericSecret $SRM_NAMESPACE $SRM_MINIO_SECRET_NAME -fileKeyValues @{'tls.crt'='./minio-tls.crt'; 'tls.key'='./minio-tls.key'; 'ca.crt'=$caPath}
-
-```
-
 ## Helm Chart Notes
 
 This section describes important considerations when moving from one SRM Helm chart version to another. If you deployed with the [Full Installation Instructions](#installation---full) instructions, rerunning the Helm Prep Script with your config.json and following the generated instructions will simplify the upgrade process. If you deployed with the [Quick Start Installation Instructions](#installation---quick-start), use the sections below to guide your update.
@@ -5000,7 +4919,443 @@ If you are upgrading from an earlier chart version, refer to any previous chart 
 
 This chart switches the Scan Farm SAST component from version 2024.9.1 to 2024.12.0 and the Scan Farm SCA version from 9.2.0 to 10.0.0. Refer to [Specify Scan Farm Engine Versions](#specify-scan-farm-engine-versions) if you'd prefer to use a previous SAST version that SRM supports.
 
-## Helm Prep Wizard
+## All-in-One Demo Config
+
+Refer to the Quick Start installation sections if you want to quickly spin up a demo environment for the [Core](#core-feature) and [Tool Orchestration](#tool-orchestration-feature) features.
+
+The [Scan Farm](#scan-farm-feature) feature does not include a Quick start, but this section shows how you can use [kind](https://kind.sigs.k8s.io/) and [Docker Desktop](https://www.docker.com/products/docker-desktop/) to configure a single environment with the [Core](#core-feature), [Tool Orchestration](#tool-orchestration-feature), and [Scan Farm](#scan-farm-feature) features. The environment uses TLS termination with an Ingress-NGINX ingress controller and a self-signed certificate using the DNS name host.docker.internal (managed by Docker Desktop).
+
+The configuration depends on having the following resources available for SRM components, with Scan Farm and Tool Orchestration pods not necessarily needing to run simultaneously. Additional resources may be required for other related cluster workloads.
+
+| Components | CPU (m) | Memory (G) |
+|:-|:-:|:-:|
+| Core, Tool Orchestration, and Scan Farm pods | 5000 | 11.5 |
+| Scan Farm analysis | 1500 | 3.5 |
+| Tool Orchestration analysis | 2000 | 2 |
+
+The commands in the sections that follow require a PowerShell session.
+
+### Install and Configure Tools
+
+1. Install [kind](https://kind.sigs.k8s.io/)
+
+2. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+
+3. Open Docker Desktop settings and uncheck `Use containerd for pulling and storing images`
+
+4. Install openssl
+
+5. Install git
+
+### Create a Certificate
+
+1. Create a private key for host.docker.internal
+
+```
+openssl genrsa -out host.docker.internal.key 2048
+```
+
+2. Save a certificate request config file
+
+```
+@'
+[ req ]
+default_bits = 2048
+prompt = no
+encrypt_key = no
+distinguished_name = req_dn
+req_extensions = req_ext
+
+[ req_dn ]
+CN = host.docker.internal
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = host.docker.internal
+'@ | Out-File host.docker.internal.cnf
+```
+
+3. Generate a certificate signing request
+
+```
+openssl req -new -key host.docker.internal.key -out host.docker.internal.csr -config host.docker.internal.cnf
+```
+
+4. Create the certificate
+
+```
+openssl x509 -req -in host.docker.internal.csr -signkey host.docker.internal.key -out host.docker.internal.crt -extfile host.docker.internal.cnf -extensions req_ext
+```
+
+5. Trust host.docker.internal.crt on your host
+
+6. Restart Docker Desktop
+
+### Create a Local Private Registry
+
+1. Change to a directory from which you will run the private registry and store both configuration files and container image files
+
+2. Copy your host.docker.internal.crt and host.docker.internal.key files to your directory
+
+2. Save a registry config file
+
+```
+@'
+version: 0.1
+log:
+  fields:
+    service: registry
+storage:
+  cache:
+    blobdescriptor: inmemory
+  filesystem:
+    rootdirectory: /var/lib/registry
+http:
+  addr: :5000
+  headers:
+    X-Content-Type-Options: [nosniff]
+  tls:
+    certificate: /tls/registry.crt
+    key: /tls/registry.key
+health:
+  storagedriver:
+    enabled: true
+    interval: 10s
+    threshold: 3
+'@ | Out-File config.yml
+```
+
+3. Save a registry Docker Compose file
+
+```
+@'
+services:
+  registry:
+    container_name: registry
+    image: registry:2
+    ports:
+    - "5000:5000"
+    environment:
+      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data
+      REGISTRY_AUTH_HTPASSWD_REALM: basic_realm
+      REGISTRY_AUTH_HTPASSWD_PATH: /data/htpasswd
+      REGISTRY_HTTP_TLS_CERTIFICATE: /tls/registry.crt
+      REGISTRY_HTTP_TLS_KEY: /tls/registry.key
+    restart: always
+    volumes:
+      - ./data:/data
+      - ./host.docker.internal.crt:/tls/registry.crt
+      - ./host.docker.internal.key:/tls/registry.key
+      - ./config.yml:/etc/docker/registry/config.yml
+'@ | Out-File registry-docker-compose.yml
+```
+
+4. Start your registry
+
+```
+docker-compose -p registry -f ./registry-docker-compose.yml up -d
+```
+
+5. Create a registry username and password
+
+```
+docker exec -it registry apk add apache2-utils
+docker exec -it registry htpasswd -cB /data/htpasswd reguser # specify password when prompted
+```
+
+6. Restart your registry
+
+```
+docker-compose -p registry -f .\registry-docker-compose.yml down
+docker-compose -p registry -f .\registry-docker-compose.yml up -d
+```
+
+7. Log on to your registry using username `reguser` and the password you specified
+
+```
+docker login host.docker.internal:5000
+```
+
+### Load Container Images
+
+1. Browse to the [pull/tag/push example](deploy/registry.md#powershell-core-docker-pulltagpush-all-example) for loading Black Duck Repo container images to your private container registry
+
+2. Run the first line, replacing the registry placeholder with host.docker.internal:5000
+
+```
+$myPrivateRegistryPrefix = 'host.docker.internal:5000/'
+```
+
+3. Run the remaining lines to pull container images from Black Duck Repo and push them to your private registry
+
+```
+if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$myPrivateRegistryPrefix/" }
+
+'codedx/codedx-tomcat...
+...
+```
+
+### Create a Cluster
+
+1. Save a kind cluster config file
+
+```
+@'
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+- role: worker
+  extraPortMappings:
+  - containerPort: 443
+    hostPort: 443
+    protocol: TCP
+- role: worker
+'@ | Out-File cluster.config
+```
+
+2. Create a cluster
+
+```
+kind create cluster --name srm --config .\cluster.config
+```
+
+3. Label the worker node with the HTTPS port mapping
+
+```
+kubectl label --overwrite node srm-worker has-https-port-mapping=true
+```
+
+4. Configure a custom scan farm node pool
+
+```
+kubectl label --overwrite node srm-worker2 pool-type=custom
+kubectl taint node srm-worker2 NodeType=ScannerNode:NoSchedule
+```
+
+5. Connect your registry to cluster nodes
+
+```
+docker network connect kind registry
+```
+
+6. Trust host.docker.internal.crt on each cluster node
+
+```
+docker ps --filter "name=^srm" -q | ForEach-Object { docker cp .\host.docker.internal.crt $_`:/usr/local/share/ca-certificates; docker exec $_ update-ca-certificates }
+```
+
+7. Restart Docker Desktop
+
+### Install Ingress-Nginx
+
+1. Deploy the ingress controller
+
+```
+kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/deploy-ingress-nginx.yaml
+```
+
+2. Patch the ingress controller deployment
+
+```
+kubectl -n ingress-nginx patch deployment ingress-nginx-controller --patch '{\"spec\":{\"template\":{\"spec\":{\"nodeSelector\":{\"has-https-port-mapping\":\"true\"}}}}}'
+```
+
+3. Wait on the ingress controller
+
+```
+kubectl -n ingress-nginx wait --for=condition=ready pod --selector=app.kubernetes.io/component=controller
+```
+
+### Deploy Scan Farm Dependencies
+
+1. If you have not already done so, clone the srm-k8s repo
+
+```
+git clone https://github.com/codedx/srm-k8s
+```
+
+2. Deploy the scan farm dependencies, replacing the path placeholder
+
+```
+helm -n srm install --create-namespace srmdeps /path/to/srm-k8s/docs/scanfarmdeps
+```
+
+3. Refer to the chart notes for inputs you will provide to the Helm Prep Wizard
+
+>Note: You can run `helm -n srm get notes srmdeps` to fetch the scanfarmdeps chart notes
+
+4. Establish your object storage proxy ingress
+
+```
+@'
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 500m
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/use-regex: "true"
+  name: minio
+  namespace: srm
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: host.docker.internal
+    http:
+      paths:
+      - backend:
+          service:
+            name: srmdeps-minio
+            port:
+              number: 9000
+        path: /upload/(.*)
+        pathType: ImplementationSpecific
+'@ | kubectl -n srm apply -f -
+```
+
+### Deploy SRM
+
+1. Create an ingress-tls Kubernetes secret resource for use with your ingress
+
+```
+kubectl -n srm create secret tls ingress-tls --cert=host.docker.internal.crt --key=host.docker.internal.key
+```
+
+2. Start the Helm Prep Wizard
+
+```
+pwsh /path/to/srm-k8s/helm-prep-wizard.ps1
+```
+
+3. Use the following responses to proceed through the wizard
+
+| Screen | Prompt | Response | Comment |
+|:-|:-|:-|:-|
+|Welcome|Press Enter to continue...|Enter||
+|About|Do you want to continue?|y||
+|Deployment Size|What is your deployment size?|u||
+|SRM License|Enter the path to your SRM license file:|/path/to/srm-license||
+|Work Directory|Enter a directory or press Enter to accept the default:|Enter|accept default directory|
+|Kubernetes Environment|Where are you deploying SRM?|o||
+|SRM Namespace|Enter SRM namespace name (e.g., srm):|srm||
+|SRM Helm Release Name|Enter SRM Helm release name (e.g., srm):|srm||
+|External Database|Do you want to host your SRM database on an external database server that you provide?|n||
+|Database Replicas|Enter the number of database replicas:|0||
+|Scan Farm|Install Scan Farm Components?|y||
+|Black Duck Docker Repo Username|Enter your Black Duck Docker Repo username:||specify your username from BD Community|
+|Black Duck Docker Repo Password|Enter your Black Duck Docker Repo password:||specify your password from BD Community|
+|Scan Farm Type|What type of Scan Farm license do you have?|o||
+|Scan Farm SAST License|Enter the path to your Scan Farm SAST license file:||specify the path to your SAST license|
+|Scan Farm SCA License|Enter the path to your Scan Farm SCA license file:||specify the path to your SCA license|
+|Scan Farm PostgreSQL Host|Enter the name of your PostgreSQL database host:||see "PostgreSQL Service" srmdeps chart note|
+|Scan Farm PostgreSQL Port|Enter your PostgreSQL port or press Enter to accept the default (5432):|5432||
+|Scan Farm PostgreSQL Username|Enter the username for your PostgreSQL database:||see "PostgreSQL Username" srmdeps chart note|
+|Scan Farm PostgreSQL Password|Enter the password of your PostgreSQL database user:||see "PostgreSQL Password" srmdeps chart note|
+|Scan Farm PostgreSQL TLS|Specify the SSL/TLS mode for your PostgreSQL database connection|d||
+|Scan Service PostgreSQL Catalog|Enter the name of your Scan Service database catalog:|scan-svc||
+|Storage Service Database Catalog|Enter the name of your Storage Service database catalog:|storage-svc||
+|Scan Farm Redis Requirements|Do you want to continue?|y||
+|Scan Farm Redis Host|Enter the name of your external Redis host:||see "Redis Service" srmdeps chart note|
+|Scan Farm Redis Port|Enter your Redis port number or press Enter to accept the default (6379):|6379||
+|Scan Farm Redis Database|Enter your Redis logical database index:|1||
+|Scan Farm Redis Auth|Do you want to enable authentication?|y||
+|Scan Farm Redis Password|Enter the Redis password:||see "Redis Password" srmdeps chart note|
+|Scan Farm Redis TLS|Specify the SSL/TLS mode for your Redis connection|d||
+|Scan Farm Storage|Specify the type of Scan Farm storage you plan to use|m||
+|Storage Service Bucket Name|Enter the name of your *existing* storage service bucket:|storage|see "MinIO Buckets" srmdeps chart note|
+|Cache Service Bucket Name|Enter the name of your *existing* cache service bucket:|cache|see "MinIO Buckets" srmdeps chart note|
+|Scan Farm Object Storage Hostname|Enter your storage hostname:||see "MinIO Service" srmdeps chart note|
+|Scan Farm Object Storage Port|Enter your storage port:|9000||
+|Scan Farm Object Storage Access Key|Enter your storage access key:||see "MinIO Username" srmdeps chart note|
+|Scan Farm Object Storage Secret Key|Enter your storage secret key:||see "MinIO Password" srmdeps chart note|
+|Scan Farm Object Storage Proxy|Do you plan to proxy your storage using your SRM hostname?|y||
+|Scan Farm Proxy Context Path|Enter your proxy context path:|upload||
+|Scan Farm In-Cluster Storage|Do you want to specify an in-cluster storage URL?|y||
+|Scan Farm In-Cluster Storage Url|Enter the in-cluster URL for your storage service:||see "MinIO URL" srmdeps chart note|
+|Scan Farm Object Storage TLS|Specify the SSL/TLS mode for your storage connection|d||
+|Docker Registry|Enter your private Docker registry host:|host.docker.internal:5000||
+|Docker Registry Credential|Do you want to specify a Docker registry credential?|y||
+|Docker Image Pull Secret|Enter a name for your Docker Image Pull Secret:|reg||
+|Docker Registry Username|Enter your private Docker registry username:|reguser||
+|Docker Registry Password|Enter your private Docker registry password:||your private registry password|
+|Tool Orchestration|Install Tool Orchestration Components?|y||
+|Orchestrated Analysis Storage|What object storage configuration will you use?|m||
+|Configure TLS|Specify your TLS configuration for SRM components|n||
+|Authentication Type|How will users authenticate to SRM?|l||
+|Ingress Type|What type of ingress do you want to use?|i||
+|Ingress Class Name|Enter ingress class name:|nginx||
+|Ingress TLS|How will you secure your ingress?|x||
+|Ingress TLS Secret Name|Enter the name of your existing Kubernetes TLS Secret name:|ingress-tls||
+|SRM DNS Name|Enter DNS name:|host.docker.internal||
+|Default Java cacerts|Do you want to use the default cacerts file?|y||
+|Auto-Generated Passwords|Do you want to use auto-generated passwords and keys?|y||
+|SRM Docker Repository Prefix|Do you need to specify a repository prefix?|n||
+|SRM Docker Images|Do you want to specify alternate Docker image versions?|n||
+|CPU Reservations|Make CPU reservations?|c||
+|SRM Web CPU Reservation|Enter CPU reservation in millicpus/millicores (e.g., 1000m)|2000m||
+|Master Database CPU Reservation|Enter CPU reservation in millicpus/millicores (e.g., 1000m):|1000m||
+|Tool Service CPU Reservation|Enter CPU reservation in millicpus/millicores (e.g., 1000m):|500m||
+|MinIO CPU Reservation|Enter CPU reservation in millicpus/millicores (e.g., 1000m):|500m||
+|Workflow Controller CPU Reservation|Enter CPU reservation in millicpus/millicores (e.g., 1000m):|250m||
+|Memory Reservations|Make memory reservations?|c||
+|SRM Web Memory Reservation|Enter memory reservation in mebibytes (e.g., 500Mi):|8192Mi||
+|Master Database Memory Reservation|Enter memory reservation in mebibytes (e.g., 500Mi):|1024Mi||
+|Tool Service Memory Reservation|Enter memory reservation in mebibytes (e.g., 500Mi):|1024Mi||
+|MinIO Memory Reservation|Enter memory reservation in mebibytes (e.g., 500Mi):|1024Mi||
+|Workflow Controller Memory Reservation|Enter memory reservation in mebibytes (e.g., 500Mi):|500Mi||
+|Ephemeral Storage Reservations|Use default ephemeral storage reservations?|u||
+|Volume Sizes|Use default volume sizes?|y||
+|Storage Class Name|Enter storage provider:|Enter|accept default|
+|Node Selectors|Do you want to specify node selectors?|n||
+|Pod Tolerations|Do you want to specify pod tolerations?|n||
+|Lock Config JSON|Enter your config.json password:||enter password|
+|Finish|Are you ready to generate your run-helm-prep.ps1 script?|s||
+
+4. Create an srm-extra-props.yaml file
+
+```
+@'
+scan-services:
+  scan-service:
+    environment:
+      BLACKDUCKSCAN_LABEL: "custom"
+      BLACKDUCKBDIO_LABEL: "custom"
+      BLACKDUCKSCAN_CPU: 1500
+      BLACKDUCKSCAN_MEM: 3500
+      BLACKDUCKBDIO_CPU: 1500
+      BLACKDUCKBDIO_MEM: 3500
+      COVCAPTURE_DEFAULTPOOLTYPE: "custom"
+      COVANALYSIS_DEFAULTPOOLTYPE: "custom"
+      CUSTOMNODEPOOL_LABEL: "custom"
+      CUSTOMNODEPOOL_CPU: 1500
+      CUSTOMNODEPOOL_MEM: 3500
+'@ | Out-File ~/.k8s-srm/srm-extra-props.yaml
+```
+
+5. Run the Helm Prep Script
+
+```
+pwsh /path/to/.k8s-srm/run-helm-prep.ps1
+```
+
+6. Follow the instructions printed by the Helm Prep Script
+
+7. Open the scan-service pod and wait for the tool download process to finish
+
+>Note: Restart the scan-service pod to resolve errors downloading tool files
+
+8. Log on to Software Risk Manager by visiting https://host.docker.internal, refer to the SRM chart notes for the admin password
+
+>Note: You can run `helm -n srm get notes srm` to fetch the srm chart notes
+
+## Software Risk Manager Wizards
+
+This section shows every step of each Software Risk Manager wizard.
+
+### Helm Prep Wizard
 
 The Helm Prep Wizard helps you specify your desired Software Risk Manager deployment configuration by generating a config.json file that you can use with
 the Helm Prep script to stage your helm deployment. 
@@ -5009,7 +5364,7 @@ Below is a graph showing every Helm Prep Wizard step. You only have to visit the
 
 ![Helm Prep Wizard Steps](./images/helm-prep-wizard-graph.png)
 
-## Add Certificates Wizard
+### Add Certificates Wizard
 
 The Add Certificates Wizard allows your Software Risk Manager web instance to trust additional certificates that are not trusted by default.
 
@@ -5017,7 +5372,7 @@ Below is a graph showing every Add Certificates Wizard step.
 
 ![Add Certificates Steps](./images/add-trust-certificates-wizard.png)
 
-## Add SAML Authentication Wizard
+### Add SAML Authentication Wizard
 
 The Add SAML Authentication Wizard allows you to configure SAML authentication for Software Risk Manager users.
 
@@ -5025,7 +5380,7 @@ Below is a graph showing every Add SAML Authentication Wizard step. You only hav
 
 ![Add SAML Authentication Steps](./images/add-saml-auth-wizard-graph.png)
 
-## Scan Farm Wizard
+### Scan Farm Wizard
 
 The Add Scan Farm Wizard allows you to include the Software Risk Manager Scan Farm feature in your deployment.
 
@@ -5033,7 +5388,7 @@ Below is a graph showing every Add Scan Farm Wizard step. You only have to visit
 
 ![Add Scan Farm Steps](./images/add-scan-farm-wizard-graph.png)
 
-## Set Passwords Wizard
+### Set Passwords Wizard
 
 The Set Passwords Wizard allows you to reset passwords and keys for Software Risk Manager Core and Tool Orchestration feature components.
 

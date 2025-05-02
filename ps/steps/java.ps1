@@ -1,4 +1,4 @@
-[ConfigAttribute(("externalDatabaseTrustCert","skipTls","useDefaultCACerts"))]
+[ConfigAttribute(("externalDatabaseTrustCert","useDefaultCACerts"))]
 class UseDefaultCACerts : Step {
 
 	static [string] hidden $description = @'
@@ -34,7 +34,7 @@ certificate authority.
 	}
 
 	[bool]CanRun(){
-		return -not $this.config.externalDatabaseTrustCert -and $this.config.skipTls
+		return -not $this.config.externalDatabaseTrustCert -and (-not $this.config.IsTlsConfigHandlingCertificates())
 	}
 }
 

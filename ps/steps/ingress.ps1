@@ -81,7 +81,7 @@ resource from which you can pattern a path-based route definition.
 
 		if ($this.config.IsIngress()) {
 
-			if ($this.config.ingressType -eq [IngressType]::NginxIngressCommunity -and -not $this.config.skipTls) {
+			if ($this.config.ingressType -eq [IngressType]::NginxIngressCommunity -and $this.config.IsTlsConfigHandlingCertificates()) {
 
 				# retain two default annotations
 				$this.config.SetIngressAnnotation('nginx.ingress.kubernetes.io/proxy-read-timeout', '3600')
@@ -93,7 +93,7 @@ resource from which you can pattern a path-based route definition.
 			elseif ($this.config.ingressType -eq [IngressType]::OtherIngress) {
 
 				$tlsSvcs = @()
-				if (-not $this.config.skipTls) {
+				if ($this.config.IsTlsConfigHandlingCertificates()) {
 					$tlsSvcs += $this.config.GetWebServiceName()
 				}
 				if (-not $this.config.skipScanFarm) {

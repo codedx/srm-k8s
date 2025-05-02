@@ -1,77 +1,10 @@
 #
-# Follow the instructions at https://cert-manager.io/docs/usage/kube-csr/ to install cert-manager kube-csr - you can
-# find an example at https://github.com/codedx/srm-k8s/blob/main/docs/DeploymentGuide.md#cert-manager-self-signed-ca-example
+# This file should be ignored when you are using Istio Ambient Mode
+# (recommended) or if you have not configured TLS between SRM components.
+# Otherwise, you should complete the TLS pre-work found in the Deployment Guide
+# (https://github.com/codedx/srm-k8s/blob/main/docs/DeploymentGuide.md#tls-pre-work)
+# before running the Helm Prep Wizard.
 #
-# (the commands below are also available at https://github.com/codedx/srm-k8s/blob/main/docs/DeploymentGuide.md#helm-tls-values-values-tlsyaml)
-#
-# $ export CACERTS_PATH='/path/to/cacerts'
-# $ export CERT_MANAGER_NAMESPACE='cert-manager'
-# $ export SRM_NAMESPACE='srm'
-# $ export SRM_RELEASE_NAME='srm'
-# $ export CERT_SIGNER='clusterissuers.cert-manager.io/ca-issuer'
-# 
-# $ export CA_CONFIGMAP_NAME='srm-ca-configmap'
-# $ export SRM_WEB_SECRET_NAME='srm-web-tls-secret'
-# $ export SRM_DB_SECRET_NAME='srm-db-tls-secret'
-# $ export SRM_TO_SECRET_NAME='srm-to-tls-secret'
-# $ export SRM_MINIO_SECRET_NAME='srm-minio-tls-secret'
-# $ export SRM_WEB_CACERTS_SECRET_NAME='srm-web-cacerts-secret'
-# 
-# $ # Fetch CA cert from cert-manager (replace ca-key-pair accordingly)
-# $ kubectl -n $CERT_MANAGER_NAMESPACE get secret ca-key-pair -o jsonpath="{.data.tls\.crt}" | base64 -d > ca.crt
-# 
-# $ # Create SRM namespace (if necessary)
-# $ kubectl create ns $SRM_NAMESPACE
-#
-# $ # Create CA ConfigMap
-# $ kubectl -n $SRM_NAMESPACE create configmap $CA_CONFIGMAP_NAME --from-file ca.crt=ca.crt
-# $ # Create CA Secret by the same name, which is required for workflows to access object storage
-# $ kubectl -n $SRM_NAMESPACE create secret generic $CA_CONFIGMAP_NAME --from-file ca.crt=ca.crt
-# 
-# $ # Remove any previous srm-ca entry
-# $ keytool -delete -keystore $CACERTS_PATH -alias 'srm-ca' -noprompt -storepass 'changeit'
-#
-# $ # Add ca.crt to cacerts file (your config.json caCertsFilePath parameter value)
-# $ keytool -import -trustcacerts -keystore $CACERTS_PATH -file ca.crt -alias 'srm-ca' -noprompt -storepass 'changeit'
-#
-# $ # Create cacerts Secret
-# $ kubectl -n $SRM_NAMESPACE create secret generic $SRM_WEB_CACERTS_SECRET_NAME --from-file cacerts=$CACERTS_PATH --from-literal cacerts-password=changeit
-#
-# $ # Start pwsh session
-# $ pwsh
-# PS> $global:PSNativeCommandArgumentPassing='Legacy'
-# PS> Install-Module guided-setup -RequiredVersion 1.18.0
-#
-# PS> $caPath = Get-ChildItem ./ca.crt | Select-Object -ExpandProperty FullName
-# 
-# PS> # Create SRM web certificate
-# PS> $webSvcName = "$(Get-HelmChartFullnameEquals $env:SRM_RELEASE_NAME 'srm')-web"
-# PS> New-Certificate $env:CERT_SIGNER $caPath $webSvcName $webSvcName './web-tls.crt' './web-tls.key' $env:SRM_NAMESPACE
-# 
-# PS> # Create SRM web Secret
-# PS> New-CertificateSecretResource $env:SRM_NAMESPACE $env:SRM_WEB_SECRET_NAME './web-tls.crt' './web-tls.key'
-# 
-# PS> # Create primary DB certificate (required for deployments using an on-cluster MariaDB)
-# PS> $dbSvcName = Get-HelmChartFullnameContains $env:SRM_RELEASE_NAME 'mariadb'
-# PS> New-Certificate $env:CERT_SIGNER $caPath $dbSvcName $dbSvcName './db-tls.crt' './db-tls.key' $env:SRM_NAMESPACE
-# 
-# PS> # Create DB Secret (required for deployments using an on-cluster MariaDB)
-# PS> New-CertificateSecretResource $env:SRM_NAMESPACE $env:SRM_DB_SECRET_NAME './db-tls.crt' './db-tls.key'
-# 
-# PS> # Create TO certificate (required for deployments using Tool Orchestration)
-# PS> $toSvcName = "$(Get-HelmChartFullnameEquals $env:SRM_RELEASE_NAME 'srm')-to"
-# PS> New-Certificate $env:CERT_SIGNER $caPath $toSvcName $toSvcName './to-tls.crt' './to-tls.key' $env:SRM_NAMESPACE
-# 
-# PS> # Create TO Secret (required for deployments using Tool Orchestration)
-# PS> New-CertificateSecretResource $env:SRM_NAMESPACE $env:SRM_TO_SECRET_NAME './to-tls.crt' './to-tls.key'
-# 
-# PS> # Create MinIO certificate (required for deployments using an on-cluster, built-in MinIO)
-# PS> $minioSvcName = Get-HelmChartFullnameContains $env:SRM_RELEASE_NAME 'minio'
-# PS> New-Certificate $env:CERT_SIGNER $caPath $minioSvcName $minioSvcName './minio-tls.crt' './minio-tls.key' $env:SRM_NAMESPACE
-# 
-# PS> # Create MinIO Secret (required for deployments using an on-cluster, built-in MinIO)
-# PS> New-GenericSecret $env:SRM_NAMESPACE $env:SRM_MINIO_SECRET_NAME -fileKeyValues @{'tls.crt'='./minio-tls.crt'; 'tls.key'='./minio-tls.key'; 'ca.crt'=$caPath}
-
 mariadb:
   master:
     # @ignore (refer to main values file for details)

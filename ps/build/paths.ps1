@@ -382,6 +382,10 @@ function Get-ScanFarmValuesPath($config) {
 	Join-Path $config.GetValuesWorkDir() 'scan-farm.values.yaml'
 }
 
+function Get-ScanFarmTrustStoresValuesPath($config) {
+	Join-Path $config.GetValuesWorkDir() 'scan-farm-trust-stores.values.yaml'
+}
+
 function Get-ScanFarmInternalUrlValuesPath($config) {
 	Join-Path $config.GetValuesWorkDir() 'scan-farm-storage-internal.values.yaml'
 }
@@ -476,4 +480,20 @@ function Get-SigRepoSecretK8sPath($config) {
 
 function Get-SizingValuesPath($config) {
 	Join-Path $config.GetValuesWorkDir() 'sizing.values.yaml'
+}
+
+function Get-ClusterCaCertCfgMapK8sPath($config) {
+	Join-Path $config.GetK8sWorkDir() 'cluster-ca-cfgmap.k8s.yaml'
+}
+
+function Get-ClusterCaCertSecretK8sPath($config) {
+	Join-Path $config.GetK8sWorkDir() 'cluster-ca-secret.k8s.yaml'
+}
+
+function Get-K8sCsrScriptPath($config) {
+	Join-Path $config.GetScriptsWorkDir() 'csr-cert-script.ps1'
+}
+
+function Get-CertManagerCertificateK8sPath($config) {
+	Join-Path $config.GetValuesWorkDir() 'cert-manager-certificate.k8s.yaml'
 }

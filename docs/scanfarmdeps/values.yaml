@@ -1,0 +1,39 @@
+minio:
+  provisioning:
+    enabled: true
+    buckets:
+    - name:  "storage"
+      region: us-east-1
+    - name: "cache"
+      region: us-east-1
+      lifecycle:
+      - id: cache
+        disabled: false
+        expiry:
+          days: 8
+  persistence:
+    size: 100Gi
+postgresql:
+  primary:
+    persistence:
+      size: 5Gi
+    resources:
+      limits:
+        memory: 2Gi
+        cpu: 1000m
+redis:
+  architecture: standalone
+  auth:
+    enabled: true
+  commonConfiguration: |-
+    save ""
+    appendonly no
+    maxmemory 1gb
+    maxmemory-policy noeviction
+  master:
+    persistence:
+      enabled: false
+    resources:
+      limits:
+        cpu: 1
+        memory: 1100Mi

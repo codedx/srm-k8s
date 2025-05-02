@@ -221,7 +221,7 @@ name during the SRM external database setup instructions.
 	}
 }
 
-[ConfigAttribute(("externalDatabasePwd","skipDatabase"))]
+[ConfigAttribute(("externalDatabaseAuthType","externalDatabasePwd","skipDatabase"))]
 class ExternalDatabasePwd : Step {
 
 	static [string] hidden $description = @'
@@ -333,7 +333,7 @@ chain.
 	}
 }
 
-[ConfigAttribute(("externalDatabaseServerCert","externalDatabaseTrustCert"))]
+[ConfigAttribute(("externalDatabaseAuthType","externalDatabaseServerCert","externalDatabaseTrustCert"))]
 class ExternalDatabaseCert : Step {
 
 	static [string] hidden $description = @'

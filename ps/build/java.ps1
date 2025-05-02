@@ -13,6 +13,10 @@ function New-CacertsSecret($config) {
 
 function New-CacertsConfig($config) {
 
+	if ('' -ne $config.clusterCertificateAuthorityCertPath) {
+		Import-TrustedCaCerts (Get-CertsPath $config) $config.caCertsFilePwd $config.clusterCertificateAuthorityCertPath
+	}
+
 	if ($config.addExtraCertificates) {
 		Import-TrustedCaCerts (Get-CertsPath $config) $config.caCertsFilePwd $config.extraTrustedCaCertPaths
 	}

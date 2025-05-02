@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.15.0
+.VERSION 1.16.0
 .GUID 11157c15-18d1-42c4-9d13-fa66ef61d5b2
 .AUTHOR Black Duck
 .COPYRIGHT Copyright 2024 Black Duck Software, Inc. All rights reserved.
@@ -52,6 +52,7 @@ Write-Host "`nLoading dependencies..."
 './build/scanfarm-storage.ps1',
 './build/schedule.ps1',
 './build/size.ps1',
+'./build/tls.ps1',
 './build/to.ps1',
 './build/volume.ps1',
 './build/web.ps1',
@@ -148,7 +149,7 @@ try {
 	}
 
 	# Reset work directory
-	$config.GetValuesWorkDir(),$config.GetK8sWorkDir(),$config.GetTempWorkDir(),$config.GetValuesCombinedWorkDir() | ForEach-Object {
+	$config.GetValuesWorkDir(),$config.GetK8sWorkDir(),$config.GetTempWorkDir(),$config.GetValuesCombinedWorkDir(),$config.GetScriptsWorkDir() | ForEach-Object {
 		if (Test-Path $_ -PathType Container) {
 			Remove-Item $_ -Force -Confirm:$false -Recurse
 		}
@@ -175,8 +176,9 @@ try {
 	}
 
 	# Handle TLS configuration (a $config.notes msg will request doing the prework in the comments of values-tls.yaml)
-	if (-not $config.skipTls) {
+	if ($config.IsTlsConfigHandlingCertificates()) {
 		$builtInValues += [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../chart/values/values-tls.yaml'))
+		New-TlsConfig $config
 	}
 
 	# Handle network policy configuration
@@ -254,12 +256,23 @@ try {
 	# Print K8s namespace
 	Write-Host "`n`n----------------------`nRequired K8s Namespace`n----------------------"
 	Write-Host "kubectl create namespace $($config.namespace)"
+	if ($config.IsUsingIstioAmbient()) {
+		Write-Host "kubectl label namespace $($config.namespace) istio.io/dataplane-mode=ambient --overwrite"
+	}
 
 	if (-not $config.skipToolOrchestration) {
 		# Print K8s CRDs
 		Write-Host "`n`n----------------------`nRequired K8s CRDs`n----------------------"
 		$crdsPath = Join-Path $PSScriptRoot '..' 'crds/v1'
 		Write-Host "kubectl apply -f ""$([io.path]::GetFullPath($crdsPath))"""
+	}
+
+	$scripts = Get-ChildItem $config.GetScriptsWorkDir()
+	if ($scripts.Length -gt 0) {
+		Write-Host "`n----------------------`nRequired K8s Scripts`n----------------------"
+	}
+	$scripts | ForEach-Object {
+		Write-Host "pwsh ""$_"""
 	}
 
 	# Print K8s resources
