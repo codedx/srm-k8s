@@ -1,11 +1,26 @@
+function Test-AppCommandPath([string] $commandName) {
+
+	Get-Command -Type Application -Name $commandName -ErrorAction 'SilentlyContinue' | Out-Null
+	$?
+}
+
+function Assert-YqCommand() {
+
+	if (-not (Test-AppCommandPath 'yq')) {
+		throw "The yq program is either not installed or not included in your PATH."
+	}
+}
+
 function Test-YamlField([string] $path, [string] $field, [string] $fieldValue) {
 
+	Assert-YqCommand
 	yq -e "$field | select(. == ""$fieldValue"")" $path 2>$null
 	$?
 }
 
 function Get-YamlField([string] $path, [string] $field) {
 
+	Assert-YqCommand
 	$value = yq -e $field $path
 	if ($LASTEXITCODE -ne 0) {
 		throw "Failed to get YAML field from $field, yq exited with code $LASTEXITCODE"
