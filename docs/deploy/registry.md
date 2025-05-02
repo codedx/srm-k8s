@@ -213,6 +213,8 @@ if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$my
 
 If you are logged in to the Black Duck Docker registry and your private registry, you can use the script below to pull, tag, and push all Black Duck Docker images; you must set the $myPrivateRegistryPrefix variable by replacing `id.dkr.ecr.us-east-2.amazonaws.com` with your Docker registry name and any prefix (e.g., my-srm) you require ($myPrivateRegistryPrefix must end with a forward slash).
 
+>Note: You can run the PowerShell commands below by executing the [registry.ps1](../deploy/registry.ps1) script.
+
 ```
 $myPrivateRegistryPrefix = 'id.dkr.ecr.us-east-2.amazonaws.com/'
 if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$myPrivateRegistryPrefix/" }

@@ -25,6 +25,7 @@ Set-PSDebug -Strict
 }
 
 $registryDocPath = Get-RegistryDocPath $repoDir
+$registryScriptPath = Get-RegistryScriptPath $repoDir
 $restoreDbPath = Get-RestoreDatabaseScriptPath $repoDir
 $deploymentGuideDocPath = Get-DeploymentGuidePath $repoDir
 
@@ -40,6 +41,14 @@ $deploymentGuideDocPath = Get-DeploymentGuidePath $repoDir
 (Get-ReferenceCount $registryDocPath "codedx/codedx-results:$toTag") -eq 3 -and
 (Get-ReferenceCount $registryDocPath "codedx/codedx-tool-service:$toTag") -eq 3 -and
 (Get-ReferenceCount $registryDocPath "codedx/codedx-cleanup:$toTag") -eq 3 -and
+(Get-ReferenceCount $registryScriptPath "codedx/codedx-tomcat:$webTag") -eq 1 -and
+(Get-ReferenceCount $registryScriptPath "codedx/codedx-tools:$webTag") -eq 1 -and
+(Get-ReferenceCount $registryScriptPath "codedx/codedx-mariadb:$dbTag") -eq 1 -and
+(Get-ReferenceCount $registryScriptPath "codedx/codedx-prepare:$toTag") -eq 1 -and
+(Get-ReferenceCount $registryScriptPath "codedx/codedx-newanalysis:$toTag") -eq 1 -and
+(Get-ReferenceCount $registryScriptPath "codedx/codedx-results:$toTag") -eq 1 -and
+(Get-ReferenceCount $registryScriptPath "codedx/codedx-tool-service:$toTag") -eq 1 -and
+(Get-ReferenceCount $registryScriptPath "codedx/codedx-cleanup:$toTag") -eq 1 -and
 (Get-ReferenceCount $restoreDbPath   "codedx/codedx-dbrestore:$dbRestoreTag") -eq 1 -and
 (Get-ReferenceCount $deploymentGuideDocPath "| web.image.tag | string | ``""$webTag""`` | the Docker image version for the SRM web workload |") -eq 1 -and
 (Get-ReferenceCount $deploymentGuideDocPath "| mariadb.image.tag | string | ``""$dbTag""`` | the Docker image version for the MariaDB workload |") -eq 1 -and

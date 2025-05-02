@@ -14,6 +14,11 @@ function Get-RegistryDocPath([string] $repoDir) {
 	Join-Path $repoDir 'docs/deploy/registry.md'
 }
 
+function Get-RegistryScriptPath([string] $repoDir) {
+	Join-Path $repoDir 'docs/deploy/registry.ps1'
+}
+
+
 function Get-RestoreDatabaseScriptPath([string] $repoDir) {
 	Join-Path $repoDir 'admin/db/restore-db.ps1'
 }
