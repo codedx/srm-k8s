@@ -8,12 +8,13 @@ function Set-WebChartTag([string] $repoDir, [string] $tag) {
 
 function Set-WebRegistryDocTag([string] $repoDir, [string] $tag) {
 
-	$docPath = Get-RegistryDocPath $repoDir
-
 	$semVersionPattern = Get-SemVerPattern
-	(Get-Content $docPath) `
-		-replace "codedx/codedx-tomcat:v$semVersionPattern","codedx/codedx-tomcat:$tag" `
-		-replace "codedx/codedx-tools:v$semVersionPattern","codedx/codedx-tools:$tag" | Set-Content $docPath
+	(Get-RegistryDocPath $repoDir), (Get-RegistryScriptPath $repoDir) | ForEach-Object {
+		$docPath = $_
+		(Get-Content $docPath) `
+			-replace "codedx/codedx-tomcat:v$semVersionPattern","codedx/codedx-tomcat:$tag" `
+			-replace "codedx/codedx-tools:v$semVersionPattern","codedx/codedx-tools:$tag" | Set-Content $docPath
+	}
 }
 
 function Set-WebDeploymentGuideTag([string] $repoDir, [string] $tag) {

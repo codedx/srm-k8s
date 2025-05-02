@@ -8,10 +8,11 @@ function Set-DatabaseChartTag([string] $repoDir, [string] $tag) {
 
 function Set-DatabaseDocTag([string] $repoDir, [string] $tag) {
 
-	$docPath = Get-RegistryDocPath $repoDir
-
 	$semVersionPattern = Get-SemVerPattern
-	(Get-Content $docPath) -replace "codedx/codedx-mariadb:v$semVersionPattern","codedx/codedx-mariadb:$tag" | Set-Content $docPath
+	(Get-RegistryDocPath $repoDir), (Get-RegistryScriptPath $repoDir) | ForEach-Object {
+		$docPath = $_
+		(Get-Content $docPath) -replace "codedx/codedx-mariadb:v$semVersionPattern","codedx/codedx-mariadb:$tag" | Set-Content $docPath
+	}
 }
 
 function Set-DatabaseDeploymentGuideTag([string] $repoDir, [string] $tag) {

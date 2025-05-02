@@ -12,15 +12,17 @@ function Set-ToolOrchestrationChartTag([string] $repoDir, [string] $tag) {
 
 function Set-ToolOrchestrationRegistryDocTag([string] $repoDir, [string] $tag) {
 
-	$docPath = Get-RegistryDocPath $repoDir
-
 	$semVersionPattern = Get-SemVerPattern
-	(Get-Content $docPath) `
-		-replace "codedx/codedx-prepare:v$semVersionPattern","codedx/codedx-prepare:$tag" `
-		-replace "codedx/codedx-newanalysis:v$semVersionPattern","codedx/codedx-newanalysis:$tag" `
-		-replace "codedx/codedx-results:v$semVersionPattern","codedx/codedx-results:$tag" `
-		-replace "codedx/codedx-tool-service:v$semVersionPattern","codedx/codedx-tool-service:$tag" `
-		-replace "codedx/codedx-cleanup:v$semVersionPattern","codedx/codedx-cleanup:$tag" | Set-Content $docPath
+	(Get-RegistryDocPath $repoDir), (Get-RegistryScriptPath $repoDir) | ForEach-Object {
+
+		$docPath = $_
+		(Get-Content $docPath) `
+			-replace "codedx/codedx-prepare:v$semVersionPattern","codedx/codedx-prepare:$tag" `
+			-replace "codedx/codedx-newanalysis:v$semVersionPattern","codedx/codedx-newanalysis:$tag" `
+			-replace "codedx/codedx-results:v$semVersionPattern","codedx/codedx-results:$tag" `
+			-replace "codedx/codedx-tool-service:v$semVersionPattern","codedx/codedx-tool-service:$tag" `
+			-replace "codedx/codedx-cleanup:v$semVersionPattern","codedx/codedx-cleanup:$tag" | Set-Content $docPath
+	}
 }
 
 function Set-ToolOrchestrationDeploymentGuideTag([string] $repoDir, [string] $tag) {

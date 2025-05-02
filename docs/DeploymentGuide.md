@@ -5080,21 +5080,10 @@ docker login host.docker.internal:5000
 
 ### Load Container Images
 
-1. Browse to the [pull/tag/push example](deploy/registry.md#powershell-core-docker-pulltagpush-all-example) for loading Black Duck Repo container images to your private container registry
-
-2. Run the first line, replacing the registry placeholder with host.docker.internal:5000
+1. Run the [registry.ps1](./deploy/registry.ps1) script to load your private container registry with Black Duck Repo container images
 
 ```
-$myPrivateRegistryPrefix = 'host.docker.internal:5000/'
-```
-
-3. Run the remaining lines to pull container images from Black Duck Repo and push them to your private registry
-
-```
-if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$myPrivateRegistryPrefix/" }
-
-'codedx/codedx-tomcat...
-...
+pwsh /path/to/git/srm-k8s/docs/deploy/registry.ps1 'host.docker.internal:5000/'
 ```
 
 ### Create a Cluster
