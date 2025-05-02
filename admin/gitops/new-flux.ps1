@@ -216,8 +216,8 @@ if (-not $config.skipToolOrchestration) {
 	$valuesFiles += [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../chart/values/values-to.yaml'))
 }
 
-# Optionally TLS configuration (a $config.notes msg will request doing the prework in the comments of values-tls.yaml)
-if (-not $config.skipTls) {
+# Optionally TLS configuration
+if ($config.IsTlsConfigHandlingCertificates()) {
 	$valuesFiles += [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../chart/values/values-tls.yaml'))
 }
 
@@ -383,11 +383,20 @@ spec:
 }
 
 
-@"
+$namespaceYaml = @"
 apiVersion: v1
 kind: Namespace
 metadata:
   name: $namespace
-"@ | Out-File (Join-Path (New-ResourceDirectory $fluxDir 'Namespace') 'namespace.yaml') -NoNewline
+"@
+
+if ($config.IsUsingIstioAmbient()) {
+	$namespaceYaml += @"
+
+  labels:
+    istio.io/ambient=enabled
+"@
+}
+$namespaceYaml | Out-File (Join-Path (New-ResourceDirectory $fluxDir 'Namespace') 'namespace.yaml') -NoNewline
 
 Write-Verbose "Finished creating GitOps resources in directory $fluxDir"

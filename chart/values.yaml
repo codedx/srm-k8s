@@ -526,3 +526,21 @@ to:
   service:
     # -- the number of tool service replicas
     numReplicas: 1
+
+# -- these are the three TLS configuration options:
+# 1. Istio Ambient mode (see Deployment Guide section titled Istio Ambient Mode)
+# 2. Cert-Manager Certificates (see the Deployment Guide section titled Cert-Manager Certificates)
+# 3. K8s CertificateSigningRequests (see the Deployment Guide section titled Kubernetes CertificateSigningRequests)
+tls:
+  certManager:
+    # -- whether to create cert-manager Certificate resources (cert-manager CRD)
+    enabled: false
+    # -- the amount of time before the certificate is invalid
+    duration: 2160h # 90 days
+    # -- the amount of time before the certificate enters the renewal period
+    renewBefore: 360h # 15 days
+    issuerRef:
+      # -- the name of the cert-manager cluster issuer or issuer
+      name: ca-issuer
+      # -- the type of cert-manager issuer, Issuer or ClusterIssuer
+      kind: Issuer

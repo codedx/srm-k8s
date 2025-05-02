@@ -284,6 +284,7 @@ $config.kubeApiTargetPort = $kubeApiTargetPort
 
 $config.clusterCertificateAuthorityCertPath = $clusterCertificateAuthorityCertPath
 $config.csrSignerName = $csrSignerNameCodeDx
+$config.componentTlsType = '' -eq $csrSignerNameCodeDx ? [ComponentTlsType]::None : [ComponentTlsType]::K8sCSR
 
 $config.createSCCs = $createSCCs
 $config.skipDatabase = $skipDatabase
@@ -291,11 +292,6 @@ $config.skipToolOrchestration = $skipToolOrchestration
 $config.skipMinIO = $skipMinIO
 $config.skipNetworkPolicies = $skipNetworkPolicies
 $config.skipTls = $skipTls
-
-if (-not $config.skipTls) {
-	$valuesTlsFilePath = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../../chart/values/values-tls.yaml'))
-	$config.SetNote('UseTlsOption', "- You must do the prework in the comments at the top of '$valuesTlsFilePath' before invoking helm")
-}
 
 $config.skipScanFarm = $true
 
@@ -376,6 +372,23 @@ if (-not [string]::IsNullOrEmpty($redirectDockerHubReferencesTo)) {
 $config.useDefaultCACerts = -not [string]::IsNullOrEmpty($caCertsFilePath)
 $config.caCertsFilePath = $caCertsFilePath
 $config.caCertsFilePwd = $caCertsFilePwd
+
+if ($config.IsUsingK8sCertificateSigningRequest()) {
+
+	# the legacy deployment could use the cacerts file from the web container image, so it was possible
+	# for K8sCSR to be enabled w/o cacerts configuration
+	$config.useDefaultCACerts = $false
+
+	if ([string]::IsNullOrEmpty($config.caCertsFilePath)) {
+		Write-Host "You must specify a Java cacerts file path to use a K8s CSR signer."
+		$config.caCertsFilePath = Get-FilePath 'Enter the path to your Java cacerts file'
+	}
+
+	if ([string]::IsNullOrEmpty($config.caCertsFilePwd)) {
+		Write-Host "You must specify a cacerts file password to use a K8s CSR signer."
+		$config.caCertsFilePwd = Read-HostSecureText -Prompt 'Enter the Java cacerts file password'
+	}
+}
 
 Write-Host 'For a description of SRM System Size, see https://github.com/codedx/srm-k8s/blob/main/docs/DeploymentGuide.md#system-size'
 

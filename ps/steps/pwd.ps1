@@ -549,7 +549,7 @@ StatefulSet to zero replicas.
 	}
 }
 
-[ConfigAttribute(("externalDatabaseUser","skipDatabase"))]
+[ConfigAttribute(("externalDatabaseAuthType","externalDatabaseUser","skipDatabase"))]
 class ResetExternalDatabaseProcedure : ResetPwdProcedure {
 
 	static [string] hidden $description = @'

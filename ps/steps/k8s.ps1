@@ -195,6 +195,11 @@ communication between SRM components, do not use SRM network policies.
 		return $true
 	}
 
+	[bool]CanRun() {
+		# SRM network policies do not include Istio Ambient config (https://istio.io/latest/docs/ambient/usage/networkpolicy/)
+		return -not $this.config.IsUsingIstioAmbient()
+	}
+
 	[void]Reset(){
 		$this.config.skipNetworkPolicies = $false
 	}

@@ -192,6 +192,10 @@ minio:
   auth:
     # -- whether to mount MinIO credential values as files
     useCredentialsFiles: true
+  extraEnvVars:
+  # -- skip the MinIO client configuration, which may not work when TLS is enabled
+  - name: MINIO_SKIP_CLIENT
+    value: "yes"
   global:
     minio:
       # -- the K8s secret name with the MinIO access and secret key with required fields access-key and secret-key

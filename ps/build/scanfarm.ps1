@@ -60,7 +60,7 @@ function New-ScanFarmConfig($config) {
 	$webSvcName = $config.GetWebServiceName()
 
   $webSvcProtocol = "http"
-  if (-not $config.skipTls) {
+  if ($config.IsTlsConfigHandlingCertificates()) {
     $webSvcProtocol = "https"
   }
 
@@ -85,5 +85,15 @@ scan-services:
 
 	if ($config.scanFarmStorageHasInClusterUrl) {
 		New-ScanFarmInternalStorageConfig $config
+	}
+
+	if (-$config.IsTlsConfigHandlingCertificates()) {
+
+		@"
+scan-services:
+  trust-stores:
+    configmapName: $(Get-ClusterCaConfigMapName)
+    enabled: true
+"@ | Out-File (Get-ScanFarmTrustStoresValuesPath $config)
 	}
 }

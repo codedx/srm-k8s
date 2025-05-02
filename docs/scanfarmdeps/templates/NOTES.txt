@@ -1,0 +1,14 @@
+PostgreSQL Service:  {{ include "postgresql.names.fullname" . }}
+PostgreSQL Username: postgres
+PostgreSQL Password: kubectl -n {{ .Release.Namespace }} get secret {{ include "postgresql.names.fullname" . }} -o jsonpath='{{ "{" }}.data.postgres-password{{ "}" }}' | base64 -d
+
+Redis Service:  {{ include "redis.names.fullname" . }}-master
+Redis Password: kubectl -n {{ .Release.Namespace }} get secret {{ include "redis.names.fullname" . }} -o jsonpath='{{ "{" }}.data.redis-password{{ "}" }}' | base64 -d
+
+MinIO Service:  {{ include "minio.names.fullname" . }}
+MinIO Buckets: {{ range .Values.minio.provisioning.buckets -}}
+{{- .name | indent 1 }}
+{{- end }}
+MinIO URL:      http://{{ include "minio.names.fullname" . }}:9000
+MinIO Username: admin
+MinIO Password: kubectl -n {{ .Release.Namespace }} get secret {{ include "minio.names.fullname" . }} -o jsonpath='{{ "{" }}.data.root-password{{ "}" }}' | base64 -d

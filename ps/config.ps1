@@ -64,6 +64,19 @@ enum ScanFarmLicenseFormatType {
 	CombinedKeygen
 }
 
+enum ComponentTlsType {
+	None
+	IstioAmbient
+	CertManagerCertificates
+	K8sCSR
+}
+
+enum CertManagerIssuerType {
+	None
+	ClusterIssuer
+	Issuer
+}
+
 class Config {
 
 	static [int]   $kubeApiTargetPortDefault = 443
@@ -71,7 +84,7 @@ class Config {
 	static [int]   $volumeSizeGiBDefault = 0           # new default to support system size override when > 0
 	static [int]   $externalDatabasePortDefault = 3306
 
-	static [string]   $thisVersion = "1.8"
+	static [string]   $thisVersion = "1.9"
 
 	static [string[]] $protectedFields = @(
 		'repoUsername',
@@ -200,7 +213,11 @@ class Config {
 	[bool]         $skipToolOrchestration
 	[bool]         $skipMinIO
 	[bool]         $skipNetworkPolicies
+
 	[bool]         $skipTls
+	[string]       $componentTlsType
+	[string]       $certManagerIssuerName
+	[string]       $certManagerIssuerType
 
 	[string]       $workflowStorageType
 	[string]       $serviceAccountToolService
@@ -352,30 +369,34 @@ class Config {
 		$this.skipTls = $true
 		$this.webServicePortNumber = 9090
 
-		# v1.1 fields
+		# v1.1 fields (09/01/2023)
 		$this.salts = @()
 		$this.isLocked = $false
-		# v1.2 fields
+		# v1.2 fields (09/27/2023)
 		$this.scanFarmStorageIsProxied = $true       # < v1.2 assumed proxy
 		$this.scanFarmStorageContextPath = 'upload'  # < v1.2 assumed upload
 		$this.scanFarmStorageExternalUrl = ''        # redundantly initialized for readability
-		# v1.3 fields
+		# v1.3 fields (11/28/2023)
 		$this.systemSize = [SystemSize]::Unspecified # < 1.3 set CPU and memory independently (unspecified for backward compatibility)
 		$this.useTriageAssistant = $true             # minimum resource size accounts for Triage Assistant
-		# v1.4 fields
+		# v1.4 fields (02/20/2024)
 		$this.workflowStorageType = [WorkflowStorageType]::OnCluster # < 1.4 skipMinIO ? [WorkflowStorageType]::AccessKey : [WorkflowStorageType]::OnCluster
 		$this.serviceAccountToolService = ''
 		$this.serviceAccountWorkflow = ''
-		# v1.5 fields
+		# v1.5 fields (09/07/2024)
 		$this.authCookieSecure = $false
-		# v1.6 no new fields, only field renames
-		# v1.7 fields
+		# v1.6 no new fields, only field renames (02/07/2025)
+		# v1.7 fields (03/11/2025)
 		$this.scanFarmCombinedLicenseFile = ''
 		$this.scanFarmLicenseFormatType = [ScanFarmLicenseFormatType]::Legacy
-		# v1.8 fields
+		# v1.8 fields (04/8/2025)
 		$this.externalDatabaseAuthType = [ExternalDatabaseAuthType]::Password
 		$this.skipWebServiceAccountCreate = $false
 		$this.webServiceAccountName = ''
+		# v1.9 fields (04/23/2025)
+		$this.componentTlsType = [ComponentTlsType]::None
+		$this.certManagerIssuerName = ''
+		$this.certManagerIssuerType = [CertManagerIssuerType]::None
 		# Note: the restore-version.ps1 script should account for any config.json format changes
 	}
 
@@ -455,6 +476,12 @@ class Config {
 			}
 		}
 
+		$v1Dot9 = new-object Management.Automation.SemanticVersion('1.9')
+		if ($version -lt $v1Dot9) {
+			# component TLS type did not exist before v1.9
+			$config.componentTlsType = '' -eq $config.csrSignerName ? [ComponentTlsType]::None : [ComponentTlsType]::K8sCSR
+		}
+
 		# override config version obtained on file import
 		$config.configVersion = [Config]::thisVersion
 		return $config
@@ -484,6 +511,26 @@ class Config {
 	[bool]IsIngressCertManagerTls() {
 		return $this.ingressTlsType -eq [IngressTlsType]::CertManagerIssuer -or `
 			$this.ingressTlsType -eq [IngressTlsType]::CertManagerClusterIssuer
+	}
+
+	[bool]IsSystemSizeSpecified() {
+		return -not ([string]::IsNullOrEmpty($this.systemSize) -or $this.systemSize -eq [SystemSize]::Unspecified)
+	}
+
+	[bool]IsUsingIstioAmbient() {
+		return -not $this.skipTls -and $this.componentTlsType -eq [ComponentTlsType]::IstioAmbient
+	}
+
+	[bool]IsUsingK8sCertificateSigningRequest() {
+		return -not $this.skipTls -and $this.componentTlsType -eq [ComponentTlsType]::K8sCSR
+	}
+
+	[bool]IsUsingCertManagerCertificates() {
+		return -not $this.skipTls -and $this.componentTlsType -eq [ComponentTlsType]::CertManagerCertificates
+	}
+
+	[bool]IsTlsConfigHandlingCertificates() {
+		return -not $this.skipTls -and ([ComponentTlsType]::CertManagerCertificates,[ComponentTlsType]::K8sCSR -contains $this.componentTlsType)
 	}
 
 	[string]GetFullName() {
@@ -563,6 +610,10 @@ class Config {
 		return Join-Path ($this.GetWorkDir()) 'chart-temp'
 	}
 
+	[string]GetScriptsWorkDir() {
+		return Join-Path ($this.GetWorkDir()) 'chart-scripts'
+	}
+
 	[KeyValue[]]GetAllExcept([KeyValue[]] $keyValues, [string] $key) {
 		return $keyValues | Where-Object {
 			$_.key -ne $key
@@ -637,10 +688,6 @@ class Config {
 		} catch {
 			throw "Unable to unlock config file. Is the password correct? The error was: $_"
 		}
-	}
-
-	[bool] IsSystemSizeSpecified() {
-		return -not ([string]::IsNullOrEmpty($this.systemSize) -or $this.systemSize -eq [SystemSize]::Unspecified)
 	}
 }
 

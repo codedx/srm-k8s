@@ -1,18 +1,20 @@
-[ConfigAttribute(("skipTls","webServicePortNumber"))]
+[ConfigAttribute(("componentTlsType","skipTls","webServicePortNumber"))]
 class UseTlsOption : Step {
 
 	static [string] hidden $description = @'
-Specify whether you want to use CertificateSigningRequests to enable TLS between
-SRM components that support TLS. This requires a certificate signing capability
-running on your cluster.
+Specify whether you want to enable TLS between SRM components that support TLS.
 
-If you alternatively plan to use Istio's Ambient mode to enable mTLS between SRM
-components, avoid using CertificateSigningRequests for TLS by answering No here.
+Using Istio Service Mesh in Ambient mode with mTLS enabled is the recommended
+way to secure communications between SRM components. You can alternatively use
+CertificateSigningRequests, provided by cert-manager kube-csr or a similiar
+component, or you can use cert-manager Certificate resources if cert-manager
+is already installed on your cluster. Refer to the TLS pre-work sections of the
+Software Risk Manager Deployment Guide for more information.
 
 Note: The Scan Farm feature's scan and storage services do not support TLS via
-CertificateSigningRequests. If you want to use TLS with those services, do not
-enable TLS here. Instead, enable mTLS between SRM components by deploying an
-Istio service mesh using Ambient mode; see the SRM documentation for more info.
+CertificateSigningRequests or cert-manager's Certificate CRD resource. If you
+want to use TLS with those services, you must use Istio service mesh's Ambient
+mode.
 '@
 
 	UseTlsOption([Config] $config) : base(
@@ -20,37 +22,38 @@ Istio service mesh using Ambient mode; see the SRM documentation for more info.
 		$config,
 		'Configure TLS',
 		[UseTlsOption]::description,
-		'Protect component communications using TLS (where available)?') {}
+		'Specify your TLS configuration for SRM components') {}
 
 	[IQuestion] MakeQuestion([string] $prompt) {
-		return new-object YesNoQuestion($prompt,
-			'Yes, I want to use TLS (where available)',
-			'No, I don''t want to use TLS to secure component communications', 1)
+		return new-object MultipleChoiceQuestion($prompt, @(
+			[tuple]::create('&None', 'Do not use TLS between SRM components'),
+			[tuple]::create('&Istio Ambient', 'Use Istio Ambient mode with mTLS enabled for SRM component TLS'),
+			[tuple]::create('&Cert-Manager Certificates', 'Use cert-manager Certificate resources for SRM component TLS'),
+			[tuple]::create('&K8s CSR', 'Use K8s Certificate Signing Requests for SRM component TLS')), 0)
 	}
 
 	[bool]HandleResponse([IQuestion] $question) {
 
-		$this.config.webServicePortNumber = 9090
-		$this.config.skipTls = ([YesNoQuestion]$question).choice -eq 1
-
-		if (-not $this.config.skipTls) {
-			$this.config.webServicePortNumber = 9443
-
-			$valuesTlsFilePath = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../chart/values/values-tls.yaml'))
-			$this.config.SetNote($this.GetType().Name, "- Before you run the Helm Prep Script, you must do the prework in the comments at the top of '$valuesTlsFilePath'")
+		switch (([MultipleChoiceQuestion]$question).choice) {
+			0 { $this.config.componentTlsType = [ComponentTlsType]::None }
+			1 { $this.config.componentTlsType = [ComponentTlsType]::IstioAmbient }
+			2 { $this.config.componentTlsType = [ComponentTlsType]::CertManagerCertificates }
+			3 { $this.config.componentTlsType = [ComponentTlsType]::K8sCSR }
 		}
+		$this.config.skipTls = $this.config.componentTlsType -eq [ComponentTlsType]::None
+		$this.config.webServicePortNumber = [ComponentTlsType]::CertManagerCertificates,[ComponentTlsType]::K8sCSR -contains $this.config.componentTlsType ? 9443 : 9090
 		return $true
 	}
 
 	[void]Reset(){
 		$this.config.skipTls = $false
+		$this.config.componentTlsType = [ComponentTlsType]::None
 		$this.config.webServicePortNumber = 9090
-		$this.config.RemoveNote($this.GetType().Name)
 	}
 }
 
 
-[ConfigAttribute(("clusterCertificateAuthorityCertPath","skipTls"))]
+[ConfigAttribute(("clusterCertificateAuthorityCertPath"))]
 class CertsCAPath : Step {
 
 	static [string] hidden $description = @'
@@ -84,11 +87,11 @@ Signing Request Kubernetes resources, refer to the comments in this file:
 	}
 
 	[bool]CanRun() {
-		return -not $this.config.skipTls
+		return $this.config.IsTlsConfigHandlingCertificates()
 	}
 }
 
-[ConfigAttribute(("csrSignerName","skipTls"))]
+[ConfigAttribute(("csrSignerName"))]
 class SignerName : Step {
 
 	static [string] hidden $description = @'
@@ -113,6 +116,75 @@ components in the SRM namespace.
 	}
 
 	[bool]CanRun() {
-		return -not $this.config.skipTls
+		return $this.config.IsUsingK8sCertificateSigningRequest()
+	}
+}
+
+[ConfigAttribute(("certManagerIssuerName"))]
+class CertificateIssuerName : Step {
+
+	static [string] hidden $description = @'
+Specify the name of your existing cert-manager issuer resource.
+'@
+
+	CertificateIssuerName([Config] $config) : base(
+		[CertificateIssuerName].Name, 
+		$config,
+		'Cert-Manager Issuer Name',
+		[CertificateIssuerName]::description,
+		'Enter the name of your cert-manager issuer') {}
+
+	[bool]HandleResponse([IQuestion] $question) {
+		$this.config.certManagerIssuerName = ([Question]$question).GetResponse([SignerName]::default)
+		return $true
+	}
+
+	[void]Reset(){
+		$this.config.certManagerIssuerName = ''
+	}
+
+	[bool]CanRun() {
+		return $this.config.IsUsingCertManagerCertificates()
+	}
+}
+
+[ConfigAttribute(("certManagerIssuerType"))]
+class CertificateIssuerType : Step {
+
+	static [string] hidden $description = @'
+Specify the type of your cert-manager issuer resource. The ClusterIssuer
+type is cluster-scoped and can be used by all namespaces. The Issuer type
+is namespace-scoped and can only be used by the namespace in which it is
+created.
+'@
+
+	CertificateIssuerType([Config] $config) : base(
+		[CertificateIssuerType].Name, 
+		$config,
+		'Cert-Manager Issuer Type',
+		[CertificateIssuerType]::description,
+		'Enter your type of cert-manager issuer') {}
+
+	[IQuestion] MakeQuestion([string] $prompt) {
+		return new-object MultipleChoiceQuestion($prompt, @(
+			[tuple]::create('&ClusterIssuer', 'The cert-manager issuer is of type ClusterIssuer'),
+			[tuple]::create('&Issuer', 'The cert-manager issuer is of type Issuer')), 0)
+	}
+
+	[bool]HandleResponse([IQuestion] $question) {
+
+		switch (([MultipleChoiceQuestion]$question).choice) {
+			0 { $this.config.certManagerIssuerType = [CertManagerIssuerType]::ClusterIssuer }
+			1 { $this.config.certManagerIssuerType = [CertManagerIssuerType]::Issuer }
+		}
+		return $true
+	}
+
+	[void]Reset(){
+		$this.config.certManagerIssuerType = [CertManagerIssuerType]::None
+	}
+
+	[bool]CanRun() {
+		return $this.config.IsUsingCertManagerCertificates()
 	}
 }
