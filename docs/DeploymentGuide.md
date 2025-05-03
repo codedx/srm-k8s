@@ -5158,7 +5158,7 @@ kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/deploy-ingress-nginx.
 2. Patch the ingress controller deployment
 
 ```
-kubectl -n ingress-nginx patch deployment ingress-nginx-controller --patch '{\"spec\":{\"template\":{\"spec\":{\"nodeSelector\":{\"has-https-port-mapping\":\"true\"}}}}}'
+kubectl -n ingress-nginx patch deployment ingress-nginx-controller --patch '{"spec":{"template":{"spec":{"nodeSelector":{"has-https-port-mapping":"true"}}}}}'
 ```
 
 3. Wait on the ingress controller
@@ -5178,6 +5178,7 @@ git clone https://github.com/codedx/srm-k8s
 2. Deploy the scan farm dependencies, replacing the path placeholder
 
 ```
+helm dependency update /path/to/srm-k8s/docs/scanfarmdeps
 helm -n srm install --create-namespace srmdeps /path/to/srm-k8s/docs/scanfarmdeps
 ```
 
