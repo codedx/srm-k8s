@@ -211,7 +211,7 @@ minio:
     # -- the Docker image repository name for the MinIO workload
     repository: bitnami/minio
     # -- the Docker image version for the MinIO workload
-    tag: 2024.11.7-debian-12-r2
+    tag: 2025.4.22-debian-12-r0
     # -- the K8s Docker image pull policy for the MinIO workload
     pullSecrets: []
     #  - private-registry
@@ -334,7 +334,7 @@ argo-workflows:
     pullSecrets: []
     #  - name: private-registry
     # -- the Docker image version for the Argo workload
-    tag: v3.5.11
+    tag: v3.6.7
   # @ignore
   server:
     # @ignore
