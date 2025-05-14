@@ -4922,9 +4922,9 @@ This chart switches the Scan Farm SAST component from version 2024.9.1 to 2024.1
 
 ## All-in-One Demo Config
 
-Refer to the Quick Start installation sections if you want to quickly spin up a demo environment for the [Core](#core-feature) and [Tool Orchestration](#tool-orchestration-feature) features.
+Refer to the [Quick Start installation sections](#installation---quick-start) if you want to quickly spin up a demo environment for the [Core](#core-feature) and [Tool Orchestration](#tool-orchestration-feature) features.
 
-The [Scan Farm](#scan-farm-feature) feature does not include a Quick start, but this section shows how you can use [kind](https://kind.sigs.k8s.io/) and [Docker Desktop](https://www.docker.com/products/docker-desktop/) to configure a single environment with the [Core](#core-feature), [Tool Orchestration](#tool-orchestration-feature), and [Scan Farm](#scan-farm-feature) features. The environment uses TLS termination with an Ingress-NGINX ingress controller and a self-signed certificate using the DNS name host.docker.internal (managed by Docker Desktop).
+The [Scan Farm](#scan-farm-feature) feature does not include a Quick Start, but this section shows how you can use [kind](https://kind.sigs.k8s.io/) and [Docker Desktop](https://www.docker.com/products/docker-desktop/) to configure a single environment with the [Core](#core-feature), [Tool Orchestration](#tool-orchestration-feature), and [Scan Farm](#scan-farm-feature) features. The environment uses TLS termination with an Ingress-NGINX ingress controller and a self-signed certificate using the DNS name host.docker.internal (managed by Docker Desktop).
 
 The configuration depends on having the following resources available for SRM components, with Scan Farm and Tool Orchestration pods not necessarily needing to run simultaneously. Additional resources may be required for other related cluster workloads.
 
