@@ -1,3 +1,8 @@
+global:
+  compatibility:
+    openshift:
+      adaptSecurityContext: auto
+
 minio:
   provisioning:
     enabled: true
@@ -12,8 +17,11 @@ minio:
         expiry:
           days: 8
   persistence:
-    size: 100Gi
+    size: 50Gi
 postgresql:
+  image:
+    # scan farm currently supports PostgreSQL versions 13 - 15 (https://documentation.blackduck.com/bundle/coverity-docs/page/cnc/topics/cnc_support_matrix.html)
+    tag: 15.10.0-debian-12-r2
   primary:
     persistence:
       size: 5Gi

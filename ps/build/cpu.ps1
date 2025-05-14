@@ -10,6 +10,9 @@ function New-WebCPUConfig($config) {
 		# for an external database, use the web CPU count to infer system size where CPU and DB 
 		# counts are equal for the Small, Medium, Large, and Extra Large sizes
 		$cpuCountDB = Get-VirtualCpuCountFromReservation $config.dbMasterCPUReservation
+		if ($cpuCountDB -lt 1) {
+			$cpuCountDB = 1 # use 1 vCPU for pool and limit calculations
+		}
 	}
 	
 	# https://community.blackduck.com/s/article/Code-Dx-Hikari-connection-pooling-settings-and-connection-timeout

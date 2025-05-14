@@ -27,7 +27,13 @@ function New-ScanFarmExternalProxiedStorageConfig($config) {
 	if ($config.ingressTlsSecretName) {
 		$externalWebSvcProtocol = "https"
 	}
-  $externalWebSvcUrl = "$externalWebSvcProtocol`://$($config.ingressHostname)"
+
+	$hostname = $config.ingressHostname
+	if ($config.ingressType -eq [IngressType]::Route) {
+		$hostname = $config.routeHostname
+	}
+
+  $externalWebSvcUrl = "$externalWebSvcProtocol`://$hostname"
 
 	@"
 scan-services:

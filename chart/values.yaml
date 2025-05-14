@@ -71,7 +71,26 @@ networkPolicy:
 openshift:
   # -- whether to create SecurityContextConstraint resources, which is required when using OpenShift
   createSCC: false
-
+  routes:
+    # -- whether to use Routes for ingress
+    enabled: false
+    # -- the host associated with routes
+    host:
+    tls:
+      # -- whether to use secured routes
+      enabled: false
+      # -- the PEM-formatted CA certificate for your route TLS configuration
+      caCertificate:
+      # -- the PEM-formatted TLS certificate for your route TLS configuration
+      certificate:
+      # -- the TLS key for your route TLS configuration
+      key:
+      # -- the destination CA certificates required for reencrypt TLS termination
+      destination:
+        # -- the PEM-formatted Scan Farm CA certificate
+        scanfarmCaCertificate:
+        # -- the PEM-formatted web CA certificate
+        webCaCertificate:
 web:
   # @ignore
   affinity: {}
