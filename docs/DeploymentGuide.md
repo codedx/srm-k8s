@@ -483,7 +483,7 @@ You can use a private registry hosted by a cloud provider (e.g., AWS, GCP, Azure
 
 ### Scan Farm Ingress Requirements
 
-The Scan Farm feature requires you to use an ingress controller, and your ingress controller must support multiple ingress resources referencing the same hostname. Black Duck recommends the [NGINX Community](https://kubernetes.github.io/ingress-nginx/) ingress controller. You can find the Installation Guide [here](https://kubernetes.github.io/ingress-nginx/deploy/).
+The Scan Farm feature requires you to use an ingress controller, and your ingress controller must support multiple ingress resources referencing the same hostname. Black Duck recommends using either the [NGINX Community](https://kubernetes.github.io/ingress-nginx/deploy/) ingress controller or [OpenShift Routes](https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/networking/configuring-routes).
 
 ### Scan Farm Internet Access Requirements
 
