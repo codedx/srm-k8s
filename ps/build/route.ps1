@@ -21,13 +21,14 @@ openshift:
 		New-OpenShiftRouteScanFarmTlsDestinationConfig $config
 	}
 
-	if ($routeTlsEnabled) {
+	if ($config.IsTlsConfigHandlingCertificates()) {
 
+		# Route must have reencrypt termination for the web service to be accessible
+		New-OpenShiftRouteWebTlsDestinationConfig $config
+	}
+
+	if ($routeTlsEnabled) {
 		New-OpenShiftRouteTlsConfig $config
-		
-		if ($config.IsTlsConfigHandlingCertificates()) {
-			New-OpenShiftRouteWebTlsDestinationConfig $config
-		}
 	}
 }
 

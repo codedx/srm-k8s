@@ -39,6 +39,11 @@ be limited to dev/test-related deployments.
 
 Securing your route(s) with HTTPS requires using a certificate
 that you provide.
+
+Note: If you opt for an unsecured Route for development or testing
+purposes and are using the Scan Farm feature or have configured
+component TLS with certificates you provide, OpenShift will use its
+own certificate.
 '@
 
 	RouteTLS([Config] $config) : base(
