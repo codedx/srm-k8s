@@ -77,7 +77,7 @@ features:
   scanfarm: true
 scan-services:
   cache-service:
-    javaOpts: "-Dserver.ssl.enabled-protocols=TLSv1.2,TLSv1.3 -Dcom.blackduck.coverity.cache.srm.secure=false"
+    javaOpts: "-Dserver.ssl.enabled-protocols=TLSv1.2,TLSv1.3 -Dcom.blackduck.coverity.cache.srm.secure=$($config.IsTlsConfigHandlingCertificates() ? 'true -Dcom.blackduck.coverity.cache.srm.caCert=file:/etc/srmssl/srm-ca.crt' : 'false')"
   scan-service:
     tools:
       sync:
@@ -100,6 +100,18 @@ scan-services:
   trust-stores:
     configmapName: $(Get-ClusterCaConfigMapName)
     enabled: true
+  cache-service:
+    extraVolumes:
+    - name: import-srm-ca-cert
+      configMap:
+        name: $(Get-ClusterCaConfigMapName)
+        items:
+        - key: ca.crt
+          path: srm-ca.crt
+    extraVolumeMounts:
+    - name: import-srm-ca-cert
+      mountPath: /etc/srmssl
+      readOnly: true
 "@ | Out-File (Get-ScanFarmTrustStoresValuesPath $config)
 	}
 }
