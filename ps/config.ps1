@@ -271,6 +271,7 @@ class Config {
 	[string]       $routeTlsType
 	[string]       $routeTlsKeyPath
 	[string]       $routeTlsCertificatePath
+	[bool]         $routeTlsUseCACertificate
 	[string]       $routeTlsCACertificatePath
 	[string]       $routeHostname
 
@@ -412,6 +413,7 @@ class Config {
 		# v1.10 fields (05/12/2025)
 		$this.routeTlsType = [RouteTlsType]::None
 		$this.routeTlsKeyPath = ''
+		$this.routeTlsUseCACertificate = $false
 		$this.routeTlsCertificatePath = ''
 		$this.routeTlsCACertificatePath = ''
 		$this.routeHostname = ''

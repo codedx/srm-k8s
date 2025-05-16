@@ -22,7 +22,9 @@ spec:
     {{- if .Values.openshift.routes.tls.enabled }}
     key: {{ .Values.openshift.routes.tls.key | quote }}
     certificate: {{ .Values.openshift.routes.tls.certificate | quote }}
+    {{- if .Values.openshift.routes.tls.caCertificate }}
     caCertificate: {{ .Values.openshift.routes.tls.caCertificate | quote }}
+    {{- end }}
     {{- end }}
     {{- if .Values.web.tlsSecret }}
     termination: reencrypt
@@ -55,7 +57,9 @@ spec:
     {{- if .Values.openshift.routes.tls.enabled }}
     key: {{ .Values.openshift.routes.tls.key | quote }}
     certificate: {{ .Values.openshift.routes.tls.certificate | quote }}
+    {{- if .Values.openshift.routes.tls.caCertificate }}
     caCertificate: {{ .Values.openshift.routes.tls.caCertificate | quote }}
+    {{- end }}
     {{- end }}
     termination: edge
     {{- if .Values.openshift.routes.tls.enabled }}
@@ -82,7 +86,9 @@ spec:
     {{- if .Values.openshift.routes.tls.enabled }}
     key: {{ .Values.openshift.routes.tls.key | quote }}
     certificate: {{ .Values.openshift.routes.tls.certificate | quote }}
+    {{- if .Values.openshift.routes.tls.caCertificate }}
     caCertificate: {{ .Values.openshift.routes.tls.caCertificate | quote }}
+    {{- end }}
     {{- end }}
     termination: edge
     {{- if .Values.openshift.routes.tls.enabled }}
@@ -109,7 +115,9 @@ spec:
     {{- if .Values.openshift.routes.tls.enabled }}
     key: {{ .Values.openshift.routes.tls.key | quote }}
     certificate: {{ .Values.openshift.routes.tls.certificate | quote }}
+    {{- if .Values.openshift.routes.tls.caCertificate }}
     caCertificate: {{ .Values.openshift.routes.tls.caCertificate | quote }}
+    {{- end }}
     {{- end }}
     termination: reencrypt
     destinationCACertificate: {{ required "You must run the scan-farm-cert-authority.ps1 to set .Values.openshift.routes.tls.destination.scanfarmCaCertificate" .Values.openshift.routes.tls.destination.scanfarmCaCertificate | quote }}

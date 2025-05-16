@@ -151,6 +151,7 @@ $s = @{}
 [RouteTlsCACertificatePath],
 [RouteTlsCertificatePath],
 [RouteTlsKeyPath],
+[RouteTlsUseCACertificate],
 [UseExternalDatabase],
 [UseExternalStorage],
 [SamlAppName],
@@ -325,8 +326,10 @@ Add-StepTransitions $graph $s[[ExternalStorageTLS]] $s[[ExternalStorageBucket]]
 
 Add-StepTransitions $graph $s[[ToolTolerations]] $s[[Finish]]
 
-Add-StepTransitions $graph $s[[IngressKind]] $s[[RouteHostname]],$s[[RouteTls]],$s[[RouteTlsKeyPath]],$s[[RouteTlsCertificatePath]],$s[[RouteTlsCACertificatePath]],$s[[UseDefaultCACerts]]
+Add-StepTransitions $graph $s[[IngressKind]] $s[[RouteHostname]],$s[[RouteTls]],$s[[RouteTlsKeyPath]],$s[[RouteTlsCertificatePath]],$s[[RouteTlsUseCACertificate]],$s[[RouteTlsCACertificatePath]],$s[[UseDefaultCACerts]]
 Add-StepTransitions $graph $s[[RouteTlsCACertificatePath]] $s[[CACertsFile]]
+Add-StepTransitions $graph $s[[RouteTlsUseCACertificate]] $s[[UseDefaultCACerts]]
+Add-StepTransitions $graph $s[[RouteTlsUseCACertificate]] $s[[CACertsFile]]
 Add-StepTransitions $graph $s[[RouteTls]] $s[[UseDefaultCACerts]]
 Add-StepTransitions $graph $s[[RouteTls]] $s[[CACertsFile]]
 

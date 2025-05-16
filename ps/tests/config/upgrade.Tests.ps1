@@ -1626,6 +1626,7 @@ Describe 'Parsing config' -Tag 'upgrade' {
 		$config.psobject.properties['routeTlsType'] | Should -Not -BeNullOrEmpty
 		$config.psobject.properties['routeTlsKeyPath'] | Should -Not -BeNullOrEmpty
 		$config.psobject.properties['routeTlsCertificatePath'] | Should -Not -BeNullOrEmpty
+		$config.psobject.properties['routeTlsUseCACertificate'] | Should -Not -BeNullOrEmpty
 		$config.psobject.properties['routeTlsCACertificatePath'] | Should -Not -BeNullOrEmpty
 		$config.psobject.properties['routeHostname'] | Should -Not -BeNullOrEmpty
 	}

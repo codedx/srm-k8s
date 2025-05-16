@@ -4727,6 +4727,7 @@ Refer to the [lock/unlock scripts](../admin/config) to edit [protected config.js
 |routeTlsType|Ingress|type of Route TLS configuration|None; ExternalCertificate|1.10|
 |routeTlsKeyPath|Ingress|path to the TLS key for the Route TLS configuration||1.10|
 |routeTlsCertificatePath|Ingress|path to the TLS certificate for the Route TLS configuration||1.10|
+|routeTlsUseCACertificate|Ingress|whether to use a TLS CA certificate for the Route TLS configuration||1.10|
 |routeTlsCACertificatePath|Ingress|path to the TLS CA certificate for the Route TLS configuration||1.10|
 |routeHostname|Ingress|hostname associated with SRM Route||1.10|
 ||||||

@@ -87,7 +87,42 @@ own certificate.
 	}
 }
 
-[ConfigAttribute(("routeTlsCACertificatePath","routeTlsType"))]
+[ConfigAttribute(("routeTlsType","routeTlsUseCACertificate"))]
+class RouteTlsUseCACertificate : Step {
+
+	static [string] hidden $description = @'
+Your Route configuration can optionally include a CA certificate to
+complete the certificate chain.
+'@
+
+	RouteTlsUseCACertificate([Config] $config) : base(
+		[RouteTlsUseCACertificate].Name, 
+		$config,
+		'Route TLS CA Certificate Option',
+		[RouteTlsUseCACertificate]::description,
+		'Do you want to include a CA certificate?') {}
+
+	[IQuestion]MakeQuestion([string] $prompt) {
+		return new-object YesNoQuestion($prompt,
+			'Yes, I want to include a CA certificate in my Route.',
+			'No, I do not want to include a CA certificate in my Route.', 1)
+	}
+
+	[bool]HandleResponse([IQuestion] $question) {
+		$this.config.routeTlsUseCACertificate = ([YesNoQuestion]$question).choice -eq 0
+		return $true
+	}
+
+	[void]Reset(){
+		$this.config.routeTlsUseCACertificate = $false
+	}
+
+	[bool]CanRun() {
+		return $this.config.routeTlsType -eq [RouteTlsType]::ExternalCertificate
+	}
+}
+
+[ConfigAttribute(("routeTlsCACertificatePath","routeTlsType","routeTlsUseCACertificate"))]
 class RouteTlsCACertificatePath : Step {
 
 	static [string] hidden $description = @'
@@ -116,7 +151,7 @@ for your Route configuration.
 	}
 
 	[bool]CanRun() {
-		return $this.config.routeTlsType -eq [RouteTlsType]::ExternalCertificate
+		return $this.config.routeTlsType -eq [RouteTlsType]::ExternalCertificate -and $this.config.routeTlsUseCACertificate
 	}
 }
 

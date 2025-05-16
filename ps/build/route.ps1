@@ -38,13 +38,21 @@ function New-OpenShiftRouteTlsConfig($config) {
 openshift:
   routes:
     tls:
-      caCertificate: |-
-        $(Get-FormattedCertificate $config.routeTlsCACertificatePath 8)
       certificate: |-
         $(Get-FormattedCertificate $config.routeTlsCertificatePath 8)
       key: |-
         $(Get-FormattedCertificate $config.routeTlsKeyPath 8)
 "@ | Out-File (Get-OpenShiftRouteTlsValuesPath $config)
+
+	if ($config.routeTlsUseCACertificate) {
+			@"
+openshift:
+  routes:
+    tls:
+      caCertificate: |-
+        $(Get-FormattedCertificate $config.routeTlsCACertificatePath 8)
+"@ | Out-File (Get-OpenShiftRouteCaTlsValuesPath $config)
+	}
 }
 
 function New-OpenShiftRouteWebTlsDestinationConfig($config) {

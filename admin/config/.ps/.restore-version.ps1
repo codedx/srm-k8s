@@ -79,6 +79,7 @@ while ($null -ne $priorVersion) {
 			$fieldsToRemove += 'routeTlsType'
 			$fieldsToRemove += 'routeTlsKeyPath'
 			$fieldsToRemove += 'routeTlsCertificatePath'
+			$fieldsToRemove += 'routeTlsUseCACertificate'
 			$fieldsToRemove += 'routeTlsCACertificatePath'
 			$fieldsToRemove += 'routeHostname'
 			break

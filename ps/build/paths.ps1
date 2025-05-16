@@ -510,6 +510,10 @@ function Get-OpenShiftRouteTlsValuesPath($config) {
 	Join-Path $config.GetValuesWorkDir() 'openshift-route-tls.values.yaml'
 }
 
+function Get-OpenShiftRouteCaTlsValuesPath($config) {
+	Join-Path $config.GetValuesWorkDir() 'openshift-route-ca-tls.values.yaml'
+}
+
 function Get-OpenShiftRouteWebTlsValuesPath($config) {
 	Join-Path $config.GetValuesWorkDir() 'openshift-route-web-tls.values.yaml'
 }
