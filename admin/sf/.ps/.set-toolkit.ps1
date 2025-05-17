@@ -15,6 +15,8 @@ scan-services:
     tools:
       sync:
         enabled: false
+
+Note that the sync.enabled property must be set to true for the scan service to obtain the SCA toolkit.
 #>
 
 param (
@@ -55,10 +57,10 @@ if ('' -eq $srmHostname) {
 if ('' -eq $srmAdminApiKey) {
 	$srmAdminApiKey = Read-HostSecureText "Enter an SRM admin API key"
 }
-if ('' -eq $repoUsername) {
+if (-not $skipDownload -and '' -eq $repoUsername) {
 	$repoUsername = Read-HostText "Enter your Black Duck Repo username"
 }
-if ('' -eq $repoPwd) {
+if (-not $skipDownload -and '' -eq $repoPwd) {
 	$repoPwd = Read-HostSecureText "Enter your Black Duck Repo password"
 }
 
