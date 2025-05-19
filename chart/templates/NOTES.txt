@@ -8,4 +8,7 @@ $ kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "srm-web.fulln
 {{- end }}
 
 You can get the initial SRM admin password by running this command:
-$ kubectl get secret --namespace {{ .Release.Namespace }} {{ include "srm-web.web.secret" . }} -o jsonpath="{.data.admin-password}" | base64 --decode
+$ kubectl get secret --namespace {{ .Release.Namespace }} {{ include "srm-web.web.secret" . }} -o=go-template='{{ "{{" }} index .data "admin-password" | base64decode {{ "}}" }}'
+
+Note: The above kubectl command is incompatible with PowerShell's PSNativeCommandArgumentPassing Legacy mode.
+      If necessary, switch to Standard with this command: $global:PSNativeCommandArgumentPassing='Standard'

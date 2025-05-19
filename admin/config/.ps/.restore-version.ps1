@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.5.0
+.VERSION 1.6.0
 .GUID 4504dc63-bd21-46b8-994f-75f06d2766a0
 .AUTHOR Black Duck
 .COPYRIGHT Copyright 2024 Black Duck Software, Inc. All rights reserved.
@@ -74,6 +74,16 @@ while ($null -ne $priorVersion) {
 
 	switch ($priorVersionLabel) {
 
+		('1.9.0') {
+			# 1.10 -> 1.9
+			$fieldsToRemove += 'routeTlsType'
+			$fieldsToRemove += 'routeTlsKeyPath'
+			$fieldsToRemove += 'routeTlsCertificatePath'
+			$fieldsToRemove += 'routeTlsUseCACertificate'
+			$fieldsToRemove += 'routeTlsCACertificatePath'
+			$fieldsToRemove += 'routeHostname'
+			break
+		}
 		('1.8.0') {
 			# 1.9 -> 1.8
 			$fieldsToRemove += 'componentTlsType'

@@ -497,3 +497,31 @@ function Get-K8sCsrScriptPath($config) {
 function Get-CertManagerCertificateK8sPath($config) {
 	Join-Path $config.GetValuesWorkDir() 'cert-manager-certificate.k8s.yaml'
 }
+
+function Get-CombinedValuesPath($config) {
+	Join-Path $config.GetValuesCombinedWorkDir() 'values-combined.yaml'
+}
+
+function Get-OpenShiftRouteValuesPath($config) {
+	Join-Path $config.GetValuesWorkDir() 'openshift-route.values.yaml'
+}
+
+function Get-OpenShiftRouteTlsValuesPath($config) {
+	Join-Path $config.GetValuesWorkDir() 'openshift-route-tls.values.yaml'
+}
+
+function Get-OpenShiftRouteCaTlsValuesPath($config) {
+	Join-Path $config.GetValuesWorkDir() 'openshift-route-ca-tls.values.yaml'
+}
+
+function Get-OpenShiftRouteWebTlsValuesPath($config) {
+	Join-Path $config.GetValuesWorkDir() 'openshift-route-web-tls.values.yaml'
+}
+
+function Get-OpenShiftRouteScanFarmTlsValuesPath($config) {
+	Join-Path $config.GetValuesCombinedWorkDir() 'openshift-route-scanfarm-tls.values.yaml'
+}
+
+function Get-OpenShiftRouteScanFarmTlsScriptPath($config) {
+	Join-Path $config.GetScriptsWorkDir() 'openshift-route-scanfarm-tls-script.ps1'
+}

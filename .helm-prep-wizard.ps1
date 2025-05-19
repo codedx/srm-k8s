@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.13.0
+.VERSION 1.14.0
 .GUID 0ab56564-8d45-485c-829a-bffed0882237
 .AUTHOR Black Duck
 .COPYRIGHT Copyright 2024 Black Duck Software, Inc. All rights reserved.
@@ -34,6 +34,7 @@ Write-Host 'Loading...' -NoNewline
 'ps/steps/memory.ps1',
 'ps/steps/pwd.ps1',
 'ps/steps/reg.ps1',
+'ps/steps/route.ps1',
 'ps/steps/scanfarm.ps1',
 'ps/steps/scanfarm-cache.ps1',
 'ps/steps/scanfarm-db.ps1',
@@ -145,6 +146,12 @@ $s = @{}
 [Namespace],
 [ToolOrchestrationDockerImageVersion],
 [ReleaseName],
+[RouteHostname],
+[RouteTLS],
+[RouteTlsCACertificatePath],
+[RouteTlsCertificatePath],
+[RouteTlsKeyPath],
+[RouteTlsUseCACertificate],
 [UseExternalDatabase],
 [UseExternalStorage],
 [SamlAppName],
@@ -318,6 +325,13 @@ Add-StepTransitions $graph $s[[ToolOrchestrationDockerImageVersion]] $s[[Workflo
 Add-StepTransitions $graph $s[[ExternalStorageTLS]] $s[[ExternalStorageBucket]]
 
 Add-StepTransitions $graph $s[[ToolTolerations]] $s[[Finish]]
+
+Add-StepTransitions $graph $s[[IngressKind]] $s[[RouteHostname]],$s[[RouteTls]],$s[[RouteTlsKeyPath]],$s[[RouteTlsCertificatePath]],$s[[RouteTlsUseCACertificate]],$s[[RouteTlsCACertificatePath]],$s[[UseDefaultCACerts]]
+Add-StepTransitions $graph $s[[RouteTlsCACertificatePath]] $s[[CACertsFile]]
+Add-StepTransitions $graph $s[[RouteTlsUseCACertificate]] $s[[UseDefaultCACerts]]
+Add-StepTransitions $graph $s[[RouteTlsUseCACertificate]] $s[[CACertsFile]]
+Add-StepTransitions $graph $s[[RouteTls]] $s[[UseDefaultCACerts]]
+Add-StepTransitions $graph $s[[RouteTls]] $s[[CACertsFile]]
 
 Add-StepTransitions $graph $s[[AuthenticationType]] $s[[LdapInstructions]],$s[[IngressKind]]
 Add-StepTransitions $graph $s[[AuthenticationType]] $s[[IngressKind]]

@@ -15,6 +15,8 @@ Note: You can select an ingress option initially to create an ingress
 resource from which you can pattern a path-based route definition.
 '@
 
+	$choiceResponse = @()
+
 	IngressKind([Config] $config) : base(
 		[IngressKind].Name, 
 		$config,
@@ -34,22 +36,43 @@ resource from which you can pattern a path-based route definition.
 
 	[IQuestion]MakeQuestion([string] $prompt) {
 
-		$choices = @(
-			[tuple]::create('Ingress-NGINX (Community)', 'Create an ingress resource for use with an NGINX Community ingress controller (kubernetes/ingress-nginx repo) you install separately')
-			[tuple]::create('Other Ingress', 'Create an ingress resource for use with another ingress controller you install separately')
-		)
+		$choices = @()
+		$this.choiceResponse = @()
+
+		$choices += [tuple]::create('Ingress-NGINX (Community)', 'Create an ingress resource for use with an NGINX Community ingress controller (kubernetes/ingress-nginx repo) you install separately')
+		$this.choiceResponse += { param($instance) $instance.config.ingressType = [IngressType]::NginxIngressCommunity; $instance.config.skipIngressEnabled = $false; }
+		
+		$choices += [tuple]::create('Other Ingress', 'Create an ingress resource for use with another ingress controller you install separately')
+		$this.choiceResponse += { param($instance) $instance.config.ingressType = [IngressType]::OtherIngress; $instance.config.skipIngressEnabled = $false; }
 
 		if ($this.config.skipScanFarm) {
 
 			$choices += [tuple]::create('ClusterIP Service', 'Configure the SRM Kubernetes service as a ClusterIP service type (use port-forward or something else to access SRM)')
+			$this.choiceResponse += { param($instance) $instance.config.ingressType = [IngressType]::ClusterIP }
+
 			$choices += [tuple]::create('NodePort Service', 'Configure the SRM Kubernetes service as a NodePort service type')
+			$this.choiceResponse += { param($instance) $instance.config.ingressType = [IngressType]::NodePort; $instance.config.webServiceType = 'NodePort' }
+
 			$choices += [tuple]::create('LoadBalancer Service', 'Configure the SRM Kubernetes service as a LoadBalancer service type')
+			$this.choiceResponse += { param($instance) $instance.config.ingressType = [IngressType]::LoadBalancer; $instance.config.webServiceType = 'LoadBalancer' }
 
 			if ($this.config.k8sProvider -eq [ProviderType]::Eks) {
+
 				$choices += [tuple]::create('Classic ELB (HTTPS)', 'Use AWS Classic Load Balancer with Certificate Manager')
+				$this.choiceResponse += { param($instance) $instance.config.ingressType = [IngressType]::ClassicElb; $instance.config.webServiceType = 'LoadBalancer'; $instance.config.authCookieSecure = $true }
+
 				$choices += [tuple]::create('Network ELB (HTTPS)', 'Use AWS Network Load Balancer with Certificate Manager')
+				$this.choiceResponse += { param($instance) $instance.config.ingressType = [IngressType]::NetworkElb; $instance.config.webServiceType = 'LoadBalancer'; $instance.config.authCookieSecure = $true }
+
 				$choices += [tuple]::create('Internal Classic ELB (HTTPS)', 'Use Internal AWS Classic Load Balancer')
+				$this.choiceResponse += { param($instance) $instance.config.ingressType = [IngressType]::InternalClassicElb; $instance.config.webServiceType = 'LoadBalancer'; $instance.config.authCookieSecure = $true }
 			}
+		}
+
+		if ($this.config.k8sProvider -eq [ProviderType]::OpenShift) {
+
+			$choices += [tuple]::create('OpenShift Route', 'Use OpenShift Route resource(s)')
+			$this.choiceResponse += { param($instance) $instance.config.ingressType = [IngressType]::Route; $instance.config.webServiceType = 'ClusterIP' }
 		}
 
 		return new-object MultipleChoiceQuestion($prompt, $choices, 0)
@@ -60,18 +83,7 @@ resource from which you can pattern a path-based route definition.
 		$this.config.skipIngressEnabled = $true
 		$this.config.webServiceType = 'ClusterIP'
 
-		$authCookieSecure = $false
-		switch (([MultipleChoiceQuestion]$question).choice) {
-			0 { $this.config.ingressType = [IngressType]::NginxIngressCommunity; $this.config.skipIngressEnabled = $false; }
-			1 { $this.config.ingressType = [IngressType]::OtherIngress; $this.config.skipIngressEnabled = $false; }
-			2 { $this.config.ingressType = [IngressType]::ClusterIP }
-			3 { $this.config.ingressType = [IngressType]::NodePort; $this.config.webServiceType = 'NodePort' }
-			4 { $this.config.ingressType = [IngressType]::LoadBalancer; $this.config.webServiceType = 'LoadBalancer' }
-			5 { $this.config.ingressType = [IngressType]::ClassicElb; $this.config.webServiceType = 'LoadBalancer'; $authCookieSecure = $true }
-			6 { $this.config.ingressType = [IngressType]::NetworkElb; $this.config.webServiceType = 'LoadBalancer'; $authCookieSecure = $true }
-			7 { $this.config.ingressType = [IngressType]::InternalClassicElb; $this.config.webServiceType = 'LoadBalancer'; $authCookieSecure = $true }
-		}
-		$this.config.authCookieSecure = $authCookieSecure
+		$this.choiceResponse[$question.choice].Invoke($this)
 
 		$this.config.ingressAnnotations = @()
 		if ($this.config.IsElbIngress()) {

@@ -16,6 +16,7 @@ enum IngressType {
 	ClassicElb
 	NetworkElb
 	InternalClassicElb
+	Route
 }
 
 enum IngressTlsType {
@@ -23,6 +24,11 @@ enum IngressTlsType {
 	CertManagerIssuer
 	CertManagerClusterIssuer
 	ExternalSecret
+}
+
+enum RouteTlsType {
+	None
+	ExternalCertificate
 }
 
 enum ExternalDatabaseAuthType {
@@ -84,7 +90,7 @@ class Config {
 	static [int]   $volumeSizeGiBDefault = 0           # new default to support system size override when > 0
 	static [int]   $externalDatabasePortDefault = 3306
 
-	static [string]   $thisVersion = "1.9"
+	static [string]   $thisVersion = "1.10"
 
 	static [string[]] $protectedFields = @(
 		'repoUsername',
@@ -262,6 +268,13 @@ class Config {
 	[string]       $ingressTlsSecretName                     # formerly ingressTlsSecretNameCodeDx
 	[string]       $ingressTlsType
 
+	[string]       $routeTlsType
+	[string]       $routeTlsKeyPath
+	[string]       $routeTlsCertificatePath
+	[bool]         $routeTlsUseCACertificate
+	[string]       $routeTlsCACertificatePath
+	[string]       $routeHostname
+
 	[bool]         $useSaml
 	[bool]         $useLdap
 	[string]       $samlHostBasePath                         # formerly samlHostBasePathOverride
@@ -397,6 +410,13 @@ class Config {
 		$this.componentTlsType = [ComponentTlsType]::None
 		$this.certManagerIssuerName = ''
 		$this.certManagerIssuerType = [CertManagerIssuerType]::None
+		# v1.10 fields (05/12/2025)
+		$this.routeTlsType = [RouteTlsType]::None
+		$this.routeTlsKeyPath = ''
+		$this.routeTlsUseCACertificate = $false
+		$this.routeTlsCertificatePath = ''
+		$this.routeTlsCACertificatePath = ''
+		$this.routeHostname = ''
 		# Note: the restore-version.ps1 script should account for any config.json format changes
 	}
 
@@ -628,6 +648,10 @@ class Config {
 			}
 		}
 		return $table
+	}
+
+	[string]GetRegistryAndPrefix() {
+		return $this.useDockerRepositoryPrefix ? "$($this.dockerRegistry)/$($this.dockerRepositoryPrefix.TrimEnd('/'))" : $this.dockerRegistry
 	}
 
 	[bool] ShouldLock() {

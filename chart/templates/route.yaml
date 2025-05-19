@@ -1,0 +1,126 @@
+{{- if .Values.openshift.routes.enabled -}}
+{{- $fullName := include "srm.fullname" . -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "srm-web.labels" . | nindent 4 }}
+spec:
+  host: {{ .Values.openshift.routes.host }}
+  path: /
+  to:
+    kind: Service
+    name: {{ include "srm-web.fullname" . }}
+  port:
+    {{- if .Values.web.tlsSecret }}
+    targetPort: 8443
+    {{- else }}
+    targetPort: 8080
+    {{- end }}
+  tls:
+    {{- if .Values.openshift.routes.tls.enabled }}
+    key: {{ .Values.openshift.routes.tls.key | quote }}
+    certificate: {{ .Values.openshift.routes.tls.certificate | quote }}
+    {{- if .Values.openshift.routes.tls.caCertificate }}
+    caCertificate: {{ .Values.openshift.routes.tls.caCertificate | quote }}
+    {{- end }}
+    {{- end }}
+    {{- if .Values.web.tlsSecret }}
+    termination: reencrypt
+    destinationCACertificate: {{ required "You must set .Values.openshift.routes.tls.destination.webCaCertificate" .Values.openshift.routes.tls.destination.webCaCertificate | quote }}
+    {{- else }}
+    termination: edge
+    {{- if .Values.openshift.routes.tls.enabled }}
+    insecureEdgeTerminationPolicy: Redirect
+    {{- else }}
+    insecureEdgeTerminationPolicy: Allow
+    {{- end }}
+    {{- end }}
+{{- if .Values.features.scanfarm }}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ $fullName }}-scan
+  labels:
+    {{- include "srm-web.labels" . | nindent 4 }}
+spec:
+  host: {{ .Values.openshift.routes.host }}
+  path: /api/v2/scans
+  to:
+    kind: Service
+    name: {{ include "srm-sf.scanSvcName" $ }}
+  port:
+    targetPort: 9998
+  tls:
+    {{- if .Values.openshift.routes.tls.enabled }}
+    key: {{ .Values.openshift.routes.tls.key | quote }}
+    certificate: {{ .Values.openshift.routes.tls.certificate | quote }}
+    {{- if .Values.openshift.routes.tls.caCertificate }}
+    caCertificate: {{ .Values.openshift.routes.tls.caCertificate | quote }}
+    {{- end }}
+    {{- end }}
+    termination: edge
+    {{- if .Values.openshift.routes.tls.enabled }}
+    insecureEdgeTerminationPolicy: Redirect
+    {{- else }}
+    insecureEdgeTerminationPolicy: Allow
+    {{- end }}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ $fullName }}-storage
+  labels:
+    {{- include "srm-web.labels" . | nindent 4 }}
+spec:
+  host: {{ .Values.openshift.routes.host }}
+  path: /api/v2/storage
+  to:
+    kind: Service
+    name: {{ include "srm-sf.storageSvcName" $ }}
+  port:
+    targetPort: 9998
+  tls:
+    {{- if .Values.openshift.routes.tls.enabled }}
+    key: {{ .Values.openshift.routes.tls.key | quote }}
+    certificate: {{ .Values.openshift.routes.tls.certificate | quote }}
+    {{- if .Values.openshift.routes.tls.caCertificate }}
+    caCertificate: {{ .Values.openshift.routes.tls.caCertificate | quote }}
+    {{- end }}
+    {{- end }}
+    termination: edge
+    {{- if .Values.openshift.routes.tls.enabled }}
+    insecureEdgeTerminationPolicy: Redirect
+    {{- else }}
+    insecureEdgeTerminationPolicy: Allow
+    {{- end }}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ $fullName }}-cache
+  labels:
+    {{- include "srm-web.labels" . | nindent 4 }}
+spec:
+  host: {{ .Values.openshift.routes.host }}
+  path: /api/cache/
+  to:
+    kind: Service
+    name: {{ include "srm-sf.cacheSvcName" $ }}
+  port:
+    targetPort: 8443
+  tls:
+    {{- if .Values.openshift.routes.tls.enabled }}
+    key: {{ .Values.openshift.routes.tls.key | quote }}
+    certificate: {{ .Values.openshift.routes.tls.certificate | quote }}
+    {{- if .Values.openshift.routes.tls.caCertificate }}
+    caCertificate: {{ .Values.openshift.routes.tls.caCertificate | quote }}
+    {{- end }}
+    {{- end }}
+    termination: reencrypt
+    destinationCACertificate: {{ required "You must run the scan-farm-cert-authority.ps1 to set .Values.openshift.routes.tls.destination.scanfarmCaCertificate" .Values.openshift.routes.tls.destination.scanfarmCaCertificate | quote }}
+{{- end }}
+{{- end }}
+

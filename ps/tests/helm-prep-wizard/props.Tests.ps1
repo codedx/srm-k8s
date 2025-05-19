@@ -115,6 +115,57 @@ Describe 'Wizard should prompt for auth cookie secure' -Tag 'size' {
 
 		$config.authCookieSecure | Should -BeFalse -Because "HTTPS will not be used"
 	}
+
+	It 'Secure should be false when using unsecured Route' {
+
+		$global:inputs = new-object collections.queue
+		$null, # welcome
+		0, # yes (About)
+		0, # Unspecified (Deployment Size)
+		'srm-web-license', # License
+		$TestDrive, # Work Directory
+		3, # OpenShift (Kubernetes Environment)
+		'srm', # Namespace
+		'srm-release', # Release
+		1, # no (External Database)
+		0, # 0 replicas (Database Replicas)
+		1, # no (Scan Farm)
+		1, # no (Docker Registry)
+		1, # no (Tool Orchestration)
+		0, # no (Configure TLS)
+		1, # no (Network Policy)
+		0, # Local Accounts (Authentication Type)
+		5, # Route (Ingress Type)
+		'dns', # (Route DNS Name)
+		0, # no TLS (Route TLS)
+		0, # yes (Default Java cacerts)
+		0, # yes (Auto-Generated Passwords)
+		1, # no (Docker Images)
+		0, # use recommended (CPU Reservations)
+		0, # use recommended (Memory Reservations)
+		0, # use recommended (Ephemeral Storage Reservations)
+		0, # use recommended (Volume Sizes)
+		$null, # Storage Provider
+		1, # no (Auth Cookie Secure)
+		1, # no (Node Selectors)
+		1, # no (Pod Tolerations)
+		0 # save (Finish)
+		| ForEach-Object {
+			$global:inputs.enqueue($_)
+		}
+
+		New-Mocks
+		Mock -ModuleName Guided-Setup Test-Path {
+			$true
+	   	} -ParameterFilter { 'srm-web-license' -contains [IO.Path]::GetFileName($path) }
+
+		. (Join-Path $PSScriptRoot ../../../helm-prep-wizard.ps1)
+
+		$configFile = Join-Path $TestDrive 'config.json'
+		$config = [Config]::FromJsonFile($configFile)
+
+		$config.authCookieSecure | Should -BeFalse -Because "HTTPS will not be used"
+	}
 }
 
 Describe 'Wizard should not prompt for auth cookie secure' -Tag 'size' {
@@ -413,6 +464,119 @@ Describe 'Wizard should not prompt for auth cookie secure' -Tag 'size' {
 		Mock -ModuleName Guided-Setup Test-Path {
 			$true
 	   	} -ParameterFilter { 'srm-web-license' -contains [IO.Path]::GetFileName($path) }
+
+		. (Join-Path $PSScriptRoot ../../../helm-prep-wizard.ps1)
+
+		$configFile = Join-Path $TestDrive 'config.json'
+		$config = [Config]::FromJsonFile($configFile)
+
+		$config.authCookieSecure | Should -BeTrue -Because "HTTPS will be used"
+	}
+
+	It 'Secure should be set for secured Route' {
+
+		$global:inputs = new-object collections.queue
+		$null, # welcome
+		0, # yes (About)
+		0, # Unspecified (Deployment Size)
+		'srm-web-license', # License
+		$TestDrive, # Work Directory
+		3, # OpenShift (Kubernetes Environment)
+		'srm', # Namespace
+		'srm-release', # Release
+		1, # no (External Database)
+		0, # 0 replicas (Database Replicas)
+		1, # no (Scan Farm)
+		1, # no (Docker Registry)
+		1, # no (Tool Orchestration)
+		0, # no (Configure TLS)
+		1, # no (Network Policy)
+		0, # Local Accounts (Authentication Type)
+		5, # Route (Ingress Type)
+		'dns', # (Route DNS Name)
+		1, # HTTPS External Certificate (Route TLS)
+		'route-key', # (Route TLS Key)
+		'cert-file', # (Route TLS Certificate)
+		1, # no (Use Route CA Certificate)
+		0, # yes (Default Java cacerts)
+		0, # yes (Auto-Generated Passwords)
+		1, # no (Docker Images)
+		0, # use recommended (CPU Reservations)
+		0, # use recommended (Memory Reservations)
+		0, # use recommended (Ephemeral Storage Reservations)
+		0, # use recommended (Volume Sizes)
+		$null, # Storage Provider
+		1, # no (Node Selectors)
+		1, # no (Pod Tolerations)
+		0 # save (Finish)
+		| ForEach-Object {
+			$global:inputs.enqueue($_)
+		}
+
+		New-Mocks
+		Mock -ModuleName Guided-Setup Test-Path {
+			$true
+	   	} -ParameterFilter { 'srm-web-license','route-key','cert-file','cert-ca-file' -contains [IO.Path]::GetFileName($path) }
+		Mock -ModuleName Guided-Setup Test-KeyToolCertificate {
+			$true
+	   	} -ParameterFilter { 'cert-file','cert-ca-file' -contains [IO.Path]::GetFileName($path) }
+
+		. (Join-Path $PSScriptRoot ../../../helm-prep-wizard.ps1)
+
+		$configFile = Join-Path $TestDrive 'config.json'
+		$config = [Config]::FromJsonFile($configFile)
+
+		$config.authCookieSecure | Should -BeTrue -Because "HTTPS will be used"
+	}
+
+	It 'Secure should be set for secured Route with a CA certificate' {
+
+		$global:inputs = new-object collections.queue
+		$null, # welcome
+		0, # yes (About)
+		0, # Unspecified (Deployment Size)
+		'srm-web-license', # License
+		$TestDrive, # Work Directory
+		3, # OpenShift (Kubernetes Environment)
+		'srm', # Namespace
+		'srm-release', # Release
+		1, # no (External Database)
+		0, # 0 replicas (Database Replicas)
+		1, # no (Scan Farm)
+		1, # no (Docker Registry)
+		1, # no (Tool Orchestration)
+		0, # no (Configure TLS)
+		1, # no (Network Policy)
+		0, # Local Accounts (Authentication Type)
+		5, # Route (Ingress Type)
+		'dns', # (Route DNS Name)
+		1, # HTTPS External Certificate (Route TLS)
+		'route-key', # (Route TLS Key)
+		'cert-file', # (Route TLS Certificate)
+		0, # yes (Use Route CA Certificate)
+		'cert-ca-file', # (Route CA Certificate)
+		0, # yes (Default Java cacerts)
+		0, # yes (Auto-Generated Passwords)
+		1, # no (Docker Images)
+		0, # use recommended (CPU Reservations)
+		0, # use recommended (Memory Reservations)
+		0, # use recommended (Ephemeral Storage Reservations)
+		0, # use recommended (Volume Sizes)
+		$null, # Storage Provider
+		1, # no (Node Selectors)
+		1, # no (Pod Tolerations)
+		0 # save (Finish)
+		| ForEach-Object {
+			$global:inputs.enqueue($_)
+		}
+
+		New-Mocks
+		Mock -ModuleName Guided-Setup Test-Path {
+			$true
+	   	} -ParameterFilter { 'srm-web-license','route-key','cert-file','cert-ca-file' -contains [IO.Path]::GetFileName($path) }
+		Mock -ModuleName Guided-Setup Test-KeyToolCertificate {
+			$true
+	   	} -ParameterFilter { 'cert-file','cert-ca-file' -contains [IO.Path]::GetFileName($path) }
 
 		. (Join-Path $PSScriptRoot ../../../helm-prep-wizard.ps1)
 

@@ -21,8 +21,7 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "srm-web.serviceAccountName" . | quote }}
       securityContext:
-        fsGroup: 1000
-        runAsUser: 1000
+      {{- toYaml .Values.web.podSecurityContext | nindent 8 }}
       {{- if .Values.web.nodeSelector }}
       nodeSelector:
       {{- toYaml .Values.web.nodeSelector | nindent 8 }}
@@ -35,6 +34,8 @@ spec:
       containers:
       - name: configuration-job
         image: "{{ .Values.web.image.registry }}/{{ .Values.web.image.repository }}:{{ .Values.web.image.tag }}"
+        securityContext:
+        {{- toYaml .Values.web.securityContext | nindent 10 }}
         command:
           - /bin/bash
           - -c

@@ -11,8 +11,9 @@ if (-not $?) {
 
 BeforeAll {
   'common.ps1',
-	'../../build/yaml.ps1',
-	'../../external/powershell-algorithms/data-structures.ps1',
+  '../wizard-common/mock.ps1',
+  '../../build/yaml.ps1',
+  '../../external/powershell-algorithms/data-structures.ps1',
   '../../keyvalue.ps1',
   '../../build/protect.ps1',
   '../../config.ps1' | ForEach-Object {

@@ -11,6 +11,7 @@ if (-not $?) {
 
 BeforeAll {
   'common.ps1',
+  '../wizard-common/mock.ps1',
 	'../../build/yaml.ps1',
 	'../../external/powershell-algorithms/data-structures.ps1',
   '../../keyvalue.ps1',

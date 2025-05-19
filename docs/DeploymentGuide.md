@@ -414,7 +414,7 @@ This section covers the requirements you must satisfy with the external dependen
 
 ### Scan Farm Database Requirements
 
-The Scan Farm feature depends on a PostgreSQL database supporting versions 12 to 15, including all minor versions. Black Duck recommends using a DBaaS (database as a service) database. Configure your PostgreSQL database by reserving 1 CPU core and 2 GB RAM. The recommended database volume size is 5GB.
+The Scan Farm feature depends on a PostgreSQL database supporting versions 13 to 15, including all minor versions. Black Duck recommends using a DBaaS (database as a service) database. Configure your PostgreSQL database by reserving 1 CPU core and 2 GB RAM. The recommended database volume size is 5GB.
 
 ### Scan Farm Cache Requirements
 
@@ -483,7 +483,7 @@ You can use a private registry hosted by a cloud provider (e.g., AWS, GCP, Azure
 
 ### Scan Farm Ingress Requirements
 
-The Scan Farm feature requires you to use an ingress controller, and your ingress controller must support multiple ingress resources referencing the same hostname. Black Duck recommends the [NGINX Community](https://kubernetes.github.io/ingress-nginx/) ingress controller. You can find the Installation Guide [here](https://kubernetes.github.io/ingress-nginx/deploy/).
+The Scan Farm feature requires you to use an ingress controller, and your ingress controller must support multiple ingress resources referencing the same hostname. Black Duck recommends using either the [NGINX Community](https://kubernetes.github.io/ingress-nginx/deploy/) ingress controller or [OpenShift Routes](https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/networking/configuring-routes).
 
 ### Scan Farm Internet Access Requirements
 
@@ -1369,7 +1369,7 @@ You can make MinIO available at a URL different from your Software Risk Manager 
 
 Alternatively, you can proxy MinIO by using the same hostname for both Software Risk Manager and MinIO. For example, if your Software Risk Manager hostname is srm.local, you can make MinIO available at https://srm.local/upload/.
 
-The following example uses hostname `srm.local` to make the `minio` Kubernetes service available at http://srm.local/upload/. Note the use of the `use-regex` and `rewrite-target` annotations to drop "/upload/" when routing a request to the MinIO service.
+The following two examples show Ingress and Route examples that use hostname `srm.local` to make a `minio` Kubernetes service available at http://srm.local/upload/. Note the use of the rewrite-related annotations in both examples to drop "/upload/" when routing a request to the MinIO service.
 
 ```
 apiVersion: networking.k8s.io/v1
@@ -1394,6 +1394,31 @@ spec:
               number: 9000
         path: /upload/(.*)
         pathType: ImplementationSpecific
+```
+
+```
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  annotations:
+    haproxy.router.openshift.io/rewrite-target: /
+  name: minio
+spec:
+  host: srm.local
+  path: /upload/
+  port:
+    targetPort: 9000
+  tls:
+    caCertificate: |-
+      ...
+    certificate: |-
+      ...
+    key: |-
+      ...
+    termination: ...
+  to:
+    kind: Service
+    name: minio
 ```
 
 Note your external MinIO URL and your in-cluster URL if you plan to specify that optimization in the Helm Prep Wizard.
@@ -4254,6 +4279,14 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | networkPolicy.web.egress.extraPorts.tcp | list | `[22,53,80,389,443,636,7990,7999]` | the TCP ports allowed for egress from the web component |
 | networkPolicy.web.egress.extraPorts.udp | list | `[53,389,636,3269]` | the UDP ports allowed for egress from the web component |
 | openshift.createSCC | bool | `false` | whether to create SecurityContextConstraint resources, which is required when using OpenShift |
+| openshift.routes.enabled | bool | `false` | whether to use Routes for ingress |
+| openshift.routes.host | string | `nil` | the host associated with routes |
+| openshift.routes.tls.enabled | bool | `false` | whether to use secured routes |
+| openshift.routes.tls.caCertificate | string | `nil` | the PEM-formatted CA certificate for your route TLS configuration |
+| openshift.routes.tls.certificate | string | `nil` | the PEM-formatted certificate for your route TLS configuration |
+| openshift.routes.tls.key | string | `nil` | the TLS key for your route TLS configuration |
+| openshift.routes.tls.destination.scanfarmCaCertificate | string | `nil` | the PEM-formatted Scan Farm CA certificate |
+| openshift.routes.tls.destination.webCaCertificate | string | `nil` | the PEM-formatted web CA certificate |
 | podLabels | object | `{}` | labels added to SRM pods of the Core and TO features |
 | sizing.size | string | `Small` | whether the deployment size is considered Unspecified, Small, Medium, Large, or Extra Large (see [System Size](#system-size)) |
 | sizing.version | string | `v1.0` | the version of the sizing guidance |
@@ -4549,7 +4582,7 @@ The Helm Prep Wizard generates a config.json file used as input to the Helm Prep
 
 Refer to the [lock/unlock scripts](../admin/config) to edit [protected config.json fields](../ps/config.ps1#L66).
 
-![config.json version: 1.9.0](https://img.shields.io/badge/config.json%20version-1.9.0-informational?style=flat-square)
+![config.json version: 1.10.0](https://img.shields.io/badge/config.json%20version-1.10.0-informational?style=flat-square)
 
 |Parameter|Feature|Description|Example|Since|
 |:---|:---|:---|:---|:---|
@@ -4690,6 +4723,13 @@ Refer to the [lock/unlock scripts](../admin/config) to edit [protected config.js
 |ingressHostname|Ingress|hostname associated with SRM ingress||1.0|
 |ingressTlsSecretName|Ingress|name of K8s secret containing ingress TLS configuration||1.0|
 |ingressTlsType|Ingress|type of TLS ingress configuration|None; CertManagerIssuer; CertManagerClusterIssuer; ExternalSecret|1.0|
+||||||
+|routeTlsType|Ingress|type of Route TLS configuration|None; ExternalCertificate|1.10|
+|routeTlsKeyPath|Ingress|path to the TLS key for the Route TLS configuration||1.10|
+|routeTlsCertificatePath|Ingress|path to the TLS certificate for the Route TLS configuration||1.10|
+|routeTlsUseCACertificate|Ingress|whether to use a TLS CA certificate for the Route TLS configuration||1.10|
+|routeTlsCACertificatePath|Ingress|path to the TLS CA certificate for the Route TLS configuration||1.10|
+|routeHostname|Ingress|hostname associated with SRM Route||1.10|
 ||||||
 |useSaml|SAML|whether to use SAML||1.0|
 |useLdap|LDAP|whether to use LDAP||1.0|

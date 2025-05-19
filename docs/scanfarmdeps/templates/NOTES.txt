@@ -1,9 +1,9 @@
 PostgreSQL Service:  {{ include "postgresql.names.fullname" . }}
 PostgreSQL Username: postgres
-PostgreSQL Password: kubectl -n {{ .Release.Namespace }} get secret {{ include "postgresql.names.fullname" . }} -o jsonpath='{{ "{" }}.data.postgres-password{{ "}" }}' | base64 -d
+PostgreSQL Password: kubectl -n {{ .Release.Namespace }} get secret {{ include "postgresql.names.fullname" . }} -o=go-template='{{ "{{" }} index .data "postgres-password" | base64decode {{ "}}" }}'
 
 Redis Service:  {{ include "redis.names.fullname" . }}-master
-Redis Password: kubectl -n {{ .Release.Namespace }} get secret {{ include "redis.names.fullname" . }} -o jsonpath='{{ "{" }}.data.redis-password{{ "}" }}' | base64 -d
+Redis Password: kubectl -n {{ .Release.Namespace }} get secret {{ include "redis.names.fullname" . }} -o=go-template='{{ "{{" }} index .data "redis-password" | base64decode {{ "}}" }}'
 
 MinIO Service:  {{ include "minio.names.fullname" . }}
 MinIO Buckets: {{ range .Values.minio.provisioning.buckets -}}
@@ -11,4 +11,7 @@ MinIO Buckets: {{ range .Values.minio.provisioning.buckets -}}
 {{- end }}
 MinIO URL:      http://{{ include "minio.names.fullname" . }}:9000
 MinIO Username: admin
-MinIO Password: kubectl -n {{ .Release.Namespace }} get secret {{ include "minio.names.fullname" . }} -o jsonpath='{{ "{" }}.data.root-password{{ "}" }}' | base64 -d
+MinIO Password: kubectl -n {{ .Release.Namespace }} get secret {{ include "minio.names.fullname" . }} -o=go-template='{{ "{{" }} index .data "root-password" | base64decode {{ "}}" }}'
+
+Note: The above kubectl commands are incompatible with PowerShell's PSNativeCommandArgumentPassing Legacy mode.
+      If necessary, switch to Standard with this command: $global:PSNativeCommandArgumentPassing='Standard'
