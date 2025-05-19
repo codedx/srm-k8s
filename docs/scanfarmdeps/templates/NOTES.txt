@@ -12,3 +12,6 @@ MinIO Buckets: {{ range .Values.minio.provisioning.buckets -}}
 MinIO URL:      http://{{ include "minio.names.fullname" . }}:9000
 MinIO Username: admin
 MinIO Password: kubectl -n {{ .Release.Namespace }} get secret {{ include "minio.names.fullname" . }} -o=go-template='{{ "{{" }} index .data "root-password" | base64decode {{ "}}" }}'
+
+Note: The above kubectl commands are incompatible with PowerShell's PSNativeCommandArgumentPassing Legacy mode.
+      If necessary, switch to Standard with this command: $global:PSNativeCommandArgumentPassing='Standard'
