@@ -27,6 +27,14 @@ function New-Mocks() {
 
 	Mock Write-StepGraph {
 	}
+
+	Mock Get-AppCommandPath {
+		$true
+	}
+
+	Mock New-GenericSecret {
+		''
+	}
 }
 
 function New-Password([string] $pwdValue) {
