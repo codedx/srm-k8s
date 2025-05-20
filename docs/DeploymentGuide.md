@@ -274,7 +274,7 @@ Refer to what follows for the supported or tested versions of software that comp
 
 ## Kubernetes Requirements
 
-The Software Risk Manager deployment supports Kubernetes versions 1.22 through 1.31 and was tested with OpenShift 4.17. If you are not a cluster administrator, your cluster access must include the permissions defined in the sections below before installing Software Risk Manager on your cluster.
+The Software Risk Manager deployment supports Kubernetes versions 1.22 through 1.31 and was tested with OpenShift 4.18. If you are not a cluster administrator, your cluster access must include the permissions defined in the sections below before installing Software Risk Manager on your cluster.
 
 ### Kubernetes Privileges for Core Feature Deployment
 
