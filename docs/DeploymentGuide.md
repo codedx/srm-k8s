@@ -2982,8 +2982,7 @@ Terminal 1 (Restore replication):
 24.	mysql -uroot -p
 25.	RESET SLAVE;
     >Note: RESET SLAVE deletes relay log files.
-26. Remove old binary log files by running "SHOW BINARY LOGS;" and "PURGE BINARY LOGS TO 'name';"
-    >Note: If you previously deleted binary log files (mysql-bin.000*) from the file system, remove the contents of the mysql-bin.index text file.
+26. Remove old binary log files by running "FLUSH BINARY LOGS;", "SHOW BINARY LOGS;", and "PURGE BINARY LOGS TO 'name';"
 27.	CHANGE MASTER TO MASTER_LOG_FILE='mysql-bin.000001', MASTER_LOG_POS=position-from-step-11-goes-here;
     >Note: Replace position-from-step-11-goes-here before running the above command.
 28.	START SLAVE;
@@ -3305,8 +3304,7 @@ Terminal 1 (Subordinate DB):
 16.	mysql -uroot -p
 17.	RESET SLAVE;
 >Note: RESET SLAVE deletes relay log files.
-18. Remove old binary log files by running "SHOW BINARY LOGS;" and "PURGE BINARY LOGS TO 'name';"
->Note: If you previously deleted binary log files (mysql-bin.000*) from the file system, remove the contents of the mysql-bin.index text file.
+18. Remove old binary log files by running "FLUSH BINARY LOGS;", "SHOW BINARY LOGS;", and "PURGE BINARY LOGS TO 'name';"
 19.	CHANGE MASTER TO MASTER_LOG_FILE='mysql-bin.000001', MASTER_LOG_POS=1;
 20.	START SLAVE;
 21.	SHOW SLAVE STATUS \G;
