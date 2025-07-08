@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.0.0
+.VERSION 1.1.0
 .GUID 503f30e0-edc9-4ae7-abed-62da0a01c57e
 .AUTHOR Black Duck
 .COPYRIGHT Copyright 2025 Black Duck Software, Inc. All rights reserved.
