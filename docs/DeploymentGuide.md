@@ -4193,7 +4193,7 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | argo-workflows.controller.workflowNamespaces | list | `[]` | the namespace for the Argo workflow service account |
 | argo-workflows.executor.image.registry | string | `docker.io` | the Argo executor Docker image registry |
 | argo-workflows.images.pullSecrets | list | `[]` | the K8s image pull secret to use for Argo Docker images |
-| argo-workflows.images.tag | string | `"v3.5.11"` | the Docker image version for the Argo workload |
+| argo-workflows.images.tag | string | `"v3.6.10"` | the Docker image version for the Argo workload |
 | scan-services.common-infra.cleanupSchedule | string | `"*/55 * * * *"` | the schedule to use for the cleanup cronjob - must be a valid schedule for a K8s cronjob |
 | scan-services.imagePullPolicy | string | `"Always"` | the image pull policy for scan farm components |
 | scan-services.srm.port | string | `"9090"` | the port number of the SRM web service |
@@ -4255,7 +4255,7 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | minio.image.pullSecrets | list | `[]` | the K8s Docker image pull policy for the MinIO workload |
 | minio.image.registry | string | `"docker.io"` | the registry name and optional registry suffix for the MinIO Docker image |
 | minio.image.repository | string | `"bitnami/minio"` | the Docker image repository name for the MinIO workload |
-| minio.image.tag | string | `"2024.11.7-debian-12-r2"` | the Docker image version for the MinIO workload |
+| minio.image.tag | string | `"2025.6.13-debian-12-r0"` | the Docker image version for the MinIO workload |
 | minio.nodeSelector | object | `{}` | the node selector to use for the MinIO workload |
 | minio.persistence.existingClaim | string | `nil` | the existing claim to use for the MinIO persistent volume; a new persistent volume is generated when unset |
 | minio.persistence.size | string | `"64Gi"` | the size of the MinIO persistent volume  |
