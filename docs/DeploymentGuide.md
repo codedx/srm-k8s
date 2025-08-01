@@ -132,6 +132,7 @@
   * [Expand Volume Size](#expand-volume-size)
   * [Reset Replication](#reset-replication)
   * [Web Logging](#web-logging)
+  * [License Renewal](#license-renewal)
 - [Backup and Restore](#backup-and-restore)
   * [About Velero](#about-velero)
   * [Installing Velero](#installing-velero)
@@ -198,6 +199,7 @@
   * [Scan Farm Feature Troubleshooting](#scan-farm-feature-troubleshooting)
     + [Scan Farm Migration Job Fails](#scan-farm-migration-job-fails)
     + [Scan Service GetAccessToken Fails](#scan-service-getaccesstoken-fails)
+    + [Cache Service Startup Fails](#cache-service-startup-fails)
 - [Appendix](#appendix)
   * [Config.json](#configjson)
   * [Helm Chart Notes](#helm-chart-notes)
@@ -3050,6 +3052,20 @@ web:
 
 4. Refer to [Customizing Software Risk Manager](#customizing-software-risk-manager) for how to rerun helm with your srm-extra-props.yaml file.
 
+## License Renewal
+
+When you renew your Software Risk Manager license, Black Duck Software will issue a new license file. If your license includes the Scan Farm feature, you will receive a ZIP file containing multiple [Software Risk Manager licenses](#licensing).
+
+While you can update the Software Risk Manager using the [web interface](https://documentation.blackduck.com/bundle/srm/page/user_guide/Settings/license_information.html) or API, the same is not possible for the Scan Farm feature license(s).
+
+If you are using the Software Risk Manager Scan Farm feature, or prefer to update the Software Risk Manager Web license using the Helm Prep Script, update the following config.json fields, then rerun the Helm Prep Script along with the resulting kubectl commands:
+
+| License | Field Name (config.json) | Field Value |
+|:-|:-|:-|
+| Software Risk Manager Web license | srmLicenseFile | /path/to/00000000-SRM-CDX.txt |
+| Software Risk Manager Scan Farm SAST license | scanFarmSastLicenseFile | /path/to/00000000-SRM-SAVE.dat |
+| Software Risk Manager Scan Farm SCA license | scanFarmScaLicenseFile | /path/to/00000000-SRM-SCA.json |
+
 # Backup and Restore
 
 Software Risk Manager depends on [Velero](https://velero.io) for cluster state and volume data backups. When not using an external web database, you must deploy with at least one MariaDB subordinate database so that a database backup occurs before Velero runs a backup.
@@ -4566,6 +4582,100 @@ Wait for the job to finish, and then remove it by running this command:
 
 ```
 kubectl -n srm delete job srm-internal-svc-job-fix
+```
+
+### Cache Service Startup Fails
+
+When using a secure Redis connection, the Scan Farm Cache Service will fail to start if it references an incorrect or invalid certificate. If you encounter a `Socket is closed` message similar to the example below, verify the validity of the certificate referenced by the service via the REDIS_CACERT environment variable and the Kubernetes Secret resource ending in `-sf-cache-cert-secret`.
+
+```
+{
+	"timestamp":"2025-01-01T00:00:00.000",
+	"level":"ERROR",
+	"thread":"main",
+	"logger":"org.springframework.boot.SpringApplication",
+	"message":"Application run failed",
+	"context":"default",
+	"exception":"org.springframework.beans.factory.UnsatisfiedDependencyException: 
+	Error creating bean with name 'metadataService' defined in URL [jar:nested:/cache-service-2024.12.7945750-exec.jar/!BOOT-INF/classes/!/com/blackduck/coverity/cache/MetadataService.class]:
+	Unsatisfied dependency expressed through constructor parameter 3: Error creating bean with name 'redisMetadataRepository': Invocation of init method failed
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:795)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:237)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1355)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1192)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:562)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:326)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:324)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:975)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:962)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:624)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:334)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1354)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1343)
+	at com.blackduck.coverity.cache.CacheApplication.main(CacheApplication.java:119)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:91)
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:53)
+	at org.springframework.boot.loader.launch.JarLauncher.main(JarLauncher.java:58)
+	Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'redisMetadataRepository': Invocation of init method failed
+		at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:222)
+		at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:422)
+		at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1778)
+		at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600)
+		at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
+		at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:326)
+		at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+		at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:324)
+		at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200)
+		at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+		at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1443)
+		at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1353)
+		at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:904)
+		at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:782)
+		... 24 common frames omitted
+	Caused by: org.springframework.data.redis.RedisConnectionFailureException: Cannot get Jedis connection
+		at org.springframework.data.redis.connection.jedis.JedisConnectionFactory.fetchJedisConnector(JedisConnectionFactory.java:873)
+		at org.springframework.data.redis.connection.jedis.JedisConnectionFactory.getConnection(JedisConnectionFactory.java:835)
+		at org.springframework.data.redis.core.RedisConnectionUtils.fetchConnection(RedisConnectionUtils.java:195)
+		at org.springframework.data.redis.core.RedisConnectionUtils.doGetConnection(RedisConnectionUtils.java:144)
+		at org.springframework.data.redis.core.RedisConnectionUtils.getConnection(RedisConnectionUtils.java:105)
+		at org.springframework.data.redis.core.RedisTemplate.execute(RedisTemplate.java:383)
+		at org.springframework.data.redis.core.RedisTemplate.execute(RedisTemplate.java:363)
+		at org.springframework.data.redis.core.RedisTemplate.execute(RedisTemplate.java:350)
+		at com.blackduck.coverity.cache.metadata.RedisMetadataRepository.checkRedisConfiguration(RedisMetadataRepository.java:123)
+		at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+		at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+		at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMethod.invoke(InitDestroyAnnotationBeanPostProcessor.java:457)
+		at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeInitMethods(InitDestroyAnnotationBeanPostProcessor.java:401)
+		at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:219)
+		... 37 common frames omitted
+	Caused by: redis.clients.jedis.exceptions.JedisConnectionException: Failed to create input/output stream
+		at redis.clients.jedis.Connection.connect(Connection.java:211)
+		at redis.clients.jedis.Connection.initializeFromClientConfig(Connection.java:393)
+		at redis.clients.jedis.Connection.<init>(Connection.java:68)
+		at redis.clients.jedis.Jedis.<init>(Jedis.java:220)
+		at redis.clients.jedis.JedisFactory.makeObject(JedisFactory.java:170)
+		at org.apache.commons.pool2.impl.GenericObjectPool.create(GenericObjectPool.java:566)
+		at org.apache.commons.pool2.impl.GenericObjectPool.borrowObject(GenericObjectPool.java:306)
+		at org.apache.commons.pool2.impl.GenericObjectPool.borrowObject(GenericObjectPool.java:233)
+		at redis.clients.jedis.util.Pool.getResource(Pool.java:38)
+		at redis.clients.jedis.JedisPool.getResource(JedisPool.java:378)
+		at redis.clients.jedis.JedisPool.getResource(JedisPool.java:17)
+		at org.springframework.data.redis.connection.jedis.JedisConnectionFactory.fetchJedisConnector(JedisConnectionFactory.java:863)
+		... 50 common frames omitted
+	Caused by: java.net.SocketException: Socket is closed
+		at java.base/java.net.Socket.getSoTimeout(Socket.java:1414)
+		at java.base/sun.security.ssl.BaseSSLSocketImpl.getSoTimeout(BaseSSLSocketImpl.java:433)
+		at redis.clients.jedis.Connection.connect(Connection.java:196)
+		... 61 common frames omitted"
+}
 ```
 
 # Appendix
