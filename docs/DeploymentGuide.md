@@ -3056,7 +3056,7 @@ web:
 
 When you renew your Software Risk Manager license, Black Duck Software will issue a new license file. If your license includes the Scan Farm feature, you will receive a ZIP file containing multiple [Software Risk Manager licenses](#licensing).
 
-While you can update the Software Risk Manager using the [web interface](https://documentation.blackduck.com/bundle/srm/page/user_guide/Settings/license_information.html) or API, the same is not possible for the Scan Farm feature license(s).
+While you can replace the Software Risk Manager license using the [web interface](https://documentation.blackduck.com/bundle/srm/page/user_guide/Settings/license_information.html) or API, the same is not possible for the Scan Farm feature license(s).
 
 If you are using the Software Risk Manager Scan Farm feature, or prefer to update the Software Risk Manager Web license using the Helm Prep Script, update the following config.json fields, then rerun the Helm Prep Script along with the resulting kubectl commands:
 
