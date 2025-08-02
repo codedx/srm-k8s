@@ -4586,7 +4586,7 @@ kubectl -n srm delete job srm-internal-svc-job-fix
 
 ### Cache Service Startup Fails
 
-When using a secure Redis connection, the Scan Farm Cache Service will fail to start if it references an incorrect or invalid certificate. If you encounter a `Socket is closed` message similar to the example below, verify the validity of the certificate referenced by the service via the REDIS_CACERT environment variable and the Kubernetes Secret resource ending in `-sf-cache-cert-secret`.
+When using a secure Redis connection, the Scan Farm Cache Service will fail to start if it references an incorrect or invalid certificate. If you encounter a `Socket is closed` message similar to the example below, verify the validity of the certificate referenced by the service via the REDIS_CACERT environment variable and the Kubernetes Secret resource ending in `-sf-cache-cert-secret`. If the certificate is invalid, replace the file referenced by the `scanFarmRedisServerCert` field in config.json with the current certificate. Then, rerun the Helm Prep Script along with the resulting kubectl commands.
 
 ```
 {
