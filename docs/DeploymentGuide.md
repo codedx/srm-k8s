@@ -4207,9 +4207,9 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | argo-workflows.controller.resources.limits.memory | string | `"500Mi"` | the required memory for the Argo workload |
 | argo-workflows.controller.tolerations | list | `[]` | the pod tolerations for the Argo component |
 | argo-workflows.controller.workflowNamespaces | list | `[]` | the namespace for the Argo workflow service account |
-| argo-workflows.executor.image.registry | string | `docker.io` | the Argo executor Docker image registry |
+| argo-workflows.executor.image.registry | string | `quay.io` | the Argo executor Docker image registry |
 | argo-workflows.images.pullSecrets | list | `[]` | the K8s image pull secret to use for Argo Docker images |
-| argo-workflows.images.tag | string | `"v3.6.10"` | the Docker image version for the Argo workload |
+| argo-workflows.images.tag | string | `"v3.7.0"` | the Docker image version for the Argo workload |
 | scan-services.common-infra.cleanupSchedule | string | `"*/55 * * * *"` | the schedule to use for the cleanup cronjob - must be a valid schedule for a K8s cronjob |
 | scan-services.imagePullPolicy | string | `"Always"` | the image pull policy for scan farm components |
 | scan-services.srm.port | string | `"9090"` | the port number of the SRM web service |
@@ -4271,7 +4271,7 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | minio.image.pullSecrets | list | `[]` | the K8s Docker image pull policy for the MinIO workload |
 | minio.image.registry | string | `"docker.io"` | the registry name and optional registry suffix for the MinIO Docker image |
 | minio.image.repository | string | `"bitnami/minio"` | the Docker image repository name for the MinIO workload |
-| minio.image.tag | string | `"2025.6.13-debian-12-r0"` | the Docker image version for the MinIO workload |
+| minio.image.tag | string | `"2025.7.23-debian-12-r0"` | the Docker image version for the MinIO workload |
 | minio.nodeSelector | object | `{}` | the node selector to use for the MinIO workload |
 | minio.persistence.existingClaim | string | `nil` | the existing claim to use for the MinIO persistent volume; a new persistent volume is generated when unset |
 | minio.persistence.size | string | `"64Gi"` | the size of the MinIO persistent volume  |
@@ -5431,6 +5431,7 @@ pwsh /path/to/srm-k8s/helm-prep-wizard.ps1
 |Tool Orchestration|Install Tool Orchestration Components?|y||
 |Orchestrated Analysis Storage|What object storage configuration will you use?|m||
 |Configure TLS|Specify your TLS configuration for SRM components|n||
+|Network Policies|Install Network Policies|n||
 |Authentication Type|How will users authenticate to SRM?|l||
 |Ingress Type|What type of ingress do you want to use?|i||
 |Ingress Class Name|Enter ingress class name:|nginx||
