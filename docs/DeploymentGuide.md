@@ -1329,7 +1329,7 @@ Set the redis.tls Helm chart configuration based on whether you plan to enable T
 
 The MinIO software is licensed under the [GNU Affero General Public License v3.0](https://github.com/minio/minio/blob/master/LICENSE) or a commercial enterprise license. The Bitnami MinIO Helm chart license is available [here](https://github.com/bitnami/charts/tree/main/bitnami/minio#license).
 
-The following is an example of the MinIO chart parameters for version 11.10.24 that customizes Redis to meet Scan Farm requirements (refer to the requirements section to identify the storage size suitable for your environment):
+The following is an example of the MinIO chart parameters for version 17.0.16 that customizes MinIO to meet Scan Farm requirements (refer to the requirements section to identify the storage size suitable for your environment):
 
 ```
 provisioning:
