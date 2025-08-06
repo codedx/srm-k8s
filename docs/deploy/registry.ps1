@@ -1,9 +1,5 @@
 <#PSScriptInfo
-<<<<<<< Updated upstream
-.VERSION 1.1.0
-=======
 .VERSION 1.3.0
->>>>>>> Stashed changes
 .GUID 503f30e0-edc9-4ae7-abed-62da0a01c57e
 .AUTHOR Black Duck
 .COPYRIGHT Copyright 2025 Black Duck Software, Inc. All rights reserved.
@@ -30,18 +26,6 @@ if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$my
 'codedx/codedx-tool-service:v2.13.0',
 'codedx/codedx-cleanup:v2.13.0',
 'codedx/codedx-mariadb:v1.38.0',
-<<<<<<< Updated upstream
-'bitnami/minio:2025.6.13-debian-12-r0',
-'argoproj/workflow-controller:v3.6.10',
-'argoproj/argoexec:v3.6.10',
-'cache-service:2024.12.0',
-'common-infra:2024.12.0',
-'scan-service:2024.12.0',
-'scan-service-migration:2024.12.0',
-'storage-service:2024.12.0',
-'storage-service-migration:2024.12.0',
-'job-runner:2024.12.0' | ForEach-Object {
-=======
 'bitnami/minio:2025.7.23-debian-12-r0',
 'argoproj/workflow-controller:v3.7.0',
 'argoproj/argoexec:v3.7.0',
@@ -52,7 +36,6 @@ if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$my
 'storage-service:2025.6.2',
 'storage-service-migration:2025.6.2',
 'job-runner:2025.6.2' | ForEach-Object {
->>>>>>> Stashed changes
 
 	docker pull "repo.blackduck.com/containers/$_"
 	if($LASTEXITCODE -ne 0){throw "$_ pull failed"} 
