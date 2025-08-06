@@ -38,7 +38,7 @@ app.kubernetes.io/component: configuration
 {{- end }}
 
 {{- define "srm-sf.assert-sast-version" -}}
-{{- include "srm-sf.assert-tool-version" (dict "type" "SAST" "version" .Values.web.scanfarm.sast.version "supportedVersions" (list "2024.12.0" "2024.9.1" "2024.3.0" "2023.9.2" "2023.6.1")) -}}
+{{- include "srm-sf.assert-tool-version" (dict "type" "SAST" "version" .Values.web.scanfarm.sast.version "supportedVersions" (list "2025.6.2" "2024.12.0" "2024.9.1" "2024.3.0" "2023.9.2" "2023.6.1")) -}}
 {{- end -}}
 
 {{- define "srm-sf.assert-sca-version" -}}

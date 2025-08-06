@@ -161,7 +161,7 @@ spec:
               fieldPath: metadata.namespace
         - name: OPERATION
           value: certgen
-        image: $($config.GetRegistryAndPrefix())/common-infra:2024.12.0
+        image: $($config.GetRegistryAndPrefix())/common-infra:2025.6.2
         imagePullPolicy: Always
         name: cnc-common-infra
         resources:

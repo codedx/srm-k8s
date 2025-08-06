@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.2.0
+.VERSION 1.3.0
 .GUID 455ac2e7-650b-420e-9a7a-3868da844bc4
 .AUTHOR Black Duck
 #>
@@ -24,7 +24,7 @@ param (
 	[string] $repoPwd,
 	[string] $srmNamespace = 'srm',
 	[string] $tool = 'coverity',
-	[string] $toolVersion = '2024.12.0',
+	[string] $toolVersion = '2025.6.2',
 	[int]    $maxUploadPartSize = 500*(1024*1024),
 	[string] $srmPath = '/srm'
 )
