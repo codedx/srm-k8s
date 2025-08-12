@@ -211,7 +211,7 @@ minio:
     # -- the Docker image repository name for the MinIO workload
     repository: bitnami/minio
     # -- the Docker image version for the MinIO workload
-    tag: 2025.6.13-debian-12-r0
+    tag: 2025.7.23-debian-12-r0
     # -- the K8s Docker image pull policy for the MinIO workload
     pullSecrets: []
     #  - private-registry

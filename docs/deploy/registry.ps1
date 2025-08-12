@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.1.0
+.VERSION 1.2.0
 .GUID 503f30e0-edc9-4ae7-abed-62da0a01c57e
 .AUTHOR Black Duck
 .COPYRIGHT Copyright 2025 Black Duck Software, Inc. All rights reserved.
@@ -26,7 +26,7 @@ if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$my
 'codedx/codedx-tool-service:v2.13.0',
 'codedx/codedx-cleanup:v2.13.0',
 'codedx/codedx-mariadb:v1.38.0',
-'bitnami/minio:2025.6.13-debian-12-r0',
+'bitnami/minio:2025.7.23-debian-12-r0',
 'argoproj/workflow-controller:v3.6.10',
 'argoproj/argoexec:v3.6.10',
 'cache-service:2024.12.0',
