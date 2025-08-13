@@ -276,7 +276,7 @@ Refer to what follows for the supported or tested versions of software that comp
 
 ## Kubernetes Requirements
 
-The Software Risk Manager deployment supports Kubernetes versions 1.22 through 1.31 and was tested with OpenShift 4.18. If you are not a cluster administrator, your cluster access must include the permissions defined in the sections below before installing Software Risk Manager on your cluster.
+The Software Risk Manager deployment supports Kubernetes versions 1.22 through 1.33 and was tested with OpenShift 4.18. If you are not a cluster administrator, your cluster access must include the permissions defined in the sections below before installing Software Risk Manager on your cluster.
 
 ### Kubernetes Privileges for Core Feature Deployment
 
@@ -3960,6 +3960,8 @@ Running the Helm Prep Wizard and Helm Prep Script is the recommended deployment 
 
 Running the scripts in an alternate environment can help you stage your helm deployment if you cannot run PowerShell Core in your primary environment. Alternatively, consider running the scripts from a Docker container:
 
+>Note: Some of the following commands must be run with elevated permissions.
+
 ```
 $ docker run -it --rm mcr.microsoft.com/powershell bash
 $ apt update
@@ -3975,9 +3977,9 @@ $ echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium
 $ apt update
 $ apt install -y temurin-11-jdk
 
-$ # install kubectl (specify correct version for your cluster)
 $ apt install -y curl
-$ curl -L https://dl.k8s.io/release/v1.28.4/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
+$ export YOUR_KUBECTL_VERSION='v1.32.7' # specify the correct kubectl version for your cluster
+$ curl -L https://dl.k8s.io/release/$YOUR_KUBECTL_VERSION/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
 $ chmod +x /usr/local/bin/kubectl
 
 $ # start Helm Prep Wizard
