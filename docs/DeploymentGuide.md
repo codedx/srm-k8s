@@ -211,6 +211,7 @@
     + [Upgrading to v1.43](#upgrading-to-v143)
     + [Upgrading to v1.46](#upgrading-to-v146)
     + [Upgrading to v1.49](#upgrading-to-v149)
+    + [Upgrading to v1.64](#upgrading-to-v164)
   * [All-in-One Demo Config](#all-in-one-demo-config)
     + [Install and Configure Tools](#install-and-configure-tools)
     + [Create a Certificate](#create-a-certificate)
@@ -5068,7 +5069,7 @@ If you are upgrading from an earlier chart version, refer to any previous chart 
 
 This chart switches the Scan Farm SAST component from version 2024.9.1 to 2024.12.0 and the Scan Farm SCA version from 9.2.0 to 10.0.0. Refer to [Specify Scan Farm Engine Versions](#specify-scan-farm-engine-versions) if you'd prefer to use a previous SAST version that SRM supports.
 
-### Upgrading to v1.63
+### Upgrading to v1.64
 
 If you are upgrading from an earlier chart version, refer to any previous chart note(s) in addition to this one.
 
