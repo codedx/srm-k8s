@@ -26,7 +26,7 @@ if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$my
 'codedx/codedx-tool-service:v2.14.0',
 'codedx/codedx-cleanup:v2.14.0',
 'codedx/codedx-mariadb:v1.38.0',
-'bitnami/minio:2025.7.23-debian-12-r0',
+'bitnami/minio:2025.7.23-debian-12-r5',
 'argoproj/workflow-controller:v3.7.1',
 'argoproj/argoexec:v3.7.1',
 'cache-service:2025.6.2',

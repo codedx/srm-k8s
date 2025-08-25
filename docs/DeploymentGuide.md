@@ -4274,7 +4274,7 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | minio.image.pullSecrets | list | `[]` | the K8s Docker image pull policy for the MinIO workload |
 | minio.image.registry | string | `"docker.io"` | the registry name and optional registry suffix for the MinIO Docker image |
 | minio.image.repository | string | `"bitnami/minio"` | the Docker image repository name for the MinIO workload |
-| minio.image.tag | string | `"2025.7.23-debian-12-r0"` | the Docker image version for the MinIO workload |
+| minio.image.tag | string | `"2025.7.23-debian-12-r5"` | the Docker image version for the MinIO workload |
 | minio.nodeSelector | object | `{}` | the node selector to use for the MinIO workload |
 | minio.persistence.existingClaim | string | `nil` | the existing claim to use for the MinIO persistent volume; a new persistent volume is generated when unset |
 | minio.persistence.size | string | `"64Gi"` | the size of the MinIO persistent volume  |
