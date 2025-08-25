@@ -277,7 +277,7 @@ Refer to what follows for the supported or tested versions of software that comp
 
 ## Kubernetes Requirements
 
-The Software Risk Manager deployment supports Kubernetes versions 1.22 through 1.31 and was tested with OpenShift 4.18. If you are not a cluster administrator, your cluster access must include the permissions defined in the sections below before installing Software Risk Manager on your cluster.
+The Software Risk Manager deployment supports Kubernetes versions 1.22 through 1.33 and was tested with OpenShift 4.18. If you are not a cluster administrator, your cluster access must include the permissions defined in the sections below before installing Software Risk Manager on your cluster.
 
 ### Kubernetes Privileges for Core Feature Deployment
 
@@ -3961,6 +3961,8 @@ Running the Helm Prep Wizard and Helm Prep Script is the recommended deployment 
 
 Running the scripts in an alternate environment can help you stage your helm deployment if you cannot run PowerShell Core in your primary environment. Alternatively, consider running the scripts from a Docker container:
 
+>Note: Some of the following commands must be run with elevated permissions.
+
 ```
 $ docker run -it --rm mcr.microsoft.com/powershell bash
 $ apt update
@@ -3976,9 +3978,9 @@ $ echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium
 $ apt update
 $ apt install -y temurin-11-jdk
 
-$ # install kubectl (specify correct version for your cluster)
 $ apt install -y curl
-$ curl -L https://dl.k8s.io/release/v1.28.4/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
+$ export YOUR_KUBECTL_VERSION='v1.32.7' # specify the correct kubectl version for your cluster
+$ curl -L https://dl.k8s.io/release/$YOUR_KUBECTL_VERSION/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
 $ chmod +x /usr/local/bin/kubectl
 
 $ # start Helm Prep Wizard
@@ -4272,7 +4274,7 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | minio.image.pullSecrets | list | `[]` | the K8s Docker image pull policy for the MinIO workload |
 | minio.image.registry | string | `"docker.io"` | the registry name and optional registry suffix for the MinIO Docker image |
 | minio.image.repository | string | `"bitnami/minio"` | the Docker image repository name for the MinIO workload |
-| minio.image.tag | string | `"2025.6.13-debian-12-r0"` | the Docker image version for the MinIO workload |
+| minio.image.tag | string | `"2025.7.23-debian-12-r0"` | the Docker image version for the MinIO workload |
 | minio.nodeSelector | object | `{}` | the node selector to use for the MinIO workload |
 | minio.persistence.existingClaim | string | `nil` | the existing claim to use for the MinIO persistent volume; a new persistent volume is generated when unset |
 | minio.persistence.size | string | `"64Gi"` | the size of the MinIO persistent volume  |
@@ -4318,7 +4320,7 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | to.image.repository.sendResults | string | `"codedx/codedx-results"` | the Docker image repository name for the SRM send-results workload |
 | to.image.repository.toolService | string | `"codedx/codedx-tool-service"` | the Docker image repository name for the SRM tool service workload |
 | to.image.repository.tools | string | `"codedx/codedx-tools"` | the Docker image repository name for the SRM tools workload |
-| to.image.tag | string | `"v2.13.0"` | the Docker image version for the SRM Tool Orchestration workloads (tools use the web.image.tag version)|
+| to.image.tag | string | `"v2.14.0"` | the Docker image version for the SRM Tool Orchestration workloads (tools use the web.image.tag version)|
 | to.logs.maxBackups | int | `20` | the maximum number of tool service log files to retain |
 | to.logs.maxSizeMB | int | `10` | the maximum size of a tool service log file |
 | to.minimumWorkflowStepRunTimeSeconds | int | `3` | the minimum seconds for an orchestrated analysis workflow step |
@@ -4382,7 +4384,7 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | web.image.pullPolicy | string | `"IfNotPresent"` | the K8s Docker image pull policy for the SRM web workload |
 | web.image.registry | string | `"docker.io"` | the registry name and optional registry suffix for the SRM web Docker image |
 | web.image.repository | string | `"codedx/codedx-tomcat"` | the Docker image repository name for the SRM web workload |
-| web.image.tag | string | `"v2025.6.3"` | the Docker image version for the SRM web workload |
+| web.image.tag | string | `"v2025.6.4"` | the Docker image version for the SRM web workload |
 | web.javaOpts | string | `"-XX:MaxRAMPercentage=75.0"` | the Java options for the SRM web workload |
 | web.licenseSecret | string | `""` | the K8s secret name containing the SRM license password with required field license.lic Command: kubectl -n srm create secret generic srm-web-license-secret --from-file license.lic=./license.lic |
 | web.loggingConfigMap | string | `""` | the K8s configmap containing the logging configuration file with required field logback.xml Command: kubectl -n srm create configmap srm-web-logging-cfgmap --from-file logback.xml=./logback.xml |
@@ -5438,6 +5440,7 @@ pwsh /path/to/srm-k8s/helm-prep-wizard.ps1
 |Tool Orchestration|Install Tool Orchestration Components?|y||
 |Orchestrated Analysis Storage|What object storage configuration will you use?|m||
 |Configure TLS|Specify your TLS configuration for SRM components|n||
+|Network Policies|Install Network Policies|n||
 |Authentication Type|How will users authenticate to SRM?|l||
 |Ingress Type|What type of ingress do you want to use?|i||
 |Ingress Class Name|Enter ingress class name:|nginx||
