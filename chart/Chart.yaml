@@ -16,7 +16,7 @@ dependencies:
   repository: https://repo.blackduck.com/cloudnative
   condition: features.scanfarm
 - name: argo-workflows
-  version: 0.45.19
+  version: 0.45.22
   repository: https://argoproj.github.io/argo-helm
   condition: features.to
 - name: minio
