@@ -264,7 +264,7 @@ argo-workflows:
       enabled: false
     image:
       # -- the Argo workflow controller Docker image registry
-      registry: docker.io
+      registry: quay.io
       repository: argoproj/workflow-controller
     instanceID:
       # -- whether the Argo workflow controller uses an instance ID
@@ -323,7 +323,7 @@ argo-workflows:
   executor:
     image:
       # -- the Argo executor Docker image registry
-      registry: docker.io
+      registry: quay.io
       repository: argoproj/argoexec
     securityContext:
       allowPrivilegeEscalation: false
