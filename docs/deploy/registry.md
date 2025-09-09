@@ -129,13 +129,13 @@ If you are not using the SRM Scan Farm feature, skip this section.
 
 The SRM Scan Farm feature requires these Docker images:
 
-- repo.blackduck.com/containers/cache-service:2024.12.0
-- repo.blackduck.com/containers/common-infra:2024.12.0
-- repo.blackduck.com/containers/scan-service:2024.12.0
-- repo.blackduck.com/containers/scan-service-migration:2024.12.0
-- repo.blackduck.com/containers/storage-service:2024.12.0
-- repo.blackduck.com/containers/storage-service-migration:2024.12.0
-- repo.blackduck.com/containers/job-runner:2024.12.0
+- repo.blackduck.com/containers/cache-service:2025.6.2
+- repo.blackduck.com/containers/common-infra:2025.6.2
+- repo.blackduck.com/containers/scan-service:2025.6.2
+- repo.blackduck.com/containers/scan-service-migration:2025.6.2
+- repo.blackduck.com/containers/storage-service:2025.6.2
+- repo.blackduck.com/containers/storage-service-migration:2025.6.2
+- repo.blackduck.com/containers/job-runner:2025.6.2
 
 You can use this PowerShell script below to pull, tag, and push the above Black Duck Docker image to your private registry; you must set the $myPrivateRegistryPrefix variable by replacing `id.dkr.ecr.us-east-2.amazonaws.com` with your Docker registry name and any prefix (e.g., my-srm) you require ($myPrivateRegistryPrefix must end with a forward slash):
 
@@ -143,13 +143,13 @@ You can use this PowerShell script below to pull, tag, and push the above Black 
 $myPrivateRegistryPrefix = 'id.dkr.ecr.us-east-2.amazonaws.com/'
 if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$myPrivateRegistryPrefix/" }
 
-'cache-service:2024.12.0',
-'common-infra:2024.12.0',
-'scan-service:2024.12.0',
-'scan-service-migration:2024.12.0',
-'storage-service:2024.12.0',
-'storage-service-migration:2024.12.0',
-'job-runner:2024.12.0' | ForEach-Object {
+'cache-service:2025.6.2',
+'common-infra:2025.6.2',
+'scan-service:2025.6.2',
+'scan-service-migration:2025.6.2',
+'storage-service:2025.6.2',
+'storage-service-migration:2025.6.2',
+'job-runner:2025.6.2' | ForEach-Object {
 
    docker pull "repo.blackduck.com/containers/$_"
    if($LASTEXITCODE -ne 0){throw "$_ pull failed"} 
@@ -176,9 +176,9 @@ The SRM Tool Orchestration feature requires these Docker images:
 - repo.blackduck.com/containers/codedx/codedx-results:v2.14.0
 - repo.blackduck.com/containers/codedx/codedx-tool-service:v2.14.0
 - repo.blackduck.com/containers/codedx/codedx-cleanup:v2.14.0
-- repo.blackduck.com/containers/argoproj/workflow-controller:v3.6.10
-- repo.blackduck.com/containers/argoproj/argoexec:v3.6.10
-- repo.blackduck.com/containers/bitnami/minio:2025.7.23-debian-12-r0 (when not using external workflow storage)
+- repo.blackduck.com/containers/argoproj/workflow-controller:v3.7.1
+- repo.blackduck.com/containers/argoproj/argoexec:v3.7.1
+- repo.blackduck.com/containers/bitnami/minio:2025.7.23-debian-12-r5 (when not using external workflow storage)
 
 You can use this PowerShell script below to pull, tag, and push the above Black Duck Docker image to your private registry; you must set the $myPrivateRegistryPrefix variable by replacing `id.dkr.ecr.us-east-2.amazonaws.com` with your Docker registry name and any prefix (e.g., my-srm) you require ($myPrivateRegistryPrefix must end with a forward slash):
 
@@ -192,9 +192,9 @@ if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$my
 'codedx/codedx-results:v2.14.0',
 'codedx/codedx-tool-service:v2.14.0',
 'codedx/codedx-cleanup:v2.14.0',
-'bitnami/minio:2025.7.23-debian-12-r0',
-'argoproj/workflow-controller:v3.6.10',
-'argoproj/argoexec:v3.6.10' | ForEach-Object {
+'bitnami/minio:2025.7.23-debian-12-r5',
+'argoproj/workflow-controller:v3.7.1',
+'argoproj/argoexec:v3.7.1' | ForEach-Object {
 
    docker pull "repo.blackduck.com/containers/$_"
    if($LASTEXITCODE -ne 0){throw "$_ pull failed"} 
@@ -227,16 +227,16 @@ if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$my
 'codedx/codedx-tool-service:v2.14.0',
 'codedx/codedx-cleanup:v2.14.0',
 'codedx/codedx-mariadb:v1.38.0',
-'bitnami/minio:2025.7.23-debian-12-r0',
-'argoproj/workflow-controller:v3.6.10',
-'argoproj/argoexec:v3.6.10',
-'cache-service:2024.12.0',
-'common-infra:2024.12.0',
-'scan-service:2024.12.0',
-'scan-service-migration:2024.12.0',
-'storage-service:2024.12.0',
-'storage-service-migration:2024.12.0',
-'job-runner:2024.12.0' | ForEach-Object {
+'bitnami/minio:2025.7.23-debian-12-r5',
+'argoproj/workflow-controller:v3.7.1',
+'argoproj/argoexec:v3.7.1',
+'cache-service:2025.6.2',
+'common-infra:2025.6.2',
+'scan-service:2025.6.2',
+'scan-service-migration:2025.6.2',
+'storage-service:2025.6.2',
+'storage-service-migration:2025.6.2',
+'job-runner:2025.6.2' | ForEach-Object {
 
    docker pull "repo.blackduck.com/containers/$_"
    if($LASTEXITCODE -ne 0){throw "$_ pull failed"} 

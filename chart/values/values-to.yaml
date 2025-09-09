@@ -211,7 +211,7 @@ minio:
     # -- the Docker image repository name for the MinIO workload
     repository: bitnami/minio
     # -- the Docker image version for the MinIO workload
-    tag: 2025.7.23-debian-12-r0
+    tag: 2025.7.23-debian-12-r5
     # -- the K8s Docker image pull policy for the MinIO workload
     pullSecrets: []
     #  - private-registry
@@ -264,7 +264,7 @@ argo-workflows:
       enabled: false
     image:
       # -- the Argo workflow controller Docker image registry
-      registry: docker.io
+      registry: quay.io
       repository: argoproj/workflow-controller
     instanceID:
       # -- whether the Argo workflow controller uses an instance ID
@@ -323,7 +323,7 @@ argo-workflows:
   executor:
     image:
       # -- the Argo executor Docker image registry
-      registry: docker.io
+      registry: quay.io
       repository: argoproj/argoexec
     securityContext:
       allowPrivilegeEscalation: false
@@ -334,7 +334,7 @@ argo-workflows:
     pullSecrets: []
     #  - name: private-registry
     # -- the Docker image version for the Argo workload
-    tag: v3.6.10
+    tag: v3.7.1
   # @ignore
   server:
     # @ignore

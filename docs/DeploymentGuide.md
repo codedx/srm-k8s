@@ -211,6 +211,7 @@
     + [Upgrading to v1.43](#upgrading-to-v143)
     + [Upgrading to v1.46](#upgrading-to-v146)
     + [Upgrading to v1.49](#upgrading-to-v149)
+    + [Upgrading to v1.64](#upgrading-to-v164)
   * [All-in-One Demo Config](#all-in-one-demo-config)
     + [Install and Configure Tools](#install-and-configure-tools)
     + [Create a Certificate](#create-a-certificate)
@@ -4031,7 +4032,7 @@ metadata:
   namespace: srm
 spec:
   containers:
-    - image: codedx/codedx-tomcat:v2024.12.0
+    - image: codedx/codedx-tomcat:v2025.6.3
       name: host-srm-web-appdata-volume
       command: ["sleep", "1d"]
       volumeMounts:
@@ -4101,7 +4102,7 @@ metadata:
   namespace: srm
 spec:
   containers:
-    - image: codedx/codedx-tomcat:v2024.12.0
+    - image: codedx/codedx-tomcat:v2025.6.3
       name: host-srm-web-appdata-volume
       command: ["sleep", "1d"]
       volumeMounts:
@@ -4211,7 +4212,7 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | argo-workflows.controller.workflowNamespaces | list | `[]` | the namespace for the Argo workflow service account |
 | argo-workflows.executor.image.registry | string | `docker.io` | the Argo executor Docker image registry |
 | argo-workflows.images.pullSecrets | list | `[]` | the K8s image pull secret to use for Argo Docker images |
-| argo-workflows.images.tag | string | `"v3.6.10"` | the Docker image version for the Argo workload |
+| argo-workflows.images.tag | string | `"v3.7.1"` | the Docker image version for the Argo workload |
 | scan-services.common-infra.cleanupSchedule | string | `"*/55 * * * *"` | the schedule to use for the cleanup cronjob - must be a valid schedule for a K8s cronjob |
 | scan-services.imagePullPolicy | string | `"Always"` | the image pull policy for scan farm components |
 | scan-services.srm.port | string | `"9090"` | the port number of the SRM web service |
@@ -4273,7 +4274,7 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | minio.image.pullSecrets | list | `[]` | the K8s Docker image pull policy for the MinIO workload |
 | minio.image.registry | string | `"docker.io"` | the registry name and optional registry suffix for the MinIO Docker image |
 | minio.image.repository | string | `"bitnami/minio"` | the Docker image repository name for the MinIO workload |
-| minio.image.tag | string | `"2025.7.23-debian-12-r0"` | the Docker image version for the MinIO workload |
+| minio.image.tag | string | `"2025.7.23-debian-12-r5"` | the Docker image version for the MinIO workload |
 | minio.nodeSelector | object | `{}` | the node selector to use for the MinIO workload |
 | minio.persistence.existingClaim | string | `nil` | the existing claim to use for the MinIO persistent volume; a new persistent volume is generated when unset |
 | minio.persistence.size | string | `"64Gi"` | the size of the MinIO persistent volume  |
@@ -4414,7 +4415,7 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | web.resources.limits.cpu | string | `"4000m"` | the required CPU for the web workload (must be >= 2 vCPUs) |
 | web.resources.limits.ephemeral-storage | string | `"2868Mi"` | the ephemeral storage for the web workload |
 | web.resources.limits.memory | string | `"16384Mi"` | the required memory for the web workload |
-| web.scanfarm.sast.version | string | `"2024.12.0"` | the SAST component version to use |
+| web.scanfarm.sast.version | string | `"2025.6.2"` | the SAST component version to use |
 | web.scanfarm.sca.version | string | `"10.0.0"` | the SCA component version to use for build-less scans (must match scan service's TOOL_DETECT_VERSION environment variable) |
 | web.scanfarm.key.validForDays | int | 45 | the duration of the Scan Farm API key |
 | web.scanfarm.key.regenSchedule | string | `"0 0 1 * *"` | the Scan Farm API key regeneration period (minute hour day-of-month month day-of-week) |
@@ -5069,6 +5070,12 @@ The srm-k8s GitHub repository for this version of Software Risk Manager depends 
 If you are upgrading from an earlier chart version, refer to any previous chart note(s) in addition to this one.
 
 This chart switches the Scan Farm SAST component from version 2024.9.1 to 2024.12.0 and the Scan Farm SCA version from 9.2.0 to 10.0.0. Refer to [Specify Scan Farm Engine Versions](#specify-scan-farm-engine-versions) if you'd prefer to use a previous SAST version that SRM supports.
+
+### Upgrading to v1.64
+
+If you are upgrading from an earlier chart version, refer to any previous chart note(s) in addition to this one.
+
+This chart switches the Scan Farm SAST component from version 2024.12.0 to 2025.6.2. Refer to [Specify Scan Farm Engine Versions](#specify-scan-farm-engine-versions) if you'd prefer to use a previous SAST version that SRM supports.
 
 ## All-in-One Demo Config
 
