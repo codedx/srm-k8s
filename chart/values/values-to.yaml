@@ -209,7 +209,7 @@ minio:
     # -- the registry name and optional registry suffix for the MinIO Docker image
     registry: docker.io
     # -- the Docker image repository name for the MinIO workload
-    repository: bitnami/minio
+    repository: bitnamilegacy/minio
     # -- the Docker image version for the MinIO workload
     tag: 2025.7.23-debian-12-r5
     # -- the K8s Docker image pull policy for the MinIO workload

@@ -4,6 +4,12 @@ global:
       adaptSecurityContext: auto
 
 minio:
+  defaultInitContainers:
+    volumePermissions:
+      image:
+        repository: bitnamilegacy/os-shell
+  image:
+    repository: bitnamilegacy/minio
   provisioning:
     enabled: true
     buckets:
@@ -20,6 +26,7 @@ minio:
     size: 50Gi
 postgresql:
   image:
+    repository: bitnamilegacy/postgresql
     # scan farm currently supports PostgreSQL versions 13 - 15 (https://documentation.blackduck.com/bundle/coverity-docs/page/cnc/topics/cnc_support_matrix.html)
     tag: 15.10.0-debian-12-r2
   primary:
@@ -38,6 +45,8 @@ redis:
     appendonly no
     maxmemory 1gb
     maxmemory-policy noeviction
+  image:
+    repository: bitnamilegacy/redis
   master:
     persistence:
       enabled: false

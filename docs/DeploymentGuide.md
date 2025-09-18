@@ -1275,6 +1275,8 @@ The PostgreSQL license is available [here](https://www.postgresql.org/about/lice
 Allocate storage capacity and specify an instance size that meets the CPU and memory requirements in the Scan Farm Database Requirements section. The following is an example of the PostgreSQL chart parameters for version 11.6.2 that customizes PostgreSQL to meet Scan Farm requirements:
 
 ```
+image:
+  repository: bitnamilegacy/postgresql
 primary:
   persistence:
     size: 5Gi
@@ -1307,6 +1309,8 @@ commonConfiguration: |-
   appendonly no
   maxmemory 1gb
   maxmemory-policy noeviction
+image:
+  repository: bitnamilegacy/redis
 master:
   persistence:
     enabled: false
@@ -1333,6 +1337,12 @@ The MinIO software is licensed under the [GNU Affero General Public License v3.0
 The following is an example of the MinIO chart parameters for version 17.0.16 that customizes MinIO to meet Scan Farm requirements (refer to the requirements section to identify the storage size suitable for your environment):
 
 ```
+defaultInitContainers:
+  volumePermissions:
+    image:
+      repository: bitnamilegacy/os-shell
+image:
+  repository: bitnamilegacy/minio
 provisioning:
   enabled: true
   buckets:
@@ -3816,7 +3826,7 @@ metadata:
   namespace: cdx-svc
 spec:
   containers:
-    - image: bitnami/minio:2024.11.7-debian-12-r2
+    - image: bitnamilegacy/minio:2024.11.7-debian-12-r2
       name: host-code-dx-minio-volume
       command: ["sleep", "1d"]
       volumeMounts:
@@ -3875,7 +3885,7 @@ metadata:
   namespace: srm
 spec:
   containers:
-    - image: bitnami/minio:2024.11.7-debian-12-r2
+    - image: bitnamilegacy/minio:2024.11.7-debian-12-r2
       name: host-srm-minio-volume
       command: ["sleep", "1d"]
       volumeMounts:
@@ -4273,7 +4283,7 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | minio.global.minio.existingSecret | string | `nil` | the K8s secret name with the MinIO access and secret key with required fields access-key and secret-key Command: kubectl -n srm create secret generic minio-secret --from-literal=access-key=admin --from-literal=secret-key=password |
 | minio.image.pullSecrets | list | `[]` | the K8s Docker image pull policy for the MinIO workload |
 | minio.image.registry | string | `"docker.io"` | the registry name and optional registry suffix for the MinIO Docker image |
-| minio.image.repository | string | `"bitnami/minio"` | the Docker image repository name for the MinIO workload |
+| minio.image.repository | string | `"bitnamilegacy/minio"` | the Docker image repository name for the MinIO workload |
 | minio.image.tag | string | `"2025.7.23-debian-12-r5"` | the Docker image version for the MinIO workload |
 | minio.nodeSelector | object | `{}` | the node selector to use for the MinIO workload |
 | minio.persistence.existingClaim | string | `nil` | the existing claim to use for the MinIO persistent volume; a new persistent volume is generated when unset |
