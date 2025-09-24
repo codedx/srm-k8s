@@ -171,11 +171,11 @@ If you are not using the SRM Tool Orchestration feature, skip this section.
 The SRM Tool Orchestration feature requires these Docker images:
 
 - repo.blackduck.com/containers/codedx/codedx-tools:v2025.9.0
-- repo.blackduck.com/containers/codedx/codedx-prepare:v2.16.0
-- repo.blackduck.com/containers/codedx/codedx-newanalysis:v2.16.0
-- repo.blackduck.com/containers/codedx/codedx-results:v2.16.0
-- repo.blackduck.com/containers/codedx/codedx-tool-service:v2.16.0
-- repo.blackduck.com/containers/codedx/codedx-cleanup:v2.16.0
+- repo.blackduck.com/containers/codedx/codedx-prepare:v2.17.0
+- repo.blackduck.com/containers/codedx/codedx-newanalysis:v2.17.0
+- repo.blackduck.com/containers/codedx/codedx-results:v2.17.0
+- repo.blackduck.com/containers/codedx/codedx-tool-service:v2.17.0
+- repo.blackduck.com/containers/codedx/codedx-cleanup:v2.17.0
 - repo.blackduck.com/containers/argoproj/workflow-controller:v3.7.1
 - repo.blackduck.com/containers/argoproj/argoexec:v3.7.1
 - repo.blackduck.com/containers/bitnami/minio:2025.7.23-debian-12-r5 (when not using external workflow storage)
@@ -187,11 +187,11 @@ $myPrivateRegistryPrefix = 'id.dkr.ecr.us-east-2.amazonaws.com/'
 if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$myPrivateRegistryPrefix/" }
 
 'codedx/codedx-tools:v2025.9.0',
-'codedx/codedx-prepare:v2.16.0',
-'codedx/codedx-newanalysis:v2.16.0',
-'codedx/codedx-results:v2.16.0',
-'codedx/codedx-tool-service:v2.16.0',
-'codedx/codedx-cleanup:v2.16.0',
+'codedx/codedx-prepare:v2.17.0',
+'codedx/codedx-newanalysis:v2.17.0',
+'codedx/codedx-results:v2.17.0',
+'codedx/codedx-tool-service:v2.17.0',
+'codedx/codedx-cleanup:v2.17.0',
 'bitnami/minio:2025.7.23-debian-12-r5',
 'argoproj/workflow-controller:v3.7.1',
 'argoproj/argoexec:v3.7.1' | ForEach-Object {
@@ -221,11 +221,11 @@ if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$my
 
 'codedx/codedx-tomcat:v2025.9.0',
 'codedx/codedx-tools:v2025.9.0',
-'codedx/codedx-prepare:v2.16.0',
-'codedx/codedx-newanalysis:v2.16.0',
-'codedx/codedx-results:v2.16.0',
-'codedx/codedx-tool-service:v2.16.0',
-'codedx/codedx-cleanup:v2.16.0',
+'codedx/codedx-prepare:v2.17.0',
+'codedx/codedx-newanalysis:v2.17.0',
+'codedx/codedx-results:v2.17.0',
+'codedx/codedx-tool-service:v2.17.0',
+'codedx/codedx-cleanup:v2.17.0',
 'codedx/codedx-mariadb:v1.38.0',
 'bitnami/minio:2025.7.23-debian-12-r5',
 'argoproj/workflow-controller:v3.7.1',
