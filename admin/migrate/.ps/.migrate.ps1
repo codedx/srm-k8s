@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.9.0
+.VERSION 1.10.0
 .GUID 62c5091b-7337-44aa-a87b-f9828ae1013a
 .AUTHOR Black Duck
 .DESCRIPTION This script helps you migrate from Code Dx to SRM (w/o the scan farm feature enabled)
@@ -247,9 +247,9 @@ $config.releaseName = Get-QuestionResponse "Enter your SRM release (do not reuse
 
 if ($skipDatabase) {
 
-	$config.externalDatabaseHost = Get-QuestionResponse 'Enter the name of your external database host' @($externalDatabaseHost)
+	$config.externalDatabaseHost = Get-QuestionResponse 'Enter the name of your external database host'
 	$config.externalDatabaseName = Get-QuestionResponse 'Enter the name of your SRM database (e.g., srmdb)' @($externalDatabaseName)
-	$config.externalDatabaseUser = Get-QuestionResponse 'Enter the SRM database username (e.g., srm)' @($externalDatabaseUser)
+	$config.externalDatabaseUser = Get-QuestionResponse 'Enter the SRM database username (e.g., srm)'
 	$config.externalDatabasePwd = Get-QuestionResponse 'Enter the SRM database password' @() -isSecure
 
 	Read-Host @"
