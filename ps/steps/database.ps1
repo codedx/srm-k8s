@@ -47,7 +47,7 @@ Specify the number of subordinate, read-only databases that will use MariaDB
 data replication to store a copy of the MariaDB master database.
 
 A replica database can provide a way for you to configure a database backup
-for your SRM database using a tool like Verlero.
+for your SRM database using a tool like Velero.
 
 Note: If you are not planning to back up this SRM deployment, set the 
 number of database replicas to 0.
