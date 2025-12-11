@@ -226,7 +226,7 @@ web:
       # -- the required memory for the web workload
       memory: 16384Mi
       # -- the ephemeral storage for the web workload
-      ephemeral-storage: 2868Mi
+      ephemeral-storage: 3368Mi
 
   persistence:
     # -- the access mode for the AppData persistent volume
