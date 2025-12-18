@@ -156,7 +156,7 @@ class WebEphemeralStorage : EphemeralStorageStep {
 	}
 
 	[string]GetDefault() {
-		return '2868Mi'
+		return '3368Mi'
 	}
 }
 

@@ -78,7 +78,7 @@ Describe 'Specifying no system size' -Tag 'size' {
 		$config.minioMemoryReservation | Should -Be '' -Because "Tool Orchestration was not included"
 		$config.workflowMemoryReservation | Should -Be '' -Because "Tool Orchestration was not included"
 
-		$config.webEphemeralStorageReservation | Should -Be '2868Mi' -Because "a web storage reservation was specified"
+		$config.webEphemeralStorageReservation | Should -Be '3368Mi' -Because "a web storage reservation was specified"
 
 		$config.webVolumeSizeGiB | Should -Be '64' -Because "a web volume size was specified"
 		$config.dbVolumeSizeGiB | Should -Be '64' -Because "a DB volume size reservation was specified"
@@ -146,7 +146,7 @@ Describe 'Specifying no system size' -Tag 'size' {
 		$config.minioMemoryReservation | Should -Be '5120Mi' -Because "a MinIO memory reservation was specified"
 		$config.workflowMemoryReservation | Should -Be '500Mi' -Because "a workflow memory reservation was specified"
 
-		$config.webEphemeralStorageReservation | Should -Be '2868Mi' -Because "a web storage reservation was specified"
+		$config.webEphemeralStorageReservation | Should -Be '3368Mi' -Because "a web storage reservation was specified"
 
 		$config.webVolumeSizeGiB | Should -Be '64' -Because "a web volume size was specified"
 		$config.dbVolumeSizeGiB | Should -Be '64' -Because "a DB volume size reservation was specified"

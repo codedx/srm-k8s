@@ -4423,7 +4423,7 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | web.props.limits.jobs.disk | int | `2000` | the value of the SRM prop swa.jobs.disk-limit, which determins the maximum available disk I/O |
 | web.props.limits.jobs.memory | int | `2000` | the value of the SRM prop swa.jobs.memory-limit, which determines the maximum available memory |
 | web.resources.limits.cpu | string | `"4000m"` | the required CPU for the web workload (must be >= 2 vCPUs) |
-| web.resources.limits.ephemeral-storage | string | `"2868Mi"` | the ephemeral storage for the web workload |
+| web.resources.limits.ephemeral-storage | string | `"3368Mi"` | the ephemeral storage for the web workload |
 | web.resources.limits.memory | string | `"16384Mi"` | the required memory for the web workload |
 | web.scanfarm.sast.version | string | `"2025.6.2"` | the SAST component version to use |
 | web.scanfarm.sca.version | string | `"10.0.0"` | the SCA component version to use for build-less scans (must match scan service's TOOL_DETECT_VERSION environment variable) |

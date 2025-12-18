@@ -182,7 +182,7 @@ Describe 'Using a v1.2 config.json file...' {
   "minioMemoryReservation": "5120Mi",
   "workflowMemoryReservation": "500Mi",
   "useEphemeralStorageDefaults": true,
-  "webEphemeralStorageReservation": "2868Mi",
+  "webEphemeralStorageReservation": "3368Mi",
   "dbMasterEphemeralStorageReservation": "",
   "dbSlaveEphemeralStorageReservation": "",
   "toolServiceEphemeralStorageReservation": "",

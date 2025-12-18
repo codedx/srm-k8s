@@ -43,7 +43,7 @@ param (
 	[string]                 $minioCPUReservation,
 	[string]                 $workflowCPUReservation = '500m',
 
-	[string]                 $codeDxEphemeralStorageReservation = '2868Mi',
+	[string]                 $codeDxEphemeralStorageReservation = '3368Mi',
 	[string]                 $dbMasterEphemeralStorageReservation,
 	[string]                 $dbSlaveEphemeralStorageReservation,
 	[string]                 $toolServiceEphemeralStorageReservation,
