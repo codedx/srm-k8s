@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.3.0
+.VERSION 1.3.1
 .GUID 503f30e0-edc9-4ae7-abed-62da0a01c57e
 .AUTHOR Black Duck
 .COPYRIGHT Copyright 2025 Black Duck Software, Inc. All rights reserved.
@@ -37,12 +37,12 @@ if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$my
 'storage-service-migration:2025.6.2',
 'job-runner:2025.6.2' | ForEach-Object {
 
-	docker pull "repo.blackduck.com/containers/$_"
+	docker pull --platform 'linux/amd64' "repo.blackduck.com/containers/$_"
 	if($LASTEXITCODE -ne 0){throw "$_ pull failed"} 
 
 	docker tag "repo.blackduck.com/containers/$_" "$myPrivateRegistryPrefix$_"
 	if($LASTEXITCODE -ne 0){throw "$_ tag failed"} 
 
-	docker push "$myPrivateRegistryPrefix$_"
+	docker push --platform 'linux/amd64' "$myPrivateRegistryPrefix$_"
 	if($LASTEXITCODE -ne 0){throw "$_ push failed"} 
 }
