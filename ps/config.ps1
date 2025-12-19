@@ -461,6 +461,35 @@ class Config {
 		return $json | ConvertTo-Json | ConvertFrom-Json
 	}
 
+	static [long] ConvertStorageToMi([string] $storage) {
+		# Convert Kubernetes storage notation to MiB for comparison
+		if ([string]::IsNullOrEmpty($storage)) {
+			return 0
+		}
+
+		if ($storage -match '^(\d+(?:\.\d+)?)([KMGTPE]i?[Bb]?)?$') {
+			$value = [double]$matches[1]
+			$unit = $matches[2]
+
+			switch -regex ($unit) {
+				'^Ki[Bb]?$'  { return [long]($value / 1024) }
+				'^Mi[Bb]?$'  { return [long]$value }
+				'^Gi[Bb]?$'  { return [long]($value * 1024) }
+				'^Ti[Bb]?$'  { return [long]($value * 1024 * 1024) }
+				'^Pi[Bb]?$'  { return [long]($value * 1024 * 1024 * 1024) }
+				'^Ei[Bb]?$'  { return [long]($value * 1024 * 1024 * 1024 * 1024) }
+				'^K[Bb]?$'   { return [long]($value / 1024 / 1.024) }
+				'^M[Bb]?$'   { return [long]($value / 1.048576) }
+				'^G[Bb]?$'   { return [long]($value * 1000 / 1.048576) }
+				'^T[Bb]?$'   { return [long]($value * 1000000 / 1.048576) }
+				'^P[Bb]?$'   { return [long]($value * 1000000000 / 1.048576) }
+				'^E[Bb]?$'   { return [long]($value * 1000000000000 / 1.048576) }
+				default      { return [long]($value / 1048576) }  # No unit means bytes, convert to MiB
+			}
+		}
+		return 0
+	}
+
 	static [Config] FromJsonFile($configJsonFile) {
 
 		$configJson = Get-Content $configJsonFile | ConvertFrom-Json
@@ -500,6 +529,17 @@ class Config {
 		if ($version -lt $v1Dot9) {
 			# component TLS type did not exist before v1.9
 			$config.componentTlsType = '' -eq $config.csrSignerName ? [ComponentTlsType]::None : [ComponentTlsType]::K8sCSR
+		}
+
+		# Ensure minimum ephemeral storage for web component
+		$minWebEphemeralStorageMi = 3368
+		if (-not [string]::IsNullOrEmpty($config.webEphemeralStorageReservation)) {
+			$currentMi = [Config]::ConvertStorageToMi($config.webEphemeralStorageReservation)
+			if ($currentMi -lt $minWebEphemeralStorageMi) {
+				$oldValue = $config.webEphemeralStorageReservation
+				$config.webEphemeralStorageReservation = "${minWebEphemeralStorageMi}Mi"
+				$config.SetNote('webEphemeralStorageReservation', "- Automatically increased webEphemeralStorageReservation from $oldValue to ${minWebEphemeralStorageMi}Mi to meet minimum requirements")
+			}
 		}
 
 		# override config version obtained on file import
