@@ -3,12 +3,12 @@ name: srm
 description: Software Risk Manager
 type: application
 icon: https://raw.githubusercontent.com/codedx/srm-k8s/refs/heads/main/docs/images/icon.svg
-version: 1.73.0
+version: 1.74.0
 appVersion: "v2025.12.1"
 
 dependencies:
 - name: mariadb
-  version: 7.7.0
+  version: 7.9.0
   repository: https://codedx.github.io/srm-k8s
   condition: features.mariadb
 - name: scan-services

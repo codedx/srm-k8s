@@ -2966,8 +2966,8 @@ Terminal 2 (Prepare for primary backup)
 Terminal 3 (Create primary backup):
 
 12.	kubectl -n srm exec -it srm-mariadb-master-0 -- bash
-13.	mysqldump -u root -p codedx > /bitnami/mariadb/codedx-dump.sql
-    >Note: The above command assumes you have adequate space at /bitnami/mariadb to store your database backup. Use an alternate path as necessary, and adjust paths in subsequent steps accordingly.
+13.	mysqldump -u root -p codedx > /mariadb/codedx-dump.sql
+    >Note: The above command assumes you have adequate space at /mariadb to store your database backup. Use an alternate path as necessary, and adjust paths in subsequent steps accordingly.
 14.	exit # pod
 15.	exit # terminal
 
@@ -2978,20 +2978,20 @@ Terminal 2 (Unlock primary tables):
 
 Terminal 1 (Move primary backup to replica):
 
-18.	kubectl -n srm cp srm-mariadb-master-0:/bitnami/mariadb/codedx-dump.sql ./codedx-dump.sql
-19.	kubectl -n srm cp ./codedx-dump.sql srm-mariadb-slave-0:/bitnami/mariadb/codedx-dump.sql
+18.	kubectl -n srm cp srm-mariadb-master-0:/mariadb/codedx-dump.sql ./codedx-dump.sql
+19.	kubectl -n srm cp ./codedx-dump.sql srm-mariadb-slave-0:/mariadb/codedx-dump.sql
 
 >Note: Above commands are one option for moving the backup from the primary to the replica.
 
 Terminal 2 (Delete primary backup):
 
-20.	kubectl -n srm exec srm-mariadb-master-0 -- rm /bitnami/mariadb/codedx-dump.sql
+20.	kubectl -n srm exec srm-mariadb-master-0 -- rm /mariadb/codedx-dump.sql
 21.	exit # terminal
 
 Terminal 1 (Restore replication):
 
 22. kubectl -n srm exec -it srm-mariadb-slave-0 -- bash
-23.	mysql -u root -p codedx < /bitnami/mariadb/codedx-dump.sql
+23.	mysql -u root -p codedx < /mariadb/codedx-dump.sql
 24.	mysql -uroot -p
 25.	RESET SLAVE;
     >Note: RESET SLAVE deletes relay log files.
@@ -3001,7 +3001,7 @@ Terminal 1 (Restore replication):
 28.	START SLAVE;
 29.	SHOW SLAVE STATUS \G;
 30.	exit # mysql
-31.	rm /bitnami/mariadb/codedx-dump.sql
+31.	rm /mariadb/codedx-dump.sql
 32.	exit # pod
 
 Terminal 1 (Start web workload):
@@ -3147,7 +3147,7 @@ spec:
             command:
             - /bin/bash
             - -c
-            - /bitnami/mariadb/scripts/backup.sh && sleep 1m
+            - /mariadb/scripts/backup.sh && sleep 1m
             container: mariadb
             timeout: 30m
     includeClusterResources: true
@@ -3185,10 +3185,10 @@ Once backups start running, use the velero commands that [describe backups and f
 
 When using Velero with Storage Provider Plugins, the volume snapshots initiated by a plugin may finish after the Backup resource reports a completed status. Wait for the volume snapshot process to finish before starting a restore.
 
-If applicable, you should also confirm that the database backup script runs correctly and produces database backups with each Velero backup in the /bitnami/mariadb/backup/data directory. Use the following command after replacing placeholder parameters to list recent backups for a MariaDB subordinate database instance:
+If applicable, you should also confirm that the database backup script runs correctly and produces database backups with each Velero backup in the /mariadb/backup/data directory. Use the following command after replacing placeholder parameters to list recent backups for a MariaDB subordinate database instance:
 
 ```
-$ kubectl -n srm-namespace-placeholder exec srm-mariadb-slave-pod-placeholder -- ls /bitnami/mariadb/backup/data
+$ kubectl -n srm-namespace-placeholder exec srm-mariadb-slave-pod-placeholder -- ls /mariadb/backup/data
 ```
 
 > Note: Older backup files get removed from the database volume when backups complete.
@@ -3196,7 +3196,7 @@ $ kubectl -n srm-namespace-placeholder exec srm-mariadb-slave-pod-placeholder --
 You can use this command to view the backup log on a MariaDB slave database instance.
 
 ```
-$ kubectl -n srm-namespace-placeholder exec srm-mariadb-slave-pod-placeholder -- cat /bitnami/mariadb/backup/data/backup.log
+$ kubectl -n srm-namespace-placeholder exec srm-mariadb-slave-pod-placeholder -- cat /mariadb/backup/data/backup.log
 ```
 
 The backup.log file should have a "completed OK!" message above the log entries indicating that old backups are getting removed.
@@ -3312,9 +3312,9 @@ Terminal 2 (Master DB):
 Terminal 3 (Master DB):
 
 10.	kubectl -n srm exec -it srm-mariadb-master-0 -- bash
-11.	mysqldump -u root -p codedx > /bitnami/mariadb/srm-dump.sql
+11.	mysqldump -u root -p codedx > /mariadb/srm-dump.sql
 
->Note: The above command assumes you have adequate space at /bitnami/mariadb to store your database backup. Use an alternate path as necessary, and adjust paths in subsequent steps accordingly.
+>Note: The above command assumes you have adequate space at /mariadb to store your database backup. Use an alternate path as necessary, and adjust paths in subsequent steps accordingly.
 
 Terminal 2 (Master DB)
 
@@ -3322,12 +3322,12 @@ Terminal 2 (Master DB)
 
 Terminal 4:
 
-13.	kubectl -n srm cp srm-mariadb-master-0:/bitnami/mariadb/srm-dump.sql ./srm-dump.sql
-14.	kubectl -n srm cp ./srm-dump.sql srm-mariadb-slave-0:/bitnami/mariadb/srm-dump.sql
+13.	kubectl -n srm cp srm-mariadb-master-0:/mariadb/srm-dump.sql ./srm-dump.sql
+14.	kubectl -n srm cp ./srm-dump.sql srm-mariadb-slave-0:/mariadb/srm-dump.sql
 
 Terminal 1 (Subordinate DB):
 
-15.	mysql -u root -p codedx < /bitnami/mariadb/srm-dump.sql
+15.	mysql -u root -p codedx < /mariadb/srm-dump.sql
 16.	mysql -uroot -p
 17.	RESET SLAVE;
 >Note: RESET SLAVE deletes relay log files.
@@ -3336,14 +3336,14 @@ Terminal 1 (Subordinate DB):
 20.	START SLAVE;
 21.	SHOW SLAVE STATUS \G;
 22.	exit # mysql
-23.	rm /bitnami/mariadb/srm-dump.sql
+23.	rm /mariadb/srm-dump.sql
 24.	exit # pod
 25.	exit # terminal
 
 Terminal 2 (Master DB):
 
 26.	exit # mysql
-27.	rm /bitnami/mariadb/srm-dump.sql
+27.	rm /mariadb/srm-dump.sql
 28.	exit # pod
 29.	exit # terminal
 
@@ -3746,24 +3746,24 @@ Skip this section if you are using an external database.
 
 ```
 $ kubectl -n cdx-app exec -it codedx-mariadb-master-0 -- bash
-$ mysqldump --host=127.0.0.1 --port=3306 --user=root -p codedx > /bitnami/mariadb/dump-codedx.sql
+$ mysqldump --host=127.0.0.1 --port=3306 --user=root -p codedx > /mariadb/dump-codedx.sql
 $ # verify "Dump completed" message (see Note 2)
-$ tail -n 1 /bitnami/mariadb/dump-codedx.sql
-$ cd /bitnami/mariadb
+$ tail -n 1 /mariadb/dump-codedx.sql
+$ cd /mariadb
 $ tar -cvzf dump-codedx.tgz dump-codedx.sql
 $ rm dump-codedx.sql
 $ exit # bash
 ```
 
->Note 1: The above command assumes you have adequate space at /bitnami/mariadb to store your database backup; expand your data volume if you need more disk capacity.
+>Note 1: The above command assumes you have adequate space at /mariadb to store your database backup; expand your data volume if you need more disk capacity.
 
->Note 2: Confirm that your dump file ends with a "Dump completed" message (e.g., tail -n 1 /bitnami/mariadb/dump-codedx.sql), and consider performing a restore test to another catalog on the same database instance where you can compare tables/data.
+>Note 2: Confirm that your dump file ends with a "Dump completed" message (e.g., tail -n 1 /mariadb/dump-codedx.sql), and consider performing a restore test to another catalog on the same database instance where you can compare tables/data.
 
 2) Copy dump-codedx.sql to your local work directory with the following commands, replacing the `cdx-app` namespace and `codedx-mariadb-master-0` pod name as necessary:
 
 ```
 $ cd /path/to/local/work/directory
-$ kubectl -n cdx-app cp codedx-mariadb-master-0:/bitnami/mariadb/dump-codedx.tgz dump-codedx.tgz
+$ kubectl -n cdx-app cp codedx-mariadb-master-0:/mariadb/dump-codedx.tgz dump-codedx.tgz
 ```
 
 ### Backup External Database
@@ -4084,12 +4084,12 @@ $ mysqldump --host=127.0.0.1 --port=3306 --user=root -p codedx > dump-codedx.sql
 $ sed 's/\sDEFINER=`[^`]*`@`[^`]*`//g' -i dump-codedx.sql
 ```
 
->Note: If you see a "Read-only file system" message, change directory to a writable location (e.g., cd /bitnami/mariadb)
+>Note: If you see a "Read-only file system" message, change directory to a writable location (e.g., cd /mariadb)
 
 Copy your dump-codedx.sql file to a local directory. If you are using the on-cluster MariaDB database, run the following command, replacing the `srm` namespace and paths as necessary:
 
 ```
-$ kubectl -n srm cp srm-mariadb-master-0:/bitnami/mariadb/dump-codedx.sql ./dump-codedx.sql
+$ kubectl -n srm cp srm-mariadb-master-0:/mariadb/dump-codedx.sql ./dump-codedx.sql
 ```
 
 ## Stop Destination Software Risk Manager Web Workload
