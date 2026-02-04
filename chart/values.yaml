@@ -401,7 +401,7 @@ mariadb:
     # the mysql configuration for the primary database
     config: |-
       [mysqld]
-      init_file=/docker-entrypoint-startdb.d/runalways-setup.sql
+      init_file=/docker-entrypoint-initdb.d/runalways-setup.sql
       skip-name-resolve
       explicit_defaults_for_timestamp
       basedir=/usr
