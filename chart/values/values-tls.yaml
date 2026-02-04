@@ -15,6 +15,7 @@ mariadb:
     # the TLS-based mysql configuration for the primary database
     config: |-
       [mysqld]
+      init_file=/docker-entrypoint-startdb.d/runalways-setup.sql
       skip-name-resolve
       explicit_defaults_for_timestamp
       basedir=/usr
@@ -32,6 +33,8 @@ mariadb:
       innodb_flush_log_at_trx_commit=0
       log_bin_trust_function_creators=1
       expire_logs_days=5
+      server-id=1
+      log-bin=mysql-bin
       ssl_cert=/mariadb/tls/cert/tls.crt
       ssl_key=/mariadb/tls/cert/tls.key
       ssl_ca=/mariadb/tls/ca/ca.crt
@@ -41,7 +44,7 @@ mariadb:
       [manager]
       port=3306
       socket=/usr/tmp/mysqld.sock
-      pid-file=/var/lib/mysql/tmp/mysqld.pid
+      pid-file=/usr/tmp/mysqld.pid
   slave:
     # @ignore
     # the TLS-based mysql configuration for the primary database
@@ -52,8 +55,8 @@ mariadb:
       basedir=/usr
       datadir=/mariadb/data/
       port=3306
-      socket=/usr/tmp/mysqld.socks
-      tmpdir=/var/lib/mysql/tmp
+      socket=/usr/tmp/mysqld.sock
+      tmpdir=/usr/tmp
       max_allowed_packet=16M
       bind-address=0.0.0.0
       pid-file=/usr/tmp/mysqld.pid
@@ -64,6 +67,9 @@ mariadb:
       innodb_flush_log_at_trx_commit=0
       log_bin_trust_function_creators=1
       expire_logs_days=5
+      server-id=2
+      log-bin=mysql-bin
+      relay-log=mysql-relay-bin
 
       [client]
       port=3306
@@ -73,7 +79,7 @@ mariadb:
       [manager]
       port=3306
       socket=/usr/tmp/mysqld.sock
-      pid-file=/var/lib/mysql/tmp/mysqld.pid
+      pid-file=/usr/tmp/mysqld.pid
 
 minio:
   tls:
