@@ -112,6 +112,8 @@ pipeline {
 
 									webVersion                = currentVersions[0]
 									mariaDBVersion            = currentVersions[1]
+									// pin MariaDB version until can move off v1.38.0
+									mariaDBVersion            = "v1.38.0"
 									toolOrchestrationVersion  = currentVersions[2]
 									restoreDBVersion          = currentVersions[4]
 

@@ -18,13 +18,13 @@ Set-PSDebug -Strict
 
 if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$myPrivateRegistryPrefix/" }
 
-'codedx/codedx-tomcat:v2025.12.1',
-'codedx/codedx-tools:v2025.12.1',
-'codedx/codedx-prepare:v2.17.0',
-'codedx/codedx-newanalysis:v2.17.0',
-'codedx/codedx-results:v2.17.0',
-'codedx/codedx-tool-service:v2.17.0',
-'codedx/codedx-cleanup:v2.17.0',
+'codedx/codedx-tomcat:v2026.3.0',
+'codedx/codedx-tools:v2026.3.0',
+'codedx/codedx-prepare:v2.18.0',
+'codedx/codedx-newanalysis:v2.18.0',
+'codedx/codedx-results:v2.18.0',
+'codedx/codedx-tool-service:v2.18.0',
+'codedx/codedx-cleanup:v2.18.0',
 'codedx/codedx-mariadb:v1.38.0',
 'bitnami/minio:2025.7.23-debian-12-r5',
 'argoproj/workflow-controller:v3.7.1',
