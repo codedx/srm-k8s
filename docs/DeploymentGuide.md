@@ -1997,7 +1997,7 @@ See the following sections for operating system-specific prerequisites.
 Use the following links to install the prerequisite software on your Linux system.
 
 - [PowerShell Core](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-linux)
-- [Java JRE](https://adoptium.net/temurin/releases/?package=jre&version=11) (specifically, keytool in your PATH)
+- [Java JRE](https://adoptium.net/temurin/releases/?package=jre&version=21) (specifically, keytool in your PATH)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) (version should match your cluster's Kubernetes version)
 
 The scripts in the repository depend on the `keytool` program, bundled with the Java JRE, and the `kubectl` program, both of which must be included in your PATH.
@@ -2009,7 +2009,7 @@ The scripts in the repository depend on the `keytool` program, bundled with the 
 Use the following links to install the prerequisite software on your macOS system.
 
 - [PowerShell Core](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-macos)
-- [Java JRE](https://adoptium.net/temurin/releases/?package=jre&version=11) (specifically, keytool in your PATH)
+- [Java JRE](https://adoptium.net/temurin/releases/?package=jre&version=21) (specifically, keytool in your PATH)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-macos/) (version should match your cluster's Kubernetes version)
 
 The scripts in the repository depend on the `keytool` program, bundled with the Java JRE, and the `kubectl` program, both of which must be included in your PATH.
@@ -2021,7 +2021,7 @@ The scripts in the repository depend on the `keytool` program, bundled with the 
 Use the following links to install the prerequisite software on your Windows system.
 
 - [PowerShell Core](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows) (not [Windows PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/whats-new/differences-from-windows-powershell))
-- [Java JRE](https://adoptium.net/temurin/releases/?package=jre&version=11) (specifically, keytool in your PATH)
+- [Java JRE](https://adoptium.net/temurin/releases/?package=jre&version=21) (specifically, keytool in your PATH)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/) (version should match your cluster's Kubernetes version)
 
 The scripts in the repository depend on the `keytool` program, bundled with the Java JRE, and the `kubectl` program, both of which must be included in your PATH.
@@ -3986,7 +3986,7 @@ $ mkdir -p /etc/apt/keyrings
 $ wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc
 $ echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list
 $ apt update
-$ apt install -y temurin-11-jdk
+$ apt install -y temurin-21-jdk
 
 $ apt install -y curl
 $ export YOUR_KUBECTL_VERSION='v1.32.7' # specify the correct kubectl version for your cluster

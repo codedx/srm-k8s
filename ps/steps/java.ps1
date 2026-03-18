@@ -45,12 +45,12 @@ class CACertsFile : Step {
 
 	static [string] hidden $description = @'
 Specify the path to your Java cacerts file. You can find the cacerts file
-under your Java installation. Use of a cacerts file from a Java 11 JRE 
+under your Java installation. Use of a cacerts file from a Java 21 JRE 
 install is strongly recommended.
 
 The cacerts file is not an individual certificate file. Visit the below URL
 and search for "cacerts Certificates File" to learn more:
-https://docs.oracle.com/en/java/javase/11/tools/keytool.html
+https://docs.oracle.com/en/java/javase/21/docs/specs/man/keytool.html
 '@
 
 	static [string] hidden $cacertsPointerMsg = @'
