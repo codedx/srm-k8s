@@ -364,7 +364,7 @@ mariadb:
     # -- the Docker image repository name for the MariaDB workload
     repository: codedx/codedx-mariadb
     # -- the Docker image version for the MariaDB workload
-    tag: v1.40.0
+    tag: v1.41.0
     # -- the K8s Docker image pull policy for the MariaDB workload
     pullPolicy: IfNotPresent
     # -- the K8s image pull secret to use for MariaDB Docker images
