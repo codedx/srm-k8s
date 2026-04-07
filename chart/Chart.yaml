@@ -8,7 +8,7 @@ appVersion: "v2026.3.3"
 
 dependencies:
 - name: mariadb
-  version: 7.7.0
+  version: 7.10.0
   repository: https://codedx.github.io/srm-k8s
   condition: features.mariadb
 - name: scan-services

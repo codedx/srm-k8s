@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.4.0
+.VERSION 1.5.0
 .GUID 5f30b324-9305-4a7c-bd68-f9845d30659e
 .AUTHOR SRM
 #>
@@ -60,7 +60,7 @@ spec:
         command: ["/bin/bash"]
         args: ["-c", "/home/sdb/restore"]
         volumeMounts:
-        - mountPath: /bitnami/mariadb
+        - mountPath: /mariadb
           name: data
         - mountPath: /home/sdb/cfg
           name: rootpwd
@@ -194,8 +194,8 @@ if (Test-Path $workDirectory -PathType Container) {
 Write-Verbose 'Restarting database...'
 & (join-path $PSScriptRoot '.restart-db.ps1') -namespace $namespace -releaseName $releaseName -waitSeconds $waitSeconds
 
-$backupDirectory = '/bitnami/mariadb/backup/data'
-$restoreDirectory = '/bitnami/mariadb/restore'
+$backupDirectory = '/mariadb/backup/data'
+$restoreDirectory = '/mariadb/restore'
 
 Write-Verbose 'Searching for MariaDB slave pods...'
 $podFullNamesSlaves = kubectl -n $namespace get pod -l component=slave -o name

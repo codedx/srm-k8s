@@ -100,7 +100,7 @@ If you are using an external SRM database, skip this section.
 
 The SRM Database pod requires this Docker image:
 
-- repo.blackduck.com/containers/codedx/codedx-mariadb:v1.38.0
+- repo.blackduck.com/containers/codedx/codedx-mariadb:v1.41.0
 
 You can use this PowerShell script below to pull, tag, and push the above Black Duck Docker image to your private registry; you must set the $myPrivateRegistryPrefix variable by replacing `id.dkr.ecr.us-east-2.amazonaws.com` with your Docker registry name and any prefix (e.g., my-srm) you require ($myPrivateRegistryPrefix must end with a forward slash):
 
@@ -108,7 +108,7 @@ You can use this PowerShell script below to pull, tag, and push the above Black 
 $myPrivateRegistryPrefix = 'id.dkr.ecr.us-east-2.amazonaws.com/'
 if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$myPrivateRegistryPrefix/" }
 
-'codedx/codedx-mariadb:v1.38.0' | ForEach-Object {
+'codedx/codedx-mariadb:v1.41.0' | ForEach-Object {
 
    docker pull "repo.blackduck.com/containers/$_"
    if($LASTEXITCODE -ne 0){throw "$_ pull failed"} 
@@ -226,7 +226,7 @@ if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$my
 'codedx/codedx-results:v2.18.0',
 'codedx/codedx-tool-service:v2.18.0',
 'codedx/codedx-cleanup:v2.18.0',
-'codedx/codedx-mariadb:v1.38.0',
+'codedx/codedx-mariadb:v1.41.0',
 'bitnami/minio:2025.7.23-debian-12-r5',
 'argoproj/workflow-controller:v3.7.1',
 'argoproj/argoexec:v3.7.1',
