@@ -9,6 +9,7 @@ enum ProviderType {
 enum IngressType {
 	NginxIngress
 	NginxIngressCommunity
+	GatewayAPI
 	OtherIngress
 	ClusterIP
 	NodePort
@@ -24,6 +25,13 @@ enum IngressTlsType {
 	CertManagerIssuer
 	CertManagerClusterIssuer
 	ExternalSecret
+}
+
+enum GatewayTlsType {
+	None
+	ExternalSecret
+	CertManagerIssuer
+	CertManagerClusterIssuer
 }
 
 enum RouteTlsType {
@@ -368,6 +376,19 @@ class Config {
 
 	[string] $scanFarmScaApiUrlOverride # used for dev/test/support only
 
+	# Gateway API fields
+	[string] $gatewayClassName
+	[string] $gatewayHostname
+	[bool]   $gatewayExternalEnabled
+	[string] $gatewayExternalName
+	[string] $gatewayExternalNamespace
+	[string] $gatewayExternalSectionName
+	[string] $gatewayTlsType
+	[string] $gatewayTlsSecretName
+	[bool]   $gatewayCertManagerEnabled
+	[string] $gatewayCertManagerIssuerName
+	[string] $gatewayCertManagerIssuerKind
+
 	Config() {
 		$this.configVersion = [Config]::thisVersion
 		$this.toolServiceReplicas = [Config]::toolServiceReplicasDefault
@@ -417,6 +438,18 @@ class Config {
 		$this.routeTlsCertificatePath = ''
 		$this.routeTlsCACertificatePath = ''
 		$this.routeHostname = ''
+		# v1.11 fields - Gateway API
+		$this.gatewayClassName = 'nginx'
+		$this.gatewayHostname = ''
+		$this.gatewayExternalEnabled = $false
+		$this.gatewayExternalName = 'gateway'
+		$this.gatewayExternalNamespace = 'nginx-gateway'
+		$this.gatewayExternalSectionName = ''
+		$this.gatewayTlsType = [GatewayTlsType]::None
+		$this.gatewayTlsSecretName = ''
+		$this.gatewayCertManagerEnabled = $false
+		$this.gatewayCertManagerIssuerName = ''
+		$this.gatewayCertManagerIssuerKind = 'ClusterIssuer'
 		# Note: the restore-version.ps1 script should account for any config.json format changes
 	}
 
@@ -560,6 +593,19 @@ class Config {
 	[bool]IsIngress() {
 		return $this.ingressType -eq [IngressType]::NginxIngressCommunity -or `
 			$this.ingressType -eq [IngressType]::OtherIngress
+	}
+
+	[bool]IsGateway() {
+		return $this.ingressType -eq [IngressType]::GatewayAPI
+	}
+
+	[bool]IsGatewayTls() {
+		return $this.gatewayTlsType -ne [GatewayTlsType]::None
+	}
+
+	[bool]IsGatewayCertManagerTls() {
+		return $this.gatewayTlsType -eq [GatewayTlsType]::CertManagerIssuer -or `
+			$this.gatewayTlsType -eq [GatewayTlsType]::CertManagerClusterIssuer
 	}
 
 	[bool]IsIngressTls() {

@@ -54,3 +54,28 @@ ingress:
     New-IngressAnnotationsConfig $config
   }
 }
+
+function New-GatewayConfig($config) {
+
+	$tlsEnabled = $config.IsGatewayTls()
+
+	@"
+gateway:
+  enabled: true
+  hostname: $($config.gatewayHostname)
+  className: $($config.gatewayClassName)
+  external:
+    enabled: $($config.gatewayExternalEnabled ? 'true' : 'false')
+    name: $($config.gatewayExternalName)
+    namespace: $($config.gatewayExternalNamespace)
+    sectionName: $($config.gatewayExternalSectionName)
+  tls:
+    enabled: $($tlsEnabled ? 'true' : 'false')
+    secretName: $($config.gatewayTlsSecretName)
+    certManager:
+      enabled: $($config.gatewayCertManagerEnabled ? 'true' : 'false')
+      issuerRef:
+        name: $($config.gatewayCertManagerIssuerName)
+        kind: $($config.gatewayCertManagerIssuerKind)
+"@ | Out-File (Get-GatewayValuesPath $config)
+}
