@@ -27,21 +27,21 @@ spec:
             type: PathPrefix
             value: /api/cache/
       backendRefs:
-        - name: {{ include "srm.fullname" . }}-cache-service
+        - name: {{ .Release.Name }}-cache-service
           port: 8443
     - matches:
         - path:
             type: PathPrefix
             value: /api/v2/scans
       backendRefs:
-        - name: {{ include "srm.fullname" . }}-scan-service
+        - name: {{ .Release.Name }}-scan-service
           port: 9998
     - matches:
         - path:
             type: PathPrefix
             value: /api/v2/storage
       backendRefs:
-        - name: {{ include "srm.fullname" . }}-storage-service
+        - name: {{ .Release.Name }}-storage-service
           port: 9998
     {{- end }}
 {{- end }}
