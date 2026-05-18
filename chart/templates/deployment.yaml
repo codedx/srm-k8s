@@ -49,6 +49,9 @@ spec:
               value: "admin"
             - name: SRM_WEBAPP_NAME
               value: "{{ include "srm-web.appName" . }}"
+          {{- with .Values.web.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: "{{ .Values.web.image.registry }}/{{ .Values.web.image.repository }}:{{ .Values.web.image.tag }}"
           imagePullPolicy: {{ .Values.web.image.pullPolicy }}
           readinessProbe:
@@ -179,6 +182,9 @@ spec:
               mountPath: {{ include "srm-web.database.pubkey.path" . }}
               subPath: {{ include "srm-web.database.pubkey.filename" . }}
             {{- end }}
+          {{- with .Values.web.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       initContainers:
         - name: srm-dbinit
           securityContext:
@@ -334,3 +340,6 @@ spec:
             - key: {{ include "srm-web.database.pubkey.filename" . }}
               path: {{ include "srm-web.database.pubkey.filename" . }}
         {{- end }}
+      {{- with .Values.web.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
