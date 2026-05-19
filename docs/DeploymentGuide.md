@@ -85,6 +85,12 @@
     + [Cert-Manager Certificates Example](#cert-manager-certificates-example)
   * [Kubernetes CertificateSigningRequests](#kubernetes-certificatesigningrequests)
     + [Kubernetes CertificateSigningRequests Example](#kubernetes-certificatesigningrequests-example)
+- [Gateway API Pre-work](#gateway-api-pre-work)
+  * [Install NGINX Gateway Fabric](#install-nginx-gateway-fabric)
+  * [Gateway TLS Options](#gateway-tls-options)
+    + [Option 1: External TLS Secret](#option-1-external-tls-secret)
+    + [Option 2: Cert-Manager Certificate](#option-2-cert-manager-certificate)
+  * [Dedicated vs Shared Gateway](#dedicated-vs-shared-gateway)
 - [Licensing](#licensing)
 - [Installation - Quick Start](#installation---quick-start)
   * [Core Quick Start](#core-quick-start)
@@ -486,7 +492,9 @@ You can use a private registry hosted by a cloud provider (e.g., AWS, GCP, Azure
 
 ### Scan Farm Ingress Requirements
 
-The Scan Farm feature requires you to use an ingress controller, and your ingress controller must support multiple ingress resources referencing the same hostname. Black Duck recommends using either the [NGINX Community](https://kubernetes.github.io/ingress-nginx/deploy/) ingress controller or [OpenShift Routes](https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/networking/configuring-routes).
+The Scan Farm feature requires you to use an ingress controller, and your ingress controller must support multiple ingress resources referencing the same hostname. Black Duck recommends using [NGINX Gateway Fabric](https://docs.nginx.com/nginx-gateway-fabric/) with the [Gateway API](#gateway-api-pre-work) or [OpenShift Routes](https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/networking/configuring-routes).
+
+> **Deprecated:** The [NGINX Community](https://kubernetes.github.io/ingress-nginx/deploy/) ingress controller is deprecated. Use the Gateway API with NGINX Gateway Fabric instead.
 
 ### Scan Farm Internet Access Requirements
 
@@ -1918,6 +1926,71 @@ kubectl get clusterissuer ca-issuer -o wide
 
 When you run the Helm Prep Wizard, select `K8s CSR` on the Configure TLS screen, enter the path to your ca.crt file, and specify `clusterissuers.cert-manager.io/ca-issuer` for your CSR signer name.
 
+# Gateway API Pre-work
+
+Software Risk Manager supports the [Kubernetes Gateway API](https://gateway-api.sigs.k8s.io/) as the recommended approach for exposing the SRM web application. The Gateway API is the successor to the Kubernetes Ingress API and is recommended over the NGINX Ingress Controller.
+
+The Helm Prep Wizard will prompt you to select **Gateway API** as your ingress type and guide you through the configuration. The sections below cover the pre-work required before running the wizard.
+
+## Install NGINX Gateway Fabric
+
+[NGINX Gateway Fabric](https://docs.nginx.com/nginx-gateway-fabric/) is the recommended Gateway API implementation. Install it using Helm:
+
+1. Install the Gateway API CRDs:
+
+```
+helm install ngf-crds oci://ghcr.io/nginx/charts/nginx-gateway-fabric-crds \
+  --namespace nginx-gateway \
+  --create-namespace
+```
+
+2. Install NGINX Gateway Fabric:
+
+```
+helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric \
+  --namespace nginx-gateway \
+  --create-namespace
+```
+
+3. Verify the installation:
+
+```
+kubectl -n nginx-gateway get pods
+```
+
+Wait until the NGINX Gateway Fabric pod shows a `Running` status before proceeding.
+
+## Gateway TLS Options
+
+The Helm Prep Wizard supports three TLS options for the Gateway listener. Choose the option that best fits your environment.
+
+### Option 1: External TLS Secret
+
+Create a Kubernetes TLS Secret in the Gateway namespace before running the wizard:
+
+```
+kubectl -n nginx-gateway create secret tls srm-gateway-tls \
+  --cert=tls.crt \
+  --key=tls.key
+```
+
+When prompted by the wizard, select **External Kubernetes TLS Secret** and enter the secret name (e.g., `srm-gateway-tls`).
+
+### Option 2: Cert-Manager Certificate
+
+If you have [cert-manager](https://cert-manager.io/) installed with an Issuer or ClusterIssuer, the wizard can automatically provision a TLS certificate. Refer to the [Cert-Manager Certificates](#cert-manager-certificates) section for cert-manager installation and issuer setup steps.
+
+When prompted by the wizard, select **Cert-Manager (Issuer)** or **Cert-Manager (ClusterIssuer)** and enter your issuer name.
+
+## Dedicated vs Shared Gateway
+
+The wizard supports two Gateway deployment models:
+
+- **Dedicated Gateway** – The wizard creates a `Gateway` resource in the SRM namespace using the `nginx` GatewayClass. This is the default and recommended option for most deployments.
+- **Shared (External) Gateway** – Attach the SRM `HTTPRoute` to a pre-existing `Gateway` resource managed outside the SRM namespace. You will need to provide the name, namespace, and optional listener section name of the shared Gateway.
+
+Select the appropriate option when the wizard prompts **How do you want to configure the Gateway?**
+
 # Licensing
 
 You will receive a license zip file with four files if you purchased Software Risk Manager with the Scan Farm feature, including SAST and SCA.
@@ -2575,6 +2648,8 @@ scan-services:
 ```
 
 >Note: Bridge CLI requires an /srm context path, so do not use a custom context path if you plan to use Bridge CLI.
+
+> **Deprecated:** The Ingress-NGINX controller is deprecated. Use the [Gateway API with NGINX Gateway Fabric](#gateway-api-pre-work) instead.
 
 If you are using the Ingress-NGINX controller, refer to this ingress resource example that uses path-based/fanout routing to make Software Risk Manager available at `/mysrm`:
 

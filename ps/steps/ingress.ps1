@@ -45,6 +45,9 @@ resource from which you can pattern a path-based route definition.
 		$choices += [tuple]::create('Other Ingress', 'Create an ingress resource for use with another ingress controller you install separately')
 		$this.choiceResponse += { param($instance) $instance.config.ingressType = [IngressType]::OtherIngress; $instance.config.skipIngressEnabled = $false; }
 
+		$choices += [tuple]::create('Gateway API', 'Create Gateway/HTTPRoute resources for use with a Gateway API-compatible controller (e.g. NGINX Gateway Fabric) you install separately')
+		$this.choiceResponse += { param($instance) $instance.config.ingressType = [IngressType]::GatewayAPI; $instance.config.skipIngressEnabled = $true; }
+
 		if ($this.config.skipScanFarm) {
 
 			$choices += [tuple]::create('ClusterIP Service', 'Configure the SRM Kubernetes service as a ClusterIP service type (use port-forward or something else to access SRM)')

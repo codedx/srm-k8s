@@ -27,6 +27,7 @@ Write-Host 'Loading...' -NoNewline
 'ps/steps/ephemeralstorage.ps1',
 'ps/steps/finish.ps1',
 'ps/steps/image.ps1',
+'ps/steps/gateway.ps1',
 'ps/steps/ingress.ps1',
 'ps/steps/java.ps1',
 'ps/steps/k8s.ps1',
@@ -120,6 +121,15 @@ $s = @{}
 [Finish],
 [GeneratePwds],
 [GetKubernetesPort],
+[GatewayCertManagerIssuer],
+[GatewayClassName],
+[GatewayExternal],
+[GatewayExternalName],
+[GatewayExternalNamespace],
+[GatewayExternalSectionName],
+[GatewayHostname],
+[GatewayTLS],
+[GatewayTLSSecretName],
 [IngressCertificateArn],
 [IngressClassName],
 [IngressHostname],
@@ -344,6 +354,22 @@ Add-StepTransitions $graph $s[[IngressKind]] $s[[UseDefaultCACerts]]
 Add-StepTransitions $graph $s[[IngressKind]] $s[[CACertsFile]]
 Add-StepTransitions $graph $s[[IngressCertificateArn]] $s[[CACertsFile]]
 Add-StepTransitions $graph $s[[IngressHostname]] $s[[CACertsFile]]
+
+# Gateway API path — branching from IngressKind
+Add-StepTransitions $graph $s[[IngressKind]] $s[[GatewayExternal]],$s[[GatewayClassName]],$s[[GatewayTLS]],$s[[GatewayCertManagerIssuer]],$s[[GatewayTLSSecretName]],$s[[GatewayHostname]],$s[[UseDefaultCACerts]]
+
+# Shared-gateway sub-path (external=true): collect name/namespace/sectionName then TLS
+Add-StepTransitions $graph $s[[GatewayExternal]] $s[[GatewayExternalName]],$s[[GatewayExternalNamespace]],$s[[GatewayExternalSectionName]],$s[[GatewayTLS]]
+# Dedicated-gateway sub-path (external=false): collect className then TLS
+Add-StepTransitions $graph $s[[GatewayExternal]] $s[[GatewayClassName]],$s[[GatewayTLS]]
+
+# TLS sub-paths
+Add-StepTransitions $graph $s[[GatewayTLS]] $s[[GatewayCertManagerIssuer]],$s[[GatewayHostname]]
+Add-StepTransitions $graph $s[[GatewayTLS]] $s[[GatewayTLSSecretName]],$s[[GatewayHostname]]
+Add-StepTransitions $graph $s[[GatewayTLS]] $s[[GatewayHostname]]
+
+# Rejoin main flow after gateway hostname
+Add-StepTransitions $graph $s[[GatewayHostname]] $s[[UseDefaultCACerts]]
 
 Add-StepTransitions $graph $s[[AddExtraCertificates]] $s[[GeneratePwds]]
 

@@ -55,6 +55,42 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
+gateway:
+  # -- whether to enable Gateway API resources (HTTPRoute and optionally Gateway/Certificate)
+  enabled: false
+  # -- the hostname to associate with the Gateway and HTTPRoute
+  hostname: ""
+  # -- settings for using an existing shared Gateway (e.g. in nginx-gateway namespace)
+  # when external.enabled=true no Gateway resource is created by this chart
+  external:
+    # -- set true to attach to a pre-existing shared Gateway instead of creating one
+    enabled: false
+    # -- the name of the shared Gateway resource
+    name: gateway
+    # -- the namespace where the shared Gateway lives
+    namespace: nginx-gateway
+    # -- the listener sectionName on the shared Gateway to attach to (e.g. https)
+    sectionName: https
+  # -- the GatewayClass name; only used when external.enabled=false
+  className: nginx
+  tls:
+    # -- whether TLS termination is configured on the Gateway listener
+    enabled: false
+    # -- the name of the K8s Secret containing the TLS certificate (must exist in the Gateway namespace)
+    secretName: ""
+    certManager:
+      # -- whether to create a cert-manager Certificate resource to provision the TLS secret
+      enabled: false
+      # -- the amount of time before the certificate is invalid
+      duration: 2160h # 90 days
+      # -- the amount of time before the certificate enters the renewal period
+      renewBefore: 168h # 7 days
+      issuerRef:
+        # -- the name of the cert-manager ClusterIssuer or Issuer
+        name: letsencrypt-prod
+        # -- the type of cert-manager issuer: Issuer or ClusterIssuer
+        kind: ClusterIssuer
+
 networkPolicy:
   # -- whether to enable network policies for SRM components that support network policy
   enabled: false

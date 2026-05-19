@@ -1,3 +1,7 @@
+function Get-GatewayValuesPath($config) {
+	Join-Path $config.GetValuesWorkDir() 'gateway.values.yaml'
+}
+
 function Get-CertsK8sPath($config) {
 	Join-Path $config.GetK8sWorkDir() 'cacerts.k8s.yaml'
 }

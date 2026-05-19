@@ -235,6 +235,10 @@ try {
 		New-IngressConfig $config
 	}
 
+	if ($config.IsGateway()) {
+		New-GatewayConfig $config
+	}
+
 	if ($config.ingressType -eq [IngressType]::Route) {
 		New-OpenShiftRouteConfig $config
 	}
