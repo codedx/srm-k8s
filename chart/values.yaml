@@ -329,6 +329,15 @@ web:
   # -- the pod tolerations for the web component
   tolerations: []
 
+  # -- extra environment variables to add to the srm-web container
+  extraEnv: []
+
+  # -- extra volume mounts to add to the srm-web container
+  extraVolumeMounts: []
+
+  # -- extra volumes to add to the srm-web pod
+  extraVolumes: []
+
   # -- the K8s secret name containing the API key for the Tool Orchestration tool service with required field to-key.props that
   # contains a HOCON-formatted file with SRM prop tws.api-key
   # File:
