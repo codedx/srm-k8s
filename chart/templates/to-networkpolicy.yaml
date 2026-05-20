@@ -30,8 +30,7 @@ spec:
     to:
     - podSelector:
         matchLabels:
-          app.kubernetes.io/name: {{ include "minio.ref.name" . }}
-          app.kubernetes.io/instance: {{ .Release.Name | quote }}
+          app: {{ include "minio.ref.name" . }}
   ingress:
   - ports:
     - port: 3333
@@ -83,8 +82,7 @@ spec:
       port: 9000
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "minio.ref.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name | quote }}
+      app: {{ include "minio.ref.name" . }}
   policyTypes:
   - Ingress
   - Egress

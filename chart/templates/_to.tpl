@@ -91,8 +91,8 @@ Create the name of the TO workflow service account to use
 {{- end }}
 
 {{- define "srm-to.storageEndpoint" -}}
-{{- if .Values.minio.enabled -}}
-{{- print (include "minio.ref.fullname" .) "." .Release.Namespace ".svc.cluster.local:" .Values.minio.service.ports.api -}}
+{{- if .Values.features.minio -}}
+{{- print (include "minio.ref.fullname" .) "." .Release.Namespace ".svc.cluster.local:" .Values.minio.service.port -}}
 {{- else -}}
 {{- .Values.to.workflowStorage.endpoint -}}
 {{- end -}}
@@ -100,7 +100,7 @@ Create the name of the TO workflow service account to use
 
 {{- define "srm-to.storageTlsEnabled" -}}
 {{- $enabled := 0 -}}
-{{- if (or .Values.to.workflowStorage.endpointSecure (and .Values.minio.enabled .Values.minio.tls.existingSecret)) -}}
+{{- if (or .Values.to.workflowStorage.endpointSecure (and .Values.features.minio .Values.minio.tls.certSecret)) -}}
 {{- $enabled = 1 -}}
 {{- end -}}
 {{ $enabled }}
@@ -224,6 +224,12 @@ Duplicates of a Minio template helper so we can reference Minio's service name
 {{- end -}}
 
 {{/*
+NOTE: The Bitnami minio.claimName override (which appended "-snsd") has been
+removed. The official MinIO chart (charts.min.io) manages its own PVC naming
+internally and does not rely on this helper.
+*/}}
+
+{{/*
 Duplicates of an Argo template helper so we can reference the Argo controller's service name
 */}}
 
@@ -251,16 +257,5 @@ Duplicates of an Argo template helper so we can reference the Argo controller's 
     {{ default (include "argo-workflows.ref.controller.fullname" .) $serviceAccount.name }}
 {{- else -}}
     {{ default "default" $serviceAccount.name }}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the PVC name, potentially forcing a switch to the single-node, single-drive configuration (overwrites template).
-*/}}
-{{- define "minio.claimName" -}}
-{{- if and .Values.persistence.existingClaim }}
-    {{- printf "%s" (tpl .Values.persistence.existingClaim $) -}}
-{{- else -}}
-    {{- printf "%s-snsd" (include "common.names.fullname" .) -}}
 {{- end -}}
 {{- end -}}

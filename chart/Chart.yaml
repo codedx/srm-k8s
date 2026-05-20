@@ -20,6 +20,6 @@ dependencies:
   repository: https://argoproj.github.io/argo-helm
   condition: features.to
 - name: minio
-  version: 3.5.0
-  repository: https://codedx.github.io/srm-k8s
+  version: 5.4.0
+  repository: https://charts.min.io/
   condition: features.minio

@@ -86,7 +86,8 @@ minio:
     # @ignore (refer to values-to.yaml file for details)
     enabled: true
     # @ignore (refer to values-to.yaml file for details)
-    existingSecret: srm-minio-tls-secret
+    # Official MinIO chart uses tls.certSecret (not tls.existingSecret)
+    certSecret: srm-minio-tls-secret
 
 to:
   # @ignore (refer to values-to.yaml file for details)

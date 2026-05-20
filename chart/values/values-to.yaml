@@ -187,71 +187,166 @@ to:
     configMapPublicCertKeyName: ""
 
 minio:
-  # -- whether to enable the on-cluster MinIO component
-  enabled: true
-  auth:
-    # -- whether to mount MinIO credential values as files
-    useCredentialsFiles: true
-  extraEnvVars:
-  # -- skip the MinIO client configuration, which may not work when TLS is enabled
-  - name: MINIO_SKIP_CLIENT
-    value: "yes"
-  global:
-    minio:
-      # -- the K8s secret name with the MinIO access and secret key with required fields access-key and secret-key
-      # Command:
-      # kubectl -n srm create secret generic minio-secret --from-literal=access-key=admin --from-literal=secret-key=password
-      existingSecret:
-    security:
-      # -- true to avoid error when using a MinIO with a private container image registry
-      allowInsecureImages: true
+  # ---------------------------------------------------------------------------
+  # Official MinIO Helm chart (https://charts.min.io/) — replaces the legacy
+  # Bitnami-based chart previously hosted at https://codedx.github.io/srm-k8s.
+  # ---------------------------------------------------------------------------
+
+  # -- the K8s secret name containing MinIO credentials with required fields
+  # rootUser and rootPassword (used by the official chart) AND access-key /
+  # secret-key (used by the SRM tool service).  When unset, the SRM chart
+  # auto-generates a secret named <release>-minio-default-secret that contains
+  # all four keys.
+  # Command (bring-your-own secret):
+  # kubectl -n srm create secret generic minio-secret \
+  #   --from-literal=rootUser=admin \
+  #   --from-literal=rootPassword=password \
+  #   --from-literal=access-key=admin \
+  #   --from-literal=secret-key=password
+  existingSecret: ""
+
+  # -- the Docker image to use for the MinIO workload
   image:
-    # -- the registry name and optional registry suffix for the MinIO Docker image
-    registry: docker.io
-    # -- the Docker image repository name for the MinIO workload
-    repository: bitnamilegacy/minio
-    # -- the Docker image version for the MinIO workload
-    tag: 2025.7.23-debian-12-r5
+    # -- the Docker image repository for MinIO
+    repository: quay.io/minio/minio
+    # -- the Docker image tag for MinIO
+    tag: RELEASE.2025-04-22T22-12-26Z
     # -- the K8s Docker image pull policy for the MinIO workload
-    pullSecrets: []
-    #  - private-registry
+    pullPolicy: IfNotPresent
+
+  # -- the K8s image pull secrets to use for MinIO Docker images
+  imagePullSecrets: []
+  #  - name: private-registry
+
   # -- the node selector to use for the MinIO workload
   nodeSelector: {}
+
   # -- the pod annotations to use for the MinIO pod
   podAnnotations: {}
+
   # -- labels added to the MinIO pod
   podLabels: {}
-  persistence:
-    # -- the size of the MinIO persistent volume 
-    size: 64Gi
-    # -- the existing claim to use for the MinIO persistent volume; a new persistent volume is generated when unset
-    existingClaim:
-    # -- the storage class name for the MinIO persistent volume; the default storage class used when unset
-    storageClass:
-  podDisruptionBudget:
-    # -- whether to create a pod disruption budget for the MinIO component
-    enabled: true
-    # -- the maximum number of unavailable instances of the MinIO component
-    maxUnavailable: 0
-  podSecurityContext:
-    # -- whether to run the MinIO pod as a non-root user
-    runAsNonRoot: true
-  # -- the MinIO component priority value, which must be set relative to other Tool Orchestration component priority values
+
+  # -- the pod tolerations for the MinIO component
+  tolerations: []
+
+  # -- the MinIO component priority class name
+  priorityClassName: ""
+
+  # -- the MinIO component priority value (used when creating a PriorityClass)
   priorityClassValue: 10100
+
+  # -- resource limits and requests for the MinIO workload
   resources:
+    requests:
+      memory: 1Gi
+      cpu: 250m
     limits:
       # -- the required CPU for the MinIO workload
       cpu: 2000m
       # -- the required memory for the MinIO workload
       memory: 5120Mi
-  # -- the K8s secret name for web component TLS with required fields tls.crt and tls.key
+
+  # -- the number of MinIO drives per node (single-node single-drive mode)
+  drivesPerNode: 1
+  # -- the number of MinIO replicas (1 = standalone mode)
+  replicas: 1
+  # -- the number of MinIO pools
+  pools: 1
+
+  persistence:
+    # -- whether to enable persistent storage for MinIO
+    enabled: true
+    # -- the size of the MinIO persistent volume
+    size: 64Gi
+    # -- the existing claim to use for the MinIO persistent volume; a new PVC is created when unset
+    existingClaim: ""
+    # -- the storage class name for the MinIO persistent volume; the default storage class is used when unset
+    storageClass: ""
+
+  # -- the MinIO service configuration
+  service:
+    # -- the K8s service type for MinIO
+    type: ClusterIP
+    # -- the MinIO API port
+    port: 9000
+    # -- the MinIO console port
+    consolePort: 9001
+
+  # -- MinIO pod security context (non-root, matching SRM security posture)
+  securityContext:
+    enabled: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    runAsNonRoot: true
+
+  # -- MinIO container security context
+  containerSecurityContext:
+    enabled: true
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false   # MinIO writes to /tmp internally
+    seccompProfile:
+      type: RuntimeDefault
+
+  # -- MinIO TLS configuration
   tls:
-    # -- whether to enable MinIO TLS
+    # -- whether to enable TLS for MinIO
     enabled: false
-    # -- name of K8s secret resource with required fields tls.crt, tls.key, and ca.crt
-    existingSecret:
-  # -- the pod tolerations for the MinIO component
-  tolerations: []
+    # -- the name of the K8s Secret containing TLS cert/key/ca (fields: tls.crt, tls.key, ca.crt)
+    # Created automatically by cert-manager when tls.certManager.enabled=true in the parent chart.
+    certSecret: ""
+
+  # -- MinIO pod disruption budget
+  podDisruptionBudget:
+    # -- whether to create a pod disruption budget for the MinIO component
+    enabled: true
+    # -- the maximum number of unavailable MinIO instances
+    maxUnavailable: 0
+
+  # -- MinIO service account
+  serviceAccount:
+    # -- whether to create a service account for MinIO
+    create: true
+    # -- the name of the service account; auto-generated when unset
+    name: ""
+
+  # -- MinIO environment variables (official chart uses 'environment' map)
+  environment:
+    # Disable the MinIO browser console in production (access via kubectl port-forward if needed)
+    MINIO_BROWSER: "off"
+
+  # -- MinIO bucket to pre-create on startup (matches SRM tool orchestration default)
+  buckets:
+    - name: code-dx-storage
+      policy: none
+      purge: false
+
+  # -- MinIO users to pre-create (leave empty; credentials come from existingSecret / auto-generated secret)
+  users: []
+
+  # -- MinIO policies to pre-create
+  policies: []
+
+  # -- MinIO liveness probe
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 3
+
+  # -- MinIO readiness probe
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 15
+    timeoutSeconds: 10
+    failureThreshold: 3
 
 argo-workflows:
   # depends on https://github.com/codedx/codedx-kubernetes/tree/master/setup/core/crds/v1
