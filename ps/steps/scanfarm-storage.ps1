@@ -812,7 +812,7 @@ available at https://srm.local/upload/ would mean specifying "upload" for
 your context path.
 
 Note: You can find an example NGINX Community ingress resource at this URL:
-https://github.com/codedx/srm-k8s/blob/main/docs/DeploymentGuide.md#bitnami-minio-chart-pre-work
+https://github.com/codedx/srm-k8s/blob/main/docs/DeploymentGuide.md#official-minio-chart-pre-work
 
 '@
 

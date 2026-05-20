@@ -44,9 +44,14 @@ web:
 
 function New-ToStorageSecret($config, $storageUsername, $storagePwd) {
 
+	# The secret must satisfy two consumers:
+	#   1. SRM tool service mounts access-key / secret-key
+	#   2. Official MinIO chart reads rootUser / rootPassword from existingSecret
 	New-GenericSecret $config.namespace (Get-ToStorageSecretName $config) -keyValues @{
 		"access-key"=$storageUsername
 		"secret-key"=$storagePwd
+		"rootUser"=$storageUsername
+		"rootPassword"=$storagePwd
 	} -dryRun | Out-File (Get-ToWorkflowStorageSecretK8sPath $config)
 }
 
@@ -129,9 +134,7 @@ function New-InternalWorkflowStorage($config) {
 	New-ToStorageSecret $config 'admin' $config.minioAdminPwd
 	@"
 minio:
-  global:
-    minio:
-      existingSecret: $(Get-ToStorageSecretName $config)
+	 existingSecret: $(Get-ToStorageSecretName $config)
 "@ | Out-File (Get-ToWorkflowStoragePath $config)
 }
 
@@ -146,9 +149,7 @@ function New-ToolOrchestrationConfig($config) {
 	$minioEnabled = $(ConvertTo-Json (-not $config.skipMinIO))
 	@"
 features:
-  minio: $minioEnabled
-minio:
-  enabled: $minioEnabled
+	 minio: $minioEnabled
 "@ | Out-File (Get-ToConfigMinIOValuesPath $config)
 
 	if ($config.toolServiceReplicas -gt 0) {
