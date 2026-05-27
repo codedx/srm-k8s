@@ -122,9 +122,17 @@ to:
 	}
 }
 
+function Get-MinioDefaultSecretName($config) {
+	"$($config.releaseName)-minio-default-secret"
+}
+
 function New-InternalWorkflowStorage($config) {
 
 	if ($config.useGeneratedPwds) {
+		@"
+minio:
+  existingSecret: $(Get-MinioDefaultSecretName $config)
+"@ | Out-File (Get-ToWorkflowStoragePath $config)
 		return
 	}
 
@@ -134,7 +142,7 @@ function New-InternalWorkflowStorage($config) {
 	New-ToStorageSecret $config 'admin' $config.minioAdminPwd
 	@"
 minio:
-	 existingSecret: $(Get-ToStorageSecretName $config)
+  existingSecret: $(Get-ToStorageSecretName $config)
 "@ | Out-File (Get-ToWorkflowStoragePath $config)
 }
 

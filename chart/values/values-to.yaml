@@ -193,17 +193,27 @@ minio:
   # ---------------------------------------------------------------------------
 
   # -- the K8s secret name containing MinIO credentials with required fields
-  # rootUser and rootPassword (used by the official chart) AND access-key /
-  # secret-key (used by the SRM tool service).  When unset, the SRM chart
-  # auto-generates a secret named <release>-minio-default-secret that contains
-  # all four keys.
-  # Command (bring-your-own secret):
+  # rootUser and rootPassword (used by the official MinIO chart) AND access-key /
+  # secret-key (used by the SRM tool service).
+  #
+  # IMPORTANT: this field MUST be set to a non-empty value so that the official
+  # MinIO chart skips creating its own secret (which would contain default
+  # minioadmin credentials).  The SRM chart creates the secret named here via
+  # to-default-storage-secret.yaml when the value equals the auto-generated name
+  # (<release>-minio-default-secret) or is empty.
+  #
+  # Default: "srm-minio-default-secret" (matches release name "srm").
+  # Override with --set minio.existingSecret=<release>-minio-default-secret
+  # if your Helm release name differs from "srm".
+  #
+  # To bring your own secret, pre-create it with all four keys and set this
+  # field to its name:
   # kubectl -n srm create secret generic minio-secret \
   #   --from-literal=rootUser=admin \
   #   --from-literal=rootPassword=password \
   #   --from-literal=access-key=admin \
   #   --from-literal=secret-key=password
-  existingSecret: ""
+  existingSecret: "srm-minio-default-secret"
 
   # -- the Docker image to use for the MinIO workload
   image:
@@ -247,6 +257,8 @@ minio:
       # -- the required memory for the MinIO workload
       memory: 5120Mi
 
+  # -- the MinIO deployment mode; must be "standalone" for single-node single-drive deployments
+  mode: standalone
   # -- the number of MinIO drives per node (single-node single-drive mode)
   drivesPerNode: 1
   # -- the number of MinIO replicas (1 = standalone mode)
@@ -275,7 +287,6 @@ minio:
 
   # -- MinIO pod security context (non-root, matching SRM security posture)
   securityContext:
-    enabled: true
     runAsUser: 1000
     runAsGroup: 1000
     fsGroup: 1000
@@ -283,7 +294,6 @@ minio:
 
   # -- MinIO container security context
   containerSecurityContext:
-    enabled: true
     runAsNonRoot: true
     allowPrivilegeEscalation: false
     capabilities:

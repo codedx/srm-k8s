@@ -32,18 +32,14 @@ Returns the MariaDB credential secret name (overwrites template).
 {{- end -}}
 
 {{/*
-Returns the MinIO secret name used by the official MinIO chart sub-chart.
-The official MinIO chart (charts.min.io) reads credentials from the secret
-named by minio.existingSecret, expecting keys rootUser and rootPassword.
-The SRM-generated secret (to-default-storage-secret.yaml) stores the same
-credential under access-key / secret-key so that the tool service can mount
-them without change.  We therefore create the secret with BOTH sets of keys.
+Returns the MinIO secret name used by the SRM chart templates (tool service
+volume mounts, network policies, etc.).
 */}}
 {{- define "minio.ref.secretName" -}}
 {{- if (not .Values.minio.existingSecret) -}}
 {{ include "srm-to.default.minio.secret" . }}
 {{- else -}}
-{{ required "You must specify a value for the 'minio.existingSecret' helm property" .Values.minio.existingSecret }}
+{{ .Values.minio.existingSecret }}
 {{- end -}}
 {{- end -}}
 
