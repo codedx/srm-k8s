@@ -257,7 +257,11 @@ minio:
       # -- the required memory for the MinIO workload
       memory: 5120Mi
 
-  # -- the MinIO deployment mode; must be "standalone" for single-node single-drive deployments
+  # -- the MinIO deployment mode.
+  # Use "standalone" for single-node single-drive deployments (replicas=1, drivesPerNode=1).
+  # Use "distributed" for multi-node/multi-drive deployments (replicas>1); in that case also
+  # increase replicas, drivesPerNode, and pools accordingly and ensure a ReadWriteMany-capable
+  # StorageClass is available.  The official chart defaults to "distributed".
   mode: standalone
   # -- the number of MinIO drives per node (single-node single-drive mode)
   drivesPerNode: 1
@@ -322,8 +326,8 @@ minio:
   serviceAccount:
     # -- whether to create a service account for MinIO
     create: true
-    # -- the name of the service account; auto-generated when unset
-    name: ""
+    # -- the name of the service account.
+    name: "minio"
 
   # -- MinIO environment variables (official chart uses 'environment' map)
   environment:
