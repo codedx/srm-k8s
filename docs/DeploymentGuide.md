@@ -243,7 +243,7 @@ The footprint of your Software Risk Manager Kubernetes deployment depends on the
 
 ## Core Feature
 
-The Software Risk Manager web application requires a MariaDB (version 10.6.x) or a MySQL (version 8.0.x) database instance. You can provide a database instance or use what's included in the Software Risk Manager Helm chart. We treat a database you provide as an external one that you are responsible for configuring according to our guidance. An external database can be a standalone instance or one managed on your behalf by a cloud provider like AWS or Azure. A Core deployment using an external database consists of one Software Risk Manager pod.
+The Software Risk Manager web application requires a MariaDB (version 10.6.x) or a MySQL (version 8.4.x) database instance. You can provide a database instance or use what's included in the Software Risk Manager Helm chart. We treat a database you provide as an external one that you are responsible for configuring according to our guidance. An external database can be a standalone instance or one managed on your behalf by a cloud provider like AWS or Azure. A Core deployment using an external database consists of one Software Risk Manager pod.
 
 ![Core with External Database](images/diagram-core-external-db.png "Core with External Database")
 
@@ -626,7 +626,7 @@ When enforcing policy violations with the optional [Kubernetes Pod Security Admi
 
 Software Risk Manager includes a MariaDB database that requires no configuration on your part. You can skip this section if you plan to use the on-cluster database instance.
 
-If you prefer an external database, the web workload supports MariaDB version 10.6.x and MySQL version 8.0.x. Complete the following pre-work before installing Software Risk Manager with an external web database.
+If you prefer an external database, the web workload supports MariaDB version 10.6.x and MySQL version 8.4.x. Complete the following pre-work before installing Software Risk Manager with an external web database.
 
 ## External Web Database Pre-work - Instance Configuration
 
