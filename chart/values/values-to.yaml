@@ -303,9 +303,19 @@ minio:
     capabilities:
       drop:
         - ALL
-    readOnlyRootFilesystem: false   # MinIO writes to /tmp internally
+    readOnlyRootFilesystem: true
     seccompProfile:
       type: RuntimeDefault
+
+  # -- extra volumes to add to the MinIO pod.
+  extraVolumes:
+    - name: tmp-dir
+      emptyDir: {}
+
+  # -- extra volume mounts to add to the MinIO container
+  extraVolumeMounts:
+    - name: tmp-dir
+      mountPath: /tmp
 
   # -- MinIO TLS configuration
   tls:
