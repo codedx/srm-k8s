@@ -57,11 +57,17 @@ argo-workflows:
 "@ | Out-File (Get-ToDockerImageLocationValuesPath $config)
 
 		if (-not $config.skipMinIO) {
+			# The official MinIO chart (charts.min.io) uses a single image.repository
+			# field containing the full image reference; there is no separate registry field.
+			$minioRepo = if ($config.dockerRegistry -and $config.dockerRegistry -ne 'docker.io') {
+				"$($config.dockerRegistry)/$($repositoryPrefix)minio/minio"
+			} else {
+				"$($repositoryPrefix)quay.io/minio/minio"
+			}
 			@"
 minio:
-  image:
-    registry: '$($config.dockerRegistry)'
-    repository: '$("$($repositoryPrefix)bitnami/minio")'
+		image:
+		  repository: '$minioRepo'
 "@ | Out-File (Get-StorageDockerImageLocationValuesPath $config)
 		}
 	}

@@ -68,7 +68,7 @@
     + [Scanner Nodes Pre-work](#scanner-nodes-pre-work)
     + [Bitnami PostgreSQL Chart Pre-work](#bitnami-postgresql-chart-pre-work)
     + [Bitnami Redis Chart Pre-work](#bitnami-redis-chart-pre-work)
-    + [Bitnami MinIO Chart Pre-work](#bitnami-minio-chart-pre-work)
+    + [Official MinIO Chart Pre-work](#official-minio-chart-pre-work)
 - [Tool Orchestration Pre-work](#tool-orchestration-pre-work)
   * [Node Pool Pre-work](#node-pool-pre-work)
   * [Object Storage Pre-work](#object-storage-pre-work)
@@ -1338,48 +1338,65 @@ helm -n srm upgrade --create-namespace --install --repo https://charts.bitnami.c
 
 Set the redis.tls Helm chart configuration based on whether you plan to enable TLS for your Redis instance. You can find the Redis TLS certificate in its pod at /opt/bitnami/redis/certs/tls.crt.
 
-### Bitnami MinIO Chart Pre-work
+### Official MinIO Chart Pre-work
 
-The MinIO software is licensed under the [GNU Affero General Public License v3.0](https://github.com/minio/minio/blob/master/LICENSE) or a commercial enterprise license. The Bitnami MinIO Helm chart license is available [here](https://github.com/bitnami/charts/tree/main/bitnami/minio#license).
+The MinIO software is licensed under the [GNU Affero General Public License v3.0](https://github.com/minio/minio/blob/master/LICENSE) or a commercial enterprise license. The official MinIO Helm chart is available at [https://charts.min.io/](https://charts.min.io/).
 
-The following is an example of the MinIO chart parameters for version 17.0.16 that customizes MinIO to meet Scan Farm requirements (refer to the requirements section to identify the storage size suitable for your environment):
+> **Migration note:** The SRM chart previously bundled a forked Bitnami MinIO chart (`https://codedx.github.io/srm-k8s`, version 3.5.0). As of this release the dependency has been replaced with the official MinIO Helm chart (`https://charts.min.io/`, version 5.4.0). See the [MinIO Migration Plan](#minio-migration-plan) section for step-by-step upgrade instructions.
 
-```
-defaultInitContainers:
-  volumePermissions:
-    image:
-      repository: bitnamilegacy/os-shell
+The following is an example of the MinIO chart parameters that customizes MinIO to meet Scan Farm requirements (refer to the requirements section to identify the storage size suitable for your environment):
+
+```yaml
 image:
-  repository: bitnamilegacy/minio
-provisioning:
-  enabled: true
-  buckets:
-  - name:  "storage"
-    region: us-east-1
-  - name: "cache"
-    region: us-east-1
-    lifecycle:
-    - id: cache
-      disabled: false
-      expiry:
-        days: 8
+  repository: quay.io/minio/minio
+  tag: RELEASE.2025-04-22T22-12-26Z
+
+buckets:
+  - name: storage
+    policy: none
+    purge: false
+  - name: cache
+    policy: none
+    purge: false
+
 persistence:
   size: 100Gi
+
+securityContext:
+  enabled: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  runAsNonRoot: true
+
+containerSecurityContext:
+  enabled: true
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
 ```
 
-If you store the above YAML in a file named minio.yaml, you can run helm like this:
+If you store the above YAML in a file named `minio.yaml`, you can install the official MinIO chart like this:
 
+```bash
+helm -n srm upgrade --create-namespace --install \
+  --repo https://charts.min.io/ \
+  --version 5.4.0 \
+  minio minio \
+  -f minio.yaml \
+  --set rootUser=<username> \
+  --set rootPassword=<password>
 ```
-helm -n srm upgrade --create-namespace --install --repo https://charts.bitnami.com/bitnami --version 11.10.24 minio minio -f minio.yaml
-```
 
->Note: The chart notes explain how to obtain the initial password.
-
-Set MinIO's root username and password using the minio.auth.rootUser and minio.auth.rootPassword Helm chart parameters. You can define default buckets for the Storage Service and Cache Service using the minio.defaultBuckets chart parameter, or you can create them by hand after installing MinIO.  
+Set MinIO's root username and password using the `rootUser` and `rootPassword` Helm chart parameters (or via an `existingSecret` — see below). You can define default buckets for the Storage Service and Cache Service using the `buckets` chart parameter, or you can create them by hand after installing MinIO.
 
 You must configure a lifecycle policy on the cache bucket. If you did not configure the policy during deployment, you can use the following command with an "srm" mc alias you can define using the MinIO endpoint and root credential, replacing the cache-bucket name and day count (must be greater than, not equal to, 7) as necessary:
 
-```
+```bash
 $ mc alias set srm <MinIO endpoint> <MinIO root username> <MinIO root password>
 $ mc ilm add --expiry-days 8 srm/cache-bucket
 ```
@@ -1392,7 +1409,7 @@ Alternatively, you can proxy MinIO by using the same hostname for both Software 
 
 The following two examples show Ingress and Route examples that use hostname `srm.local` to make a `minio` Kubernetes service available at http://srm.local/upload/. Note the use of the rewrite-related annotations in both examples to drop "/upload/" when routing a request to the MinIO service.
 
-```
+```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -1417,7 +1434,7 @@ spec:
         pathType: ImplementationSpecific
 ```
 
-```
+```yaml
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
@@ -1443,6 +1460,176 @@ spec:
 ```
 
 Note your external MinIO URL and your in-cluster URL if you plan to specify that optimization in the Helm Prep Wizard.
+
+---
+
+## MinIO Migration Plan
+
+This section describes how to migrate an existing SRM deployment from the legacy Bitnami-based MinIO chart to the official MinIO Helm chart with minimal downtime.
+
+### Overview of Changes
+
+| Aspect | Legacy (Bitnami fork) | Official (charts.min.io) |
+|---|---|---|
+| Chart repository | `https://codedx.github.io/srm-k8s` | `https://charts.min.io/` |
+| Chart version | 3.5.0 | 5.4.0 |
+| Docker image | `docker.io/bitnamilegacy/minio` | `quay.io/minio/minio` |
+| Secret keys | `access-key` / `secret-key` | `rootUser` / `rootPassword` |
+| `existingSecret` path | `minio.global.minio.existingSecret` | `minio.existingSecret` |
+| TLS secret param | `minio.tls.existingSecret` | `minio.tls.certSecret` |
+| Pod label selector | `app.kubernetes.io/name: minio` | `app: minio` |
+| Service port value path | `minio.service.ports.api` | `minio.service.port` |
+| PVC name suffix | `<release>-minio-snsd` | `<release>-minio` |
+
+### Pre-Migration Checklist
+
+- [ ] Confirm `features.minio: true` and `features.to: true` in your current values
+- [ ] Record the current MinIO PVC name: `kubectl -n srm get pvc | grep minio`
+- [ ] Record the current MinIO credentials (access-key / secret-key) from the existing secret
+- [ ] Verify the bucket name in use (default: `code-dx-storage`)
+- [ ] Ensure you have a recent backup of the MinIO PVC data
+- [ ] Confirm FluxCD / GitOps reconciliation is paused or you are performing a manual `helm upgrade`
+
+### Step-by-Step Migration
+
+#### Step 1 — Retain the existing PVC
+
+Before upgrading, prevent Kubernetes from deleting the existing MinIO PVC when the old Deployment is removed:
+
+```bash
+# Find the PVC name (typically <release>-minio-snsd)
+kubectl -n srm get pvc | grep minio
+
+# Switch reclaim policy to Retain so data survives pod/PVC deletion
+kubectl -n srm patch pv <PV_NAME> \
+  -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
+```
+
+#### Step 2 — Scale down Tool Orchestration workloads
+
+```bash
+kubectl -n srm scale --replicas=0 deployment/srm-to
+kubectl -n srm scale --replicas=0 deployment/srm-minio
+```
+
+#### Step 3 — Prepare the new credentials secret
+
+The official MinIO chart expects `rootUser` and `rootPassword` keys. The SRM chart also needs `access-key` and `secret-key` for the tool service. Create a single secret with all four keys:
+
+```bash
+# Replace <access-key> and <secret-key> with your existing credentials
+kubectl -n srm create secret generic minio-secret \
+  --from-literal=rootUser=<access-key> \
+  --from-literal=rootPassword=<secret-key> \
+  --from-literal=access-key=<access-key> \
+  --from-literal=secret-key=<secret-key>
+```
+
+Then set `minio.existingSecret: minio-secret` in your values file.
+
+#### Step 4 — Update your Helm values
+
+Replace the legacy `minio:` block in your `values-to.yaml` (or override file) with the new official chart values. Key changes:
+
+```yaml
+# BEFORE (legacy Bitnami)
+minio:
+  enabled: true
+  auth:
+    useCredentialsFiles: true
+  global:
+    minio:
+      existingSecret: minio-secret   # <-- old path
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/minio
+    tag: 2025.7.23-debian-12-r5
+  tls:
+    existingSecret: srm-minio-tls-secret  # <-- old TLS param
+
+# AFTER (official MinIO chart)
+minio:
+  existingSecret: minio-secret            # <-- new path (top-level)
+  image:
+    repository: quay.io/minio/minio
+    tag: RELEASE.2025-04-22T22-12-26Z
+  tls:
+    certSecret: srm-minio-tls-secret      # <-- new TLS param
+  persistence:
+    existingClaim: <old-pvc-name>         # <-- reuse existing PVC
+```
+
+#### Step 5 — Run helm dependency update
+
+```bash
+cd chart/
+helm dependency update .
+```
+
+This fetches the new `minio-5.4.0.tgz` from `https://charts.min.io/` and removes the old Bitnami chart from the `charts/` directory.
+
+#### Step 6 — Upgrade the SRM Helm release
+
+```bash
+helm -n srm upgrade srm . \
+  -f values/values-to.yaml \
+  -f values/values-tls.yaml \   # if using TLS
+  --set minio.existingSecret=minio-secret \
+  --atomic \
+  --timeout 10m
+```
+
+#### Step 7 — Validate
+
+```bash
+# Confirm the MinIO pod is Running
+kubectl -n srm get pods | grep minio
+
+# Confirm the bucket exists and data is intact
+kubectl -n srm exec -it deploy/srm-minio -- \
+  mc alias set local http://localhost:9000 <access-key> <secret-key>
+kubectl -n srm exec -it deploy/srm-minio -- \
+  mc ls local/code-dx-storage
+
+# Scale Tool Orchestration back up
+kubectl -n srm scale --replicas=1 deployment/srm-to
+kubectl -n srm scale --replicas=1 deployment/srm-minio
+```
+
+#### Step 8 — Smoke test
+
+Run a test orchestrated analysis in SRM and confirm it completes successfully.
+
+### Rollback Strategy
+
+If the upgrade fails or validation does not pass:
+
+```bash
+# Roll back the Helm release to the previous revision
+helm -n srm rollback srm
+
+# If the new PVC was created and the old PVC still exists (Retain policy),
+# patch the old PV back to the release and delete the new PVC:
+kubectl -n srm delete pvc <new-minio-pvc>
+kubectl -n srm patch pv <old-PV_NAME> \
+  -p '{"spec":{"claimRef":null}}'
+# Then re-create the old PVC pointing at the retained PV and re-run helm upgrade
+```
+
+### Risks and Validation Checklist
+
+| Risk | Mitigation |
+|---|---|
+| PVC data loss during chart swap | Set PV reclaim policy to `Retain` before upgrade (Step 1) |
+| Credential mismatch (old `access-key` vs new `rootUser`) | Create unified secret with all four keys (Step 3) |
+| NetworkPolicy pod-selector mismatch | Updated from `app.kubernetes.io/name` to `app` label in `to-networkpolicy.yaml` |
+| Tool service cannot reach MinIO | Verify `minio.service.port: 9000` and DNS `<release>-minio.<ns>.svc.cluster.local` |
+| TLS cert secret field name change | Updated from `tls.existingSecret` to `tls.certSecret` in values and cert-manager template |
+| FluxCD reconciliation loop | Pause FluxCD `HelmRelease` before upgrade; resume after validation |
+| Image pull failure (private registry) | Update `minio.imagePullSecrets` with your registry pull secret |
+| Bucket not found after migration | Confirm `minio.buckets[0].name: code-dx-storage` in new values |
+
+---
 
 # Tool Orchestration Pre-work
 
@@ -4272,7 +4459,7 @@ Depending on the Software Risk Manager features you install and how you configur
 |:-|:-|:-|:-|
 | argo-workflows | Tool Orchestration | https://argoproj.github.io/argo-helm | Required to manage orchestrated analyses |
 | mariadb | Core | https://codedx.github.io/srm-k8s | Optional on-cluster Software Risk Manager database |
-| minio | Tool Orchestration | https://codedx.github.io/srm-k8s | Optional on-cluster Software Risk Manager workflow storage |
+| minio | Tool Orchestration | https://charts.min.io/ | Optional on-cluster Software Risk Manager workflow storage |
 | scan-services | Scan Farm | https://repo.blackduck.com/artifactory/sig-cloudnative | Required to run SAST and SCA scans |
 
 ## Values
@@ -4353,26 +4540,35 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | mariadb.slave.resources.limits.cpu | string | `"1000m"` | the required CPU for the MariaDB replica database workload |
 | mariadb.slave.resources.limits.memory | string | `"8192Mi"` | the required memory for the MariaDB replica database workload |
 | mariadb.slave.tolerations | list | `[]` | the pod tolerations for the MariaDB replica database component |
-| minio.enabled | bool | `true` | whether to enable the on-cluster MinIO component |
-| minio.auth.useCredentialsFiles | bool | `true` | whether to mount MinIO credential values as files |
-| minio.global.minio.existingSecret | string | `nil` | the K8s secret name with the MinIO access and secret key with required fields access-key and secret-key Command: kubectl -n srm create secret generic minio-secret --from-literal=access-key=admin --from-literal=secret-key=password |
-| minio.image.pullSecrets | list | `[]` | the K8s Docker image pull policy for the MinIO workload |
-| minio.image.registry | string | `"docker.io"` | the registry name and optional registry suffix for the MinIO Docker image |
-| minio.image.repository | string | `"bitnamilegacy/minio"` | the Docker image repository name for the MinIO workload |
-| minio.image.tag | string | `"2025.7.23-debian-12-r5"` | the Docker image version for the MinIO workload |
+| minio.existingSecret | string | `""` | the K8s secret name with MinIO credentials; required fields: rootUser, rootPassword (official chart), access-key, secret-key (SRM tool service). Auto-generated when unset. Command: kubectl -n srm create secret generic minio-secret --from-literal=rootUser=admin --from-literal=rootPassword=password --from-literal=access-key=admin --from-literal=secret-key=password |
+| minio.image.repository | string | `"quay.io/minio/minio"` | the Docker image repository name for the MinIO workload |
+| minio.image.tag | string | `"RELEASE.2025-04-22T22-12-26Z"` | the Docker image tag for the MinIO workload |
+| minio.image.pullPolicy | string | `"IfNotPresent"` | the K8s Docker image pull policy for the MinIO workload |
+| minio.imagePullSecrets | list | `[]` | the K8s image pull secrets to use for MinIO Docker images |
 | minio.nodeSelector | object | `{}` | the node selector to use for the MinIO workload |
-| minio.persistence.existingClaim | string | `nil` | the existing claim to use for the MinIO persistent volume; a new persistent volume is generated when unset |
-| minio.persistence.size | string | `"64Gi"` | the size of the MinIO persistent volume  |
-| minio.persistence.storageClass | string | `nil` | the storage class name for the MinIO persistent volume; the default storage class used when unset |
+| minio.persistence.enabled | bool | `true` | whether to enable persistent storage for MinIO |
+| minio.persistence.existingClaim | string | `""` | the existing claim to use for the MinIO persistent volume; a new PVC is created when unset |
+| minio.persistence.size | string | `"64Gi"` | the size of the MinIO persistent volume |
+| minio.persistence.storageClass | string | `""` | the storage class name for the MinIO persistent volume; the default storage class is used when unset |
 | minio.podAnnotations | object | `{}` | the pod annotations to use for the MinIO pod |
 | minio.podDisruptionBudget.enabled | bool | `true` | whether to create a pod disruption budget for the MinIO component |
 | minio.podDisruptionBudget.maxUnavailable | int | `0` | the maximum number of unavailable instances of the MinIO component |
 | minio.podLabels | object | `{}` | labels added to the MinIO pod |
 | minio.priorityClassValue | int | `10100` | the MinIO component priority value, which must be set relative to other Tool Orchestration component priority values |
+| minio.replicas | int | `1` | the number of MinIO replicas (1 = standalone/single-node mode) |
+| minio.resources.requests.cpu | string | `"250m"` | the CPU request for the MinIO workload |
+| minio.resources.requests.memory | string | `"1Gi"` | the memory request for the MinIO workload |
 | minio.resources.limits.cpu | string | `"2000m"` | the required CPU for the MinIO workload |
-| minio.resources.limits.memory | string | `"500Mi"` | the required memory for the MinIO workload |
-| minio.tls.enabled | boolean | `false` | whether to use TLS for MinIO |
-| minio.tls.existingSecret | string | `nil` | the K8s secret name for MinIO component TLS with required fields tls.crt, tls.key, and ca.crt |
+| minio.resources.limits.memory | string | `"5120Mi"` | the required memory for the MinIO workload |
+| minio.securityContext.enabled | bool | `true` | whether to apply the pod security context for MinIO |
+| minio.securityContext.runAsUser | int | `1000` | the UID for the MinIO pod |
+| minio.securityContext.runAsGroup | int | `1000` | the GID for the MinIO pod |
+| minio.securityContext.fsGroup | int | `1000` | the fsGroup for the MinIO pod |
+| minio.securityContext.runAsNonRoot | bool | `true` | whether to run the MinIO pod as non-root |
+| minio.service.port | int | `9000` | the MinIO API service port |
+| minio.service.consolePort | int | `9001` | the MinIO console service port |
+| minio.tls.enabled | bool | `false` | whether to enable TLS for MinIO |
+| minio.tls.certSecret | string | `""` | the K8s Secret name containing TLS cert/key/ca (fields: tls.crt, tls.key, ca.crt); created by cert-manager when tls.certManager.enabled=true |
 | minio.tolerations | list | `[]` | the pod tolerations for the MinIO component |
 | networkPolicy.enabled | bool | `false` | whether to enable network policies for SRM components that support network policy |
 | networkPolicy.k8sApiPort | int | `443` | the port for the K8s API, required when using the Tool Orchestration feature |

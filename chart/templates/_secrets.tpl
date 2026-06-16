@@ -32,48 +32,14 @@ Returns the MariaDB credential secret name (overwrites template).
 {{- end -}}
 
 {{/*
-Returns the MinIO secret name (overwrites template).
-*/}}
-{{- define "minio.secretName" -}}
-{{- if (not .Values.global.minio.existingSecret) -}}
-{{ include "srm-to.default.minio.secret" . }}
-{{- else -}}
-{{ required "You must specify a value for the 'global.minio.existingSecret' helm property" .Values.global.minio.existingSecret }}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Get the root user key by switching the default from root-user to access-key (overwrites template).
-*/}}
-{{- define "minio.rootUserKey" -}}
-{{- if and (.Values.auth.existingSecret) (.Values.auth.rootUserSecretKey) -}}
-    {{- printf "%s" (tpl .Values.auth.rootUserSecretKey $) -}}
-{{- else -}}
-    {{/* Use the legacy name for key instead of root-user. */}}
-    {{- "access-key" -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Get the root password key by switching the default from root-password to secret-key (overwrites template).
-*/}}
-{{- define "minio.rootPasswordKey" -}}
-{{- if and (.Values.auth.existingSecret) (.Values.auth.rootPasswordSecretKey) -}}
-    {{- printf "%s" (tpl .Values.auth.rootPasswordSecretKey $) -}}
-{{- else -}}
-    {{/* Use the legacy name for password instead of root-password. */}}
-    {{- "secret-key" -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Returns the MinIO secret name.
+Returns the MinIO secret name used by the SRM chart templates (tool service
+volume mounts, network policies, etc.).
 */}}
 {{- define "minio.ref.secretName" -}}
-{{- if (not .Values.minio.global.minio.existingSecret) -}}
+{{- if (not .Values.minio.existingSecret) -}}
 {{ include "srm-to.default.minio.secret" . }}
 {{- else -}}
-{{ required "You must specify a value for the 'minio.global.minio.existingSecret' helm property" .Values.minio.global.minio.existingSecret }}
+{{ .Values.minio.existingSecret }}
 {{- end -}}
 {{- end -}}
 
