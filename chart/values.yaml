@@ -321,6 +321,9 @@ web:
     # -- the name of the service account to use; a name is generated using the fullname template when unset and create is true
     name: ""
 
+  # -- whether to automount the service account token inside the SRM web (Tomcat) pod.
+  automountServiceAccountToken: false
+
   # -- the K8s secret name for web component TLS with required fields tls.crt and tls.key
   # Command:
   # kubectl -n srm create secret tls web-tls-secret --cert=path/to/cert-file --key=path/to/key-file
@@ -441,6 +444,9 @@ mariadb:
   serviceAccount:
     # -- whether to create a service account for the MariaDB service
     create: true
+    # -- whether to automount the service account token inside MariaDB pods (master and slave).
+    # Set to false to reduce the attack surface when Kubernetes API access is not needed.
+    automountServiceAccountToken: false
   master:
     # @ignore
     # the mysql configuration for the primary database
