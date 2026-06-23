@@ -445,7 +445,6 @@ mariadb:
     # -- whether to create a service account for the MariaDB service
     create: true
     # -- whether to automount the service account token inside MariaDB pods (master and slave).
-    # Set to false to reduce the attack surface when Kubernetes API access is not needed.
     automountServiceAccountToken: false
   master:
     # @ignore
