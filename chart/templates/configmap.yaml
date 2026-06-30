@@ -52,6 +52,7 @@ data:
     {{- end }}
     CATALINA_OPTS="$CATALINA_OPTS {{ default "" .Values.web.javaOpts }}"
     CATALINA_OPTS="$CATALINA_OPTS -Dcodedx.autoupdate=true"
+    CATALINA_OPTS="$CATALINA_OPTS -Dmariadb.jdbc.driver.mysql.alias=true"
     CATALINA_OPTS="$CATALINA_OPTS -Dsrm.webapp-name={{ include "srm-web.appName" . }}"
     keystoreKeyFile='{{ include "srm-web.cacerts.password.path" . }}'
     if [ -f $keystoreKeyFile ] && [ -s $keystoreKeyFile ]; then
