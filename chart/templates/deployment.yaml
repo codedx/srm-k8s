@@ -197,7 +197,7 @@ spec:
           {{- if .Values.features.mariadb }}
           command: ["bash", "-c", "for i in {1..60}; do if (timeout 2 bash -c \"</dev/tcp/{{ include "srm-web.db.fullname" . }}/3306\" echo $?); then echo 'Successfully connected to MariaDB port'; exit 0; else echo 'Retrying database connection...'; sleep 2; fi; done; echo 'MariaDB is unavailable'; exit 1"]
           {{- else }}
-          command: ["bash", "-c", "url='{{ .Values.web.database.externalDbUrl }}' && pat='^jdbc:mysql://([^/:]+):?([0-9]+)?/.+$' && [[ $url =~ $pat ]] && host=${BASH_REMATCH[1]} && port=${BASH_REMATCH[2]:-3306} && for i in {1..60}; do if (timeout 2 bash -c </dev/tcp/$host/$port echo $?); then echo 'Successfully connected to database port'; exit 0; else echo 'Retrying database connection...'; sleep 2; fi; done; echo 'Database is unavailable'; exit 1"]
+          command: ["bash", "-c", "url='{{ .Values.web.database.externalDbUrl }}' && pat='^jdbc:(mysql|mariadb)://([^/:]+):?([0-9]+)?/.+$' && [[ $url =~ $pat ]] && host=${BASH_REMATCH[2]} && port=${BASH_REMATCH[3]:-3306} && for i in {1..60}; do if (timeout 2 bash -c </dev/tcp/$host/$port echo $?); then echo 'Successfully connected to database port'; exit 0; else echo 'Retrying database connection...'; sleep 2; fi; done; echo 'Database is unavailable'; exit 1"]
           {{- end }}
       restartPolicy: Always
       {{- with .Values.web.nodeSelector }}

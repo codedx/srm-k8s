@@ -47,9 +47,9 @@ function New-ExternalDatabaseConfig($config) {
 
 	New-DatabasePropsSecret $config
 
-	$urlOption = ''
+	$urlOption = '?permitMysqlScheme'
 	if (-not $config.externalDatabaseSkipTls) {
-		$urlOption = '?useSSL=true&requireSSL=true'
+		$urlOption = '?sslMode=verify-ca&permitMysqlScheme'
 	}
 
 	@"
