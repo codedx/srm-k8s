@@ -172,7 +172,7 @@ web:
     # Command:
     # kubectl -n srm create secret generic srm-web-db-cred-secret --from-file db.props=./db.props
     credentialSecret: ""
-    # -- the URL for the external SRM web database (jdbc:mysql://my-srm-web-db-host:3306/my-srm-web-db-name?useSSL=true&requireSSL=true)
+    # -- the URL for the external SRM web database (jdbc:mysql://my-srm-web-db-host:3306/my-srm-web-db-name?sslMode=verify-ca&permitMysqlScheme)
     externalDbUrl:
     # -- the K8s configmap name containing the RSA public key when using MySQL's caching_sha2_password plugin
     # Note: see the caching_sha2_password_public_key_path MySQL variable for the public key file location
@@ -186,7 +186,7 @@ web:
     # -- the Docker image repository name for the SRM web workload
     repository: codedx/codedx-tomcat
     # -- the Docker image version for the SRM web workload
-    tag: v2026.3.6
+    tag: v2026.6.0
     # -- the K8s Docker image pull policy for the SRM web workload
     pullPolicy: IfNotPresent
 
@@ -321,6 +321,9 @@ web:
     # -- the name of the service account to use; a name is generated using the fullname template when unset and create is true
     name: ""
 
+  # -- whether to automount the service account token inside the SRM web (Tomcat) pod.
+  automountServiceAccountToken: false
+
   # -- the K8s secret name for web component TLS with required fields tls.crt and tls.key
   # Command:
   # kubectl -n srm create secret tls web-tls-secret --cert=path/to/cert-file --key=path/to/key-file
@@ -328,6 +331,15 @@ web:
 
   # -- the pod tolerations for the web component
   tolerations: []
+
+  # -- extra environment variables to add to the srm-web container
+  extraEnv: []
+
+  # -- extra volume mounts to add to the srm-web container
+  extraVolumeMounts: []
+
+  # -- extra volumes to add to the srm-web pod
+  extraVolumes: []
 
   # -- the K8s secret name containing the API key for the Tool Orchestration tool service with required field to-key.props that
   # contains a HOCON-formatted file with SRM prop tws.api-key
@@ -432,6 +444,8 @@ mariadb:
   serviceAccount:
     # -- whether to create a service account for the MariaDB service
     create: true
+    # -- whether to automount the service account token inside MariaDB pods (master and slave).
+    automountServiceAccountToken: false
   master:
     # @ignore
     # the mysql configuration for the primary database

@@ -243,7 +243,7 @@ The footprint of your Software Risk Manager Kubernetes deployment depends on the
 
 ## Core Feature
 
-The Software Risk Manager web application requires a MariaDB (version 10.6.x) or a MySQL (version 8.0.x) database instance. You can provide a database instance or use what's included in the Software Risk Manager Helm chart. We treat a database you provide as an external one that you are responsible for configuring according to our guidance. An external database can be a standalone instance or one managed on your behalf by a cloud provider like AWS or Azure. A Core deployment using an external database consists of one Software Risk Manager pod.
+The Software Risk Manager web application requires a MariaDB (version 10.6.x) or a MySQL (version 8.4.x) database instance. You can provide a database instance or use what's included in the Software Risk Manager Helm chart. We treat a database you provide as an external one that you are responsible for configuring according to our guidance. An external database can be a standalone instance or one managed on your behalf by a cloud provider like AWS or Azure. A Core deployment using an external database consists of one Software Risk Manager pod.
 
 ![Core with External Database](images/diagram-core-external-db.png "Core with External Database")
 
@@ -626,7 +626,7 @@ When enforcing policy violations with the optional [Kubernetes Pod Security Admi
 
 Software Risk Manager includes a MariaDB database that requires no configuration on your part. You can skip this section if you plan to use the on-cluster database instance.
 
-If you prefer an external database, the web workload supports MariaDB version 10.6.x and MySQL version 8.0.x. Complete the following pre-work before installing Software Risk Manager with an external web database.
+If you prefer an external database, the web workload supports MariaDB version 10.6.x and MySQL version 8.4.x. Complete the following pre-work before installing Software Risk Manager with an external web database.
 
 ## External Web Database Pre-work - Instance Configuration
 
@@ -4660,12 +4660,12 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | web.cacertsSecret | string | `""` | the K8s secret name containing the Java keystore contents and its password with required fields cacerts and cacerts-password Note: cacerts must trust the database cert when using 'REQUIRE SSL' with an external database Command: kubectl -n srm create secret generic srm-web-cacerts-secret --from-file cacerts=./cacerts --from-literal cacerts-password=changeit |
 | web.database.rdsAuth.enabled | bool | `false` | whether to enable RDS IAM authentication (set web.serviceAccount.name accordingly) |
 | web.database.credentialSecret | string | `""` | the K8s secret name containing the database connection properties with required field db.props that contains a HOCON-formatted file with SRM props swa.db.user and swa.db.password File:  swa.db.user = """username""" swa.db.password = """password""" Command: kubectl -n srm create secret generic srm-web-db-cred-secret --from-file db.props=./db.props |
-| web.database.externalDbUrl | string | `nil` | the URL for the external SRM web database (jdbc:mysql://my-srm-web-db-host:3306/my-srm-web-db-name?useSSL=true&requireSSL=true) |
+| web.database.externalDbUrl | string | `nil` | the URL for the external SRM web database (jdbc:mysql://my-srm-web-db-host:3306/my-srm-web-db-name?sslMode=verify-ca&permitMysqlScheme) |
 | web.database.publicKeyConfigMap | string | `""` | the K8s configmap name containing the RSA public key when using MySQL's caching_sha2_password plugin |
 | web.image.pullPolicy | string | `"IfNotPresent"` | the K8s Docker image pull policy for the SRM web workload |
 | web.image.registry | string | `"docker.io"` | the registry name and optional registry suffix for the SRM web Docker image |
 | web.image.repository | string | `"codedx/codedx-tomcat"` | the Docker image repository name for the SRM web workload |
-| web.image.tag | string | `"v2026.3.6"` | the Docker image version for the SRM web workload |
+| web.image.tag | string | `"v2026.6.0"` | the Docker image version for the SRM web workload |
 | web.javaOpts | string | `"-XX:MaxRAMPercentage=75.0"` | the Java options for the SRM web workload |
 | web.licenseSecret | string | `""` | the K8s secret name containing the SRM license password with required field license.lic Command: kubectl -n srm create secret generic srm-web-license-secret --from-file license.lic=./license.lic |
 | web.loggingConfigMap | string | `""` | the K8s configmap containing the logging configuration file with required field logback.xml Command: kubectl -n srm create configmap srm-web-logging-cfgmap --from-file logback.xml=./logback.xml |
