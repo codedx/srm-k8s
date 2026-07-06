@@ -172,7 +172,7 @@ web:
     # Command:
     # kubectl -n srm create secret generic srm-web-db-cred-secret --from-file db.props=./db.props
     credentialSecret: ""
-    # -- the URL for the external SRM web database (jdbc:mysql://my-srm-web-db-host:3306/my-srm-web-db-name?useSSL=true&requireSSL=true)
+    # -- the URL for the external SRM web database (jdbc:mysql://my-srm-web-db-host:3306/my-srm-web-db-name?sslMode=verify-ca&permitMysqlScheme)
     externalDbUrl:
     # -- the K8s configmap name containing the RSA public key when using MySQL's caching_sha2_password plugin
     # Note: see the caching_sha2_password_public_key_path MySQL variable for the public key file location

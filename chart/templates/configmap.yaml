@@ -7,7 +7,7 @@ metadata:
 data:
   {{- $tlsOpts := "" -}}
   {{- if .Values.mariadb.master.masterTlsSecret -}}
-  {{-   $tlsOpts = "?useSSL=true&requireSSL=true" -}}
+  {{-   $tlsOpts = "?sslMode=verify-ca" -}}
   {{- end -}}
   {{- $dbUrl := (printf "jdbc:mysql://%s/codedx%s" (include "srm-web.db.fullname" .) $tlsOpts) -}}
   {{- if not .Values.features.mariadb -}}
@@ -22,6 +22,9 @@ data:
 
   {{- $sessionVariables := "sessionVariables=sql_mode='STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'" -}}
   {{- $dbUrl = (printf "%s%s" $dbUrl $sessionVariables) -}}
+  {{- if hasPrefix "jdbc:mysql:" $dbUrl -}}
+  {{-   $dbUrl = (printf "%s&permitMysqlScheme" $dbUrl) -}}
+  {{- end -}}
 
   {{- $useDatabasePublicKey := and (not .Values.features.mariadb) (not (empty (.Values.web.database.publicKeyConfigMap))) -}}
   {{- if $useDatabasePublicKey -}}
@@ -30,7 +33,7 @@ data:
 
   {{ include "srm-web.main.props.filename" . }}: |-
     swa.db.url = {{ $dbUrl }}
-    swa.db.driver = com.mysql.jdbc.Driver
+    swa.db.driver = org.mariadb.jdbc.Driver
     swa.jobs.cpu-limit = {{ include "srm.sizing.webJobLimitCPU" . }}
     swa.jobs.memory-limit = {{ include "srm.sizing.webJobLimitMemory" . }}
     swa.jobs.database-limit = {{ include "srm.sizing.webJobLimitDB" . }}
