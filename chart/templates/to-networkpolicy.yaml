@@ -77,6 +77,9 @@ spec:
         matchLabels:
           {{- include "srm-to.job-labels" . | nindent 10 }}
           component: hook
+    - podSelector:
+        matchLabels:
+          app: {{ printf "%s-job" (include "minio.ref.fullname" .) }}
     ports:
     - protocol: TCP
       port: 9000
