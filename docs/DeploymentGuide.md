@@ -66,9 +66,11 @@
     + [Azure Cloud Storage (Object Storage) Pre-work](#azure-cloud-storage-object-storage-pre-work)
   * [On-Cluster Scan Farm Pre-work](#on-cluster-scan-farm-pre-work)
     + [Scanner Nodes Pre-work](#scanner-nodes-pre-work)
-    + [Bitnami PostgreSQL Chart Pre-work](#bitnami-postgresql-chart-pre-work)
-    + [Bitnami Redis Chart Pre-work](#bitnami-redis-chart-pre-work)
-    + [Bitnami MinIO Chart Pre-work](#bitnami-minio-chart-pre-work)
+    + [Redis Chart Pre-work](#redis-chart-pre-work)
+    + [Bitnami Charts Pre-work (Deprecated)](#bitnami-charts-pre-work-deprecated)
+      - [Bitnami PostgreSQL Chart Pre-work](#bitnami-postgresql-chart-pre-work)
+      - [Bitnami Redis Chart Pre-work](#bitnami-redis-chart-pre-work)
+      - [Bitnami MinIO Chart Pre-work](#bitnami-minio-chart-pre-work)
 - [Tool Orchestration Pre-work](#tool-orchestration-pre-work)
   * [Node Pool Pre-work](#node-pool-pre-work)
   * [Object Storage Pre-work](#object-storage-pre-work)
@@ -1276,7 +1278,46 @@ kubectl taint node scan-farm-worker-node-name NodeType=ScannerNode:NoSchedule
 
 If using a cloud-hosted node pool, specify the node label and taint with your node pool configuration so that generated nodes meet Scan Farm requirements.
 
-### Bitnami PostgreSQL Chart Pre-work
+### Redis Chart Pre-work
+
+The Redis license is available [here](https://redis.io/docs/about/license/). The HelmForge Redis Helm chart license is available [here](https://github.com/helmforgedev/charts/tree/main/charts/redis).
+
+The HelmForge Redis chart uses the official `docker.io/library/redis` image and supports standalone, replication, sentinel, and cluster topologies. Set the Redis architecture to standalone using the `architecture` chart parameter. You can enable authentication using the `auth.enabled` chart parameter, referencing a Kubernetes Secret via `auth.existingSecret` and `auth.existingSecretPasswordKey`. The following is an example of the Redis chart parameters for version 1.6.19 that customizes Redis to meet Scan Farm requirements:
+
+```
+architecture: standalone
+auth:
+  enabled: false
+config:
+  redis: |
+    save ""
+    appendonly no
+    maxmemory 1gb
+    maxmemory-policy noeviction
+standalone:
+  persistence:
+    enabled: false
+  resources:
+    limits:
+      cpu: "1"
+      memory: 1100Mi
+```
+
+If you store the above YAML in a file named redis.yaml, you can run helm like this:
+
+```
+helm -n srm upgrade --create-namespace --install --repo https://repo.helmforge.dev --version 1.6.19 redis redis -f redis.yaml
+```
+
+When using the HelmForge Redis chart with the release name `redis`, the chart creates a Kubernetes Service named `redis-client` for standalone mode. Use `redis-client` as the Redis host when configuring the Scan Farm cache service.
+
+Set the `tls.enabled` chart parameter to `true` and provide a secret via `tls.existingSecret` if you plan to enable TLS for your Redis instance.
+
+### Bitnami Charts Pre-work (Deprecated)
+
+>**Deprecated:** The Bitnami charts below require `bitnamilegacy` images due to Bitnami's licensing change. Use the alternatives documented above instead.
+
+#### Bitnami PostgreSQL Chart Pre-work
 
 The PostgreSQL license is available [here](https://www.postgresql.org/about/licence/). The Bitnami PostgreSQL Helm chart license is available [here](https://github.com/bitnami/charts/tree/main/bitnami/postgresql#license).
 
@@ -1302,7 +1343,7 @@ helm -n srm upgrade --create-namespace --install --repo https://charts.bitnami.c
 
 >Note: The chart notes explain how to obtain the initial password.
 
-### Bitnami Redis Chart Pre-work
+#### Bitnami Redis Chart Pre-work
 
 The Redis license is available [here](https://redis.io/docs/about/license/). The Bitnami Redis Helm chart license is available [here](https://github.com/bitnami/charts/tree/main/bitnami/redis#license).
 
@@ -1338,7 +1379,7 @@ helm -n srm upgrade --create-namespace --install --repo https://charts.bitnami.c
 
 Set the redis.tls Helm chart configuration based on whether you plan to enable TLS for your Redis instance. You can find the Redis TLS certificate in its pod at /opt/bitnami/redis/certs/tls.crt.
 
-### Bitnami MinIO Chart Pre-work
+#### Bitnami MinIO Chart Pre-work
 
 The MinIO software is licensed under the [GNU Affero General Public License v3.0](https://github.com/minio/minio/blob/master/LICENSE) or a commercial enterprise license. The Bitnami MinIO Helm chart license is available [here](https://github.com/bitnami/charts/tree/main/bitnami/minio#license).
 

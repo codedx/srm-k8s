@@ -227,7 +227,7 @@ try {
 
 	New-ServiceConfig $config
 
-	if ('' -ne $config.webServiceAccountName) {
+	if ('' -ne $config.webServiceAccountName -or $config.automountWebServiceAccountToken) {
 		New-ServiceAccountConfig $config
 	}
 
