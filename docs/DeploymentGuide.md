@@ -4339,6 +4339,7 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | mariadb.master.tolerations | list | `[]` | the pod tolerations for the MariaDB primary database component |
 | mariadb.podLabels | object | `{}` | labels added to the database pods |
 | mariadb.replication.enabled | bool | `false` | whether to enable MariaDB replication |
+| mariadb.serviceAccount.automountServiceAccountToken | bool | `false` | whether to automount the service account token inside MariaDB pods; set to true only if the MariaDB pods require Kubernetes API access |
 | mariadb.serviceAccount.create | bool | `true` | whether to create a service account for the MariaDB service |
 | mariadb.slave.annotations."backup.codedx.io/type" | string | `"none"` | the annotations for the MariaDB replica database component |
 | mariadb.slave.nodeSelector | object | `{}` | the node selector to use for the MariaDB replica database workload |
@@ -4511,6 +4512,7 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | web.service.port | int | `9090` | the port number of the SRM web service |
 | web.service.port_name | string | `http` | the name of the service port (set to 'https' for HTTPS ports, required for AWS ELB configuration) |
 | web.service.type | string | `"ClusterIP"` | the service type of the SRM web service |
+| web.automountServiceAccountToken | bool | `false` | whether to automount the service account token inside the SRM web (Tomcat) pod; set to true only if the web pod requires Kubernetes API access (e.g., RDS IAM authentication) |
 | web.serviceAccount.annotations | object | `{}` | the annotations to apply to the SRM service account |
 | web.serviceAccount.create | bool | `true` | whether to create a service account for the SRM web service |
 | web.serviceAccount.name | string | `""` | the name of the service account to use; a name is generated using the fullname template when unset and create is true |
