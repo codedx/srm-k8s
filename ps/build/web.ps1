@@ -18,5 +18,6 @@ web:
   serviceAccount:
     create: $((!$config.skipWebServiceAccountCreate).ToString().ToLower())
     name: "$($config.webServiceAccountName)"
+  automountServiceAccountToken: $($config.automountWebServiceAccountToken.ToString().ToLower())
 "@ | Out-File (Get-WebServiceAccountValuesPath $config)
 }

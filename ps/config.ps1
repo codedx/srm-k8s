@@ -98,7 +98,7 @@ class Config {
 	static [int]   $volumeSizeGiBDefault = 0           # new default to support system size override when > 0
 	static [int]   $externalDatabasePortDefault = 3306
 
-	static [string]   $thisVersion = "1.10"
+	static [string]   $thisVersion = "1.12"
 
 	static [string[]] $protectedFields = @(
 		'repoUsername',
@@ -370,6 +370,7 @@ class Config {
 
 	[bool]        $skipWebServiceAccountCreate
 	[string]      $webServiceAccountName
+	[bool]        $automountWebServiceAccountToken
 
 	[KeyValue[]]  $salts
 	[bool]        $isLocked
@@ -427,6 +428,7 @@ class Config {
 		$this.externalDatabaseAuthType = [ExternalDatabaseAuthType]::Password
 		$this.skipWebServiceAccountCreate = $false
 		$this.webServiceAccountName = ''
+		$this.automountWebServiceAccountToken = $false
 		# v1.9 fields (04/23/2025)
 		$this.componentTlsType = [ComponentTlsType]::None
 		$this.certManagerIssuerName = ''
