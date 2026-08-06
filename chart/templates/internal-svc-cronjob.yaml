@@ -19,6 +19,7 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           serviceAccountName: {{ include "srm-web.serviceAccountName" . | quote }}
+          automountServiceAccountToken: {{ .Values.web.automountServiceAccountToken }}
           securityContext:
           {{- toYaml .Values.web.podSecurityContext | nindent 12 }}
           {{- if .Values.web.nodeSelectors }}
