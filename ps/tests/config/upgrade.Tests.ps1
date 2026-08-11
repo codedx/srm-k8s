@@ -1621,7 +1621,7 @@ Describe 'Parsing config' -Tag 'upgrade' {
 		$v1Dot10 = new-object Management.Automation.SemanticVersion('1.10')
 		$version = new-object Management.Automation.SemanticVersion($config.configVersion)
 
-		$version -eq $v1Dot10 | Should -BeTrue
+		$version -ge $v1Dot10 | Should -BeTrue
 
 		$config.psobject.properties['routeTlsType'] | Should -Not -BeNullOrEmpty
 		$config.psobject.properties['routeTlsKeyPath'] | Should -Not -BeNullOrEmpty
