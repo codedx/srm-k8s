@@ -4542,7 +4542,7 @@ The following table lists the Software Risk Manager Helm chart values. Run `helm
 | web.resources.limits.cpu | string | `"4000m"` | the required CPU for the web workload (must be >= 2 vCPUs) |
 | web.resources.limits.ephemeral-storage | string | `"3368Mi"` | the ephemeral storage for the web workload |
 | web.resources.limits.memory | string | `"16384Mi"` | the required memory for the web workload |
-| web.scanfarm.sast.version | string | `"2025.6.2"` | the SAST component version to use |
+| web.scanfarm.sast.version | string | `"2026.6.0"` | the SAST component version to use |
 | web.scanfarm.sca.version | string | `"10.0.0"` | the SCA component version to use for build-less scans (must match scan service's TOOL_DETECT_VERSION environment variable) |
 | web.scanfarm.key.validForDays | int | 45 | the duration of the Scan Farm API key |
 | web.scanfarm.key.regenSchedule | string | `"0 0 1 * *"` | the Scan Farm API key regeneration period (minute hour day-of-month month day-of-week) |
@@ -5202,8 +5202,8 @@ This chart switches the Scan Farm SAST component from version 2024.9.1 to 2024.1
 ### Upgrading to v1.64
 
 If you are upgrading from an earlier chart version, refer to any previous chart note(s) in addition to this one.
+This chart switches the Scan Farm SAST component from version 2025.6.2 to 2026.6.0. Refer to [Specify Scan Farm Engine Versions](#specify-scan-farm-engine-versions) if you'd prefer to use a previous SAST version that SRM supports.
 
-This chart switches the Scan Farm SAST component from version 2024.12.0 to 2025.6.2. Refer to [Specify Scan Farm Engine Versions](#specify-scan-farm-engine-versions) if you'd prefer to use a previous SAST version that SRM supports.
 
 ## All-in-One Demo Config
 
