@@ -18,8 +18,8 @@ Set-PSDebug -Strict
 
 if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$myPrivateRegistryPrefix/" }
 
-'codedx/codedx-tomcat:v2026.6.5',
-'codedx/codedx-tools:v2026.6.5',
+'codedx/codedx-tomcat:v2026.9.0',
+'codedx/codedx-tools:v2026.9.0',
 'codedx/codedx-prepare:v2.20.0',
 'codedx/codedx-newanalysis:v2.20.0',
 'codedx/codedx-results:v2.20.0',
