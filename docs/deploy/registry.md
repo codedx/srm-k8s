@@ -128,28 +128,28 @@ if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$my
 If you are not using the SRM Scan Farm feature, skip this section.
 
 The SRM Scan Farm feature requires these Docker images:
+- repo.blackduck.com/containers/cache-service:2026.6.0
+- repo.blackduck.com/containers/common-infra:2026.6.0
+- repo.blackduck.com/containers/scan-service:2026.6.0
+- repo.blackduck.com/containers/scan-service-migration:2026.6.0
+- repo.blackduck.com/containers/storage-service:2026.6.0
+- repo.blackduck.com/containers/storage-service-migration:2026.6.0
+- repo.blackduck.com/containers/job-runner:2026.6.0
 
-- repo.blackduck.com/containers/cache-service:2025.6.2
-- repo.blackduck.com/containers/common-infra:2025.6.2
-- repo.blackduck.com/containers/scan-service:2025.6.2
-- repo.blackduck.com/containers/scan-service-migration:2025.6.2
-- repo.blackduck.com/containers/storage-service:2025.6.2
-- repo.blackduck.com/containers/storage-service-migration:2025.6.2
-- repo.blackduck.com/containers/job-runner:2025.6.2
 
 You can use this PowerShell script below to pull, tag, and push the above Black Duck Docker image to your private registry; you must set the $myPrivateRegistryPrefix variable by replacing `id.dkr.ecr.us-east-2.amazonaws.com` with your Docker registry name and any prefix (e.g., my-srm) you require ($myPrivateRegistryPrefix must end with a forward slash):
 
 ```
 $myPrivateRegistryPrefix = 'id.dkr.ecr.us-east-2.amazonaws.com/'
 if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$myPrivateRegistryPrefix/" }
+'cache-service:2026.6.0',
+'common-infra:2026.6.0',
+'scan-service:2026.6.0',
+'scan-service-migration:2026.6.0',
+'storage-service:2026.6.0',
+'storage-service-migration:2026.6.0',
+'job-runner:2026.6.0' | ForEach-Object {
 
-'cache-service:2025.6.2',
-'common-infra:2025.6.2',
-'scan-service:2025.6.2',
-'scan-service-migration:2025.6.2',
-'storage-service:2025.6.2',
-'storage-service-migration:2025.6.2',
-'job-runner:2025.6.2' | ForEach-Object {
 
    docker pull --platform 'linux/amd64' "repo.blackduck.com/containers/$_"
    if($LASTEXITCODE -ne 0){throw "$_ pull failed"} 
@@ -230,13 +230,13 @@ if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$my
 'bitnami/minio:2025.7.23-debian-12-r5',
 'argoproj/workflow-controller:v3.7.11',
 'argoproj/argoexec:v3.7.11',
-'cache-service:2025.6.2',
-'common-infra:2025.6.2',
-'scan-service:2025.6.2',
-'scan-service-migration:2025.6.2',
-'storage-service:2025.6.2',
-'storage-service-migration:2025.6.2',
-'job-runner:2025.6.2' | ForEach-Object {
+'cache-service:2026.6.0',
+'common-infra:2026.6.0',
+'scan-service:2026.6.0',
+'scan-service-migration:2026.6.0',
+'storage-service:2026.6.0',
+'storage-service-migration:2026.6.0',
+'job-runner:2026.6.0' | ForEach-Object {
 
    docker pull --platform 'linux/amd64' "repo.blackduck.com/containers/$_"
    if($LASTEXITCODE -ne 0){throw "$_ pull failed"} 
