@@ -381,11 +381,10 @@ scan-services:
       TOOL_DETECT_VERSION: "10.0.0"
       # -- must match web.scanfarm.sast.version
       TOOL_COVERITY_VERSION: "2026.6.0"
-      # -- controls whether scan-service automatically sets a default Coverity version (required from 2025.12.0+)
+      # -- controls whether scan-service automatically sets a default Coverity version
       TOOL_COVERITY_ENSUREDEFAULT: true
       # -- controls whether scan-service automatically sets a default Detect version (optional, not needed for Bridge CLI)
       TOOL_DETECT_ENSUREDEFAULT: false
-      # Note: SCANFARM_CONSUMER_TYPE and SCANFARM_CONSUMER_VERSION removed in 2025.12.0+ (unified CNC matrix)
 
   # @ignore
   cache-service:
