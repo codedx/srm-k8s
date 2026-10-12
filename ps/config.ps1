@@ -428,7 +428,6 @@ class Config {
 		$this.externalDatabaseAuthType = [ExternalDatabaseAuthType]::Password
 		$this.skipWebServiceAccountCreate = $false
 		$this.webServiceAccountName = ''
-		$this.automountWebServiceAccountToken = $false
 		# v1.9 fields (04/23/2025)
 		$this.componentTlsType = [ComponentTlsType]::None
 		$this.certManagerIssuerName = ''
@@ -440,7 +439,7 @@ class Config {
 		$this.routeTlsCertificatePath = ''
 		$this.routeTlsCACertificatePath = ''
 		$this.routeHostname = ''
-		# v1.11 fields - Gateway API
+		# v1.11 fields - Gateway API (06/15/2025)
 		$this.gatewayClassName = 'nginx'
 		$this.gatewayHostname = ''
 		$this.gatewayExternalEnabled = $false
@@ -452,6 +451,8 @@ class Config {
 		$this.gatewayCertManagerEnabled = $false
 		$this.gatewayCertManagerIssuerName = ''
 		$this.gatewayCertManagerIssuerKind = 'ClusterIssuer'
+		# v1.12 fields (08/04/2026)
+		$this.automountWebServiceAccountToken = $false
 		# Note: the restore-version.ps1 script should account for any config.json format changes
 	}
 
