@@ -74,6 +74,26 @@ while ($null -ne $priorVersion) {
 
 	switch ($priorVersionLabel) {
 
+		('1.11.0') {
+			# 1.12 -> 1.11
+			$fieldsToRemove += 'automountWebServiceAccountToken'
+			break
+		}
+		('1.10.0') {
+			# 1.11 -> 1.10
+			$fieldsToRemove += 'gatewayClassName'
+			$fieldsToRemove += 'gatewayHostname'
+			$fieldsToRemove += 'gatewayExternalEnabled'
+			$fieldsToRemove += 'gatewayExternalName'
+			$fieldsToRemove += 'gatewayExternalNamespace'
+			$fieldsToRemove += 'gatewayExternalSectionName'
+			$fieldsToRemove += 'gatewayTlsType'
+			$fieldsToRemove += 'gatewayTlsSecretName'
+			$fieldsToRemove += 'gatewayCertManagerEnabled'
+			$fieldsToRemove += 'gatewayCertManagerIssuerName'
+			$fieldsToRemove += 'gatewayCertManagerIssuerKind'
+			break
+		}
 		('1.9.0') {
 			# 1.10 -> 1.9
 			$fieldsToRemove += 'routeTlsType'
