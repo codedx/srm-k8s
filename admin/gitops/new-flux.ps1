@@ -280,7 +280,7 @@ spec:
 "@ | Out-File (Join-Path (New-ResourceDirectory $fluxDir 'HelmRepository') 'repo.yaml') -NoNewline
 
 @"
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: srm
@@ -341,7 +341,7 @@ spec:
 "@ | Out-File (Join-Path (New-ResourceDirectory $fluxDir 'GitRepository') 'repo.yaml') -NoNewline
 
 @"
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: srm
