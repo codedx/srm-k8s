@@ -29,13 +29,13 @@ if (-not $myPrivateRegistryPrefix.EndsWith('/')) { $myPrivateRegistryPrefix="$my
 'bitnami/minio:2025.7.23-debian-12-r5',
 'argoproj/workflow-controller:v3.7.11',
 'argoproj/argoexec:v3.7.11',
-'cache-service:2026.6.0',
-'common-infra:2026.6.0',
-'scan-service:2026.6.0',
-'scan-service-migration:2026.6.0',
-'storage-service:2026.6.0',
-'storage-service-migration:2026.6.0',
-'job-runner:2026.6.0' | ForEach-Object {
+'cache-service:2026.9.0',
+'common-infra:2026.9.0',
+'scan-service:2026.9.0',
+'scan-service-migration:2026.9.0',
+'storage-service:2026.9.0',
+'storage-service-migration:2026.9.0',
+'job-runner:2026.9.0' | ForEach-Object {
 
 	docker pull --platform 'linux/amd64' "repo.blackduck.com/containers/$_"
 	if($LASTEXITCODE -ne 0){throw "$_ pull failed"} 
